@@ -16,6 +16,9 @@ Close the live server with ```Ctrl + C``` and type ```Y``` when prompted "Termin
 ## Shadcn/ui
 View [https://ui.shadcn.com/docs](https://ui.shadcn.com/docs) to see all available components and installation steps.
 
+## Tailwind CSS
+View [https://tailwindcss.com/](https://tailwindcss.com/) to search up Tailwind styling.
+
 ## Next.js
 To learn more about Next.js, take a look at the following resources:
 
