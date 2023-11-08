@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { Inclusive_Sans } from 'next/font/google'
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { MobileNav } from "@/components/mobile-nav"
+import { Sidebar } from "@/components/sidebar"
 
 const font = Inclusive_Sans({ weight: "400", style: "normal", subsets: ['latin'], display: "swap" })
 
@@ -25,6 +27,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <MobileNav />
+          <Sidebar />
           {children}
         </ThemeProvider>
       </body>
