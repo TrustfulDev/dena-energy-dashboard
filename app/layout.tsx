@@ -3,8 +3,9 @@ import type { Metadata } from 'next'
 import { Inclusive_Sans } from 'next/font/google'
 
 import { ThemeProvider } from "@/components/theme-provider"
-import { MobileNav } from "@/components/mobile-nav"
-import { Sidebar } from "@/components/sidebar"
+import { MobileNav } from "@/components/navigation/mobile-nav"
+import { Sidebar } from "@/components/navigation/sidebar"
+import { DesktopHeader } from "@/components/navigation/desktop-header"
 
 const font = Inclusive_Sans({ weight: "400", style: "normal", subsets: ['latin'], display: "swap" })
 
@@ -20,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={font.className}>
+      <body className={`${font.className} block md:flex`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -28,8 +29,12 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <MobileNav />
+          
           <Sidebar />
-          {children}
+          <section className="md:p-6 flex-1">
+            <DesktopHeader />
+            {children}
+          </section>
         </ThemeProvider>
       </body>
     </html>
