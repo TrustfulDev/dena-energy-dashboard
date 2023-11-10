@@ -12,11 +12,17 @@ module.exports = {
       center: true,
       padding: "2rem",
       screens: {
+        'sm': '640px',
+        'md': '768px',
         "2xl": "1400px",
       },
     },
     extend: {
       colors: {
+        'primary-bg': '#242529',
+        'primary-card': '#37373F',
+        'primary-text': '#FDFDFE',
+        'faded-text': 'rgba(253, 253, 254, 0.75)',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
