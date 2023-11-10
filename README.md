@@ -3,6 +3,9 @@
 All rights reserved to Dena Energy Inc.
 
 ## Running Development Server
+Run ```npm install``` before attempting to start the development server.
+Ensure that your Node version is at least v18 or higher.
+
 ```bash
 npm run dev
 # or
