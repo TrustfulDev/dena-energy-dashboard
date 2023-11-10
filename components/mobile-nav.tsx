@@ -1,4 +1,5 @@
 "use client"
+import Image from 'next/image'
 
 import { 
     Menu, 
@@ -18,9 +19,9 @@ import {
 import { NavBtn } from "@/components/nav-btns"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { usePathname } from "next/navigation"
-import Image from 'next/image'
 
 export const MobileNav = () => {
+    // Used to determine which page the user is on & sets the active nav-btn.
     const pathname = usePathname();
 
     return (
@@ -39,11 +40,11 @@ export const MobileNav = () => {
                     <h1 className="text-3xl mb-14">Dena Energy</h1>
 
                     <div className="flex flex-col gap-1 w-full">
-                        <NavBtn Icon={LayoutDashboard} text="Dashboard" link="/" active={pathname === "/"} className="" />
-                        <NavBtn Icon={BarChart3} text="Analytics" link="/analytics" active={pathname === "/analytics"} className="" />
-                        <NavBtn Icon={FilePieChart} text="Reports" link="/reports" active={pathname === "/reports"} className="" />
-                        <NavBtn Icon={Settings} text="Settings" link="/settings" active={pathname === "/settings"} className="" />
-                        <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="" />
+                        <NavBtn Icon={LayoutDashboard} text="Dashboard" link="/" active={pathname === "/"} className="" withSheetClose />
+                        <NavBtn Icon={BarChart3} text="Analytics" link="/analytics" active={pathname === "/analytics"} className="" withSheetClose />
+                        <NavBtn Icon={FilePieChart} text="Reports" link="/reports" active={pathname === "/reports"} className="" withSheetClose />
+                        <NavBtn Icon={Settings} text="Settings" link="/settings" active={pathname === "/settings"} className="" withSheetClose />
+                        <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="" withSheetClose />
                     </div>
                 </SheetContent>
             </Sheet>
