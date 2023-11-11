@@ -10,6 +10,7 @@ import {
 
 import { NavBtn } from "@/components/navigation/nav-btns"
 import { usePathname } from "next/navigation"
+import { UserButton } from "@clerk/nextjs";
 
 export const Sidebar = () => {
     const pathname = usePathname();
@@ -24,7 +25,8 @@ export const Sidebar = () => {
             <NavBtn Icon={BarChart3} text="Analytics" link="/analytics" active={pathname === "/analytics"} className="" />
             <NavBtn Icon={FilePieChart} text="Reports" link="/reports" active={pathname === "/reports"} className="" />
             <NavBtn Icon={Settings} text="Settings" link="/settings" active={pathname === "/settings"} className="" />
+
             <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="mt-auto text-red-400" />
         </aside>
     )
-}
+}/** */

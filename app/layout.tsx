@@ -1,6 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inclusive_Sans } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { MobileNav } from "@/components/navigation/mobile-nav"
@@ -20,6 +21,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
+    <ClerkProvider>
     <html lang="en">
       <body className={`${font.className} block md:flex`}>
         <ThemeProvider
@@ -38,5 +40,6 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
+    </ClerkProvider>
   )
 }
