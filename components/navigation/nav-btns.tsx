@@ -11,6 +11,7 @@ import { SheetClose } from "@/components/ui/sheet";
 *   Active:             State that indicates if the button is for the current tab
 *   className:          Add any extra styling
 *   withSheetClose?:    SPECIFICALLY used for the mobile-nav.tsx | Not a mandatory prop
+*   clickHandler?:      SPECIFICALLY used for buttons that need an onClick
 */
 interface NavBtnProps {
     Icon: LucideIcon;
@@ -19,6 +20,7 @@ interface NavBtnProps {
     active: Boolean;
     className: String;
     withSheetClose?: boolean;
+    clickHandler?: React.MouseEventHandler<HTMLButtonElement>
 }
 
 export const NavBtn: React.FC<NavBtnProps> = ({
@@ -27,7 +29,8 @@ export const NavBtn: React.FC<NavBtnProps> = ({
     link,
     active,
     className,
-    withSheetClose
+    withSheetClose,
+    clickHandler
 }) => {
     // Determine whether we need SheetClose for our wrapper
     const [SheetCloseWrapper, sheetCloseWrapperProps] = withSheetClose
@@ -36,7 +39,10 @@ export const NavBtn: React.FC<NavBtnProps> = ({
 
     return (
         <SheetCloseWrapper {...sheetCloseWrapperProps}>
-            <Button variant="left" className={`hover:bg-primary-card hover:text-primary-text text-base py-7 ${active ? "text-primary-text bg-primary-card" : "text-faded-text"} ${className}`} asChild>
+            <Button variant="left" className={`hover:bg-primary-card hover:text-primary-text text-base py-7 ${active ? "text-primary-text bg-primary-card" : "text-faded-text"} ${className}`} 
+                asChild
+                onClick={clickHandler}
+            >
                 <Link href={`${link}`} type="button"><Icon className="mr-3 h-5 w-5" /> {text}</Link>
             </Button>
         </SheetCloseWrapper>
