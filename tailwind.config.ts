@@ -22,6 +22,8 @@ module.exports = {
         'primary-bg': '#242529',
         'primary-card': '#37373F',
         'primary-text': '#FDFDFE',
+        'primary-cta': '#A6ABFF',
+        'secondary-cta': '#FF9E73',
         'faded-text': 'rgba(253, 253, 254, 0.75)',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

@@ -69,6 +69,8 @@
 @layer base {
   * {
     @apply border-border;
+    scrollbar-width: thin;
+    scrollbar-color: #FF9E73 #37373fa4;
   }
   body {
     @apply bg-background text-foreground;
