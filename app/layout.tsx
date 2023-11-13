@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { MobileNav } from "@/components/navigation/mobile-nav"
 import { Sidebar } from "@/components/navigation/sidebar"
 import { DesktopHeader } from "@/components/navigation/desktop-header"
+import { Footer } from "@/components/navigation/footer"
 
 const font = Inclusive_Sans({ weight: "400", style: "normal", subsets: ['latin'], display: "swap" })
 
@@ -31,9 +32,10 @@ export default function RootLayout({
           <MobileNav />
           
           <Sidebar />
-          <section className="md:p-6 flex-1">
+          <section className="md:p-6 flex-1 flex flex-col md:min-h-0 md:mt-0 max-h-screen" style={{ minHeight: 'calc(100vh - 88px)'}}>
             <DesktopHeader />
             {children}
+            <Footer />
           </section>
         </ThemeProvider>
       </body>
