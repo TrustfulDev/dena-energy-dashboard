@@ -10,7 +10,7 @@ import {
 
 import { NavBtn } from "@/components/navigation/nav-btns"
 import { usePathname } from "next/navigation"
-import { UserButton } from "@clerk/nextjs";
+
 
 export const Sidebar = () => {
     const pathname = usePathname();
@@ -29,4 +29,4 @@ export const Sidebar = () => {
             <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="mt-auto text-red-400" />
         </aside>
     )
-}/** */
+}

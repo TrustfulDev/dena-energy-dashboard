@@ -1,7 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+
 @layer base {
   :root {
     --background: 228, 6%, 15%; /* #242529 */
@@ -33,7 +34,11 @@
     --ring: 228, 6%, 15%;
  
     --radius: 0.5rem;
-  }
+
+   
+
+
+}
  
   .dark {
     --background: 228, 6%, 15%; /* #242529 */

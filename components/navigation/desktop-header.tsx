@@ -28,7 +28,13 @@ export const DesktopHeader = () => {
             <div className="flex items-center space-x-4">
                 <ThemeToggle />
                 
-                <UserButton afterSignOutUrl="/"  />
+                <UserButton afterSignOutUrl="/" 
+                    appearance={{
+                        elements: {
+                            avatarBox: "w-[3rem] h-[3rem]"
+                        }
+                    }}
+                />
                 
             </div>
             
