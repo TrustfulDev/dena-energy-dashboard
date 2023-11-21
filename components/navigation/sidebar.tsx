@@ -9,11 +9,13 @@ import {
 } from "lucide-react"
 
 import { NavBtn } from "@/components/navigation/nav-btns"
-import { usePathname } from "next/navigation"
-
+import { usePathname, useRouter } from "next/navigation"
+import { useClerk } from "@clerk/nextjs"
 
 export const Sidebar = () => {
     const pathname = usePathname();
+    const { signOut } = useClerk();
+    const router = useRouter();
 
     return (
         <aside className="hidden md:inline-flex flex-col gap-4 w-[368px] h-screen border-r border-primary-card p-6">
@@ -26,7 +28,7 @@ export const Sidebar = () => {
             <NavBtn Icon={FilePieChart} text="Reports" link="/reports" active={pathname === "/reports"} className="" />
             <NavBtn Icon={Settings} text="Settings" link="/settings" active={pathname === "/settings"} className="" />
 
-            <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="mt-auto text-red-400" />
+            <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="mt-auto text-red-400" clickHandler={() => signOut(() => router.push("/"))} />
         </aside>
     )
 }

@@ -18,11 +18,14 @@ import {
 
 import { NavBtn } from "@/components/navigation/nav-btns"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useClerk } from '@clerk/nextjs';
 
 export const MobileNav = () => {
     // Used to determine which page the user is on & sets the active nav-btn.
     const pathname = usePathname();
+    const { signOut } = useClerk();
+    const router = useRouter();
 
     return (
         <div className="h-[88px] md:hidden">
@@ -45,7 +48,7 @@ export const MobileNav = () => {
                             <NavBtn Icon={BarChart3} text="Analytics" link="/analytics" active={pathname === "/analytics"} className="" withSheetClose />
                             <NavBtn Icon={FilePieChart} text="Reports" link="/reports" active={pathname === "/reports"} className="" withSheetClose />
                             <NavBtn Icon={Settings} text="Settings" link="/settings" active={pathname === "/settings"} className="" withSheetClose />
-                            <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="mt-auto text-red-400" withSheetClose />
+                            <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="mt-auto text-red-400" clickHandler={() => signOut(() => router.push("/"))} withSheetClose />
                         </div>
                     </SheetContent>
                 </Sheet>

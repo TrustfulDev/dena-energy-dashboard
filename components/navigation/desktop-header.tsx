@@ -25,7 +25,7 @@ export const DesktopHeader = () => {
     return (
         <header className="hidden md:flex justify-between">
             <h1 className="text-4xl">{page}</h1>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center gap-3">
                 <ThemeToggle />
                 
                 <UserButton afterSignOutUrl="/" 
