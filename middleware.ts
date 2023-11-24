@@ -11,11 +11,6 @@ export default authMiddleware({
       const signin = new URL('/sign-in', req.url);
       return NextResponse.redirect(signin);
     }
-
-    if (auth.userId && !auth.orgId && req.nextUrl.pathname !== "/") {
-      const home = new URL('/', req.url);
-      return NextResponse.redirect(home);
-    }
   },
 });
  
