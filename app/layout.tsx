@@ -1,7 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inclusive_Sans } from 'next/font/google'
-import { ClerkProvider, SignIn, SignedIn, SignedOut } from '@clerk/nextjs'
+import { ClerkProvider, SignedIn, SignedOut } from '@clerk/nextjs'
 
 import { ThemeProvider } from "@/components/theme-provider"
 import { MobileNav } from "@/components/navigation/mobile-nav"
@@ -23,52 +23,41 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-     
       <html lang="en">
-      <SignedIn>
-        <body className={`${font.className} block md:flex`}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <MobileNav />
-            
-            <Sidebar />
-            <section className="md:p-6 flex-1">
-              <DesktopHeader />
-              {children}
-            </section>
-          </ThemeProvider>
-        </body>
-        </SignedIn>
-        <SignedOut>
-
+        <SignedIn>
           <body className={`${font.className} block md:flex`}>
             <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-            <section className="md:p-6 flex-1">
-       
-                  {children}
-                  </section>
-                  </ThemeProvider>
-            </body>
-          </SignedOut>
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <MobileNav />
 
-        
+              <Sidebar />
+              <section className="md:p-6 flex-1">
+                <DesktopHeader />
+                {children}
+              </section>
+            </ThemeProvider>
+          </body>
+        </SignedIn>
 
-        
+        <SignedOut>
+          <body className={`${font.className} block md:flex`}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <section className="flex-1">
+                {children}
+              </section>
+            </ThemeProvider>
+          </body>
+        </SignedOut>
       </html>
-    
-      
-     
-           
-   
     </ClerkProvider>
   )
 }

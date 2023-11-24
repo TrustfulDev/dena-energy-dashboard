@@ -14,6 +14,7 @@ module.exports = {
       screens: {
         'sm': '640px',
         'md': '768px',
+        'xl': '1000px',
         "2xl": "1400px",
       },
     },
@@ -22,6 +23,8 @@ module.exports = {
         'primary-bg': '#242529',
         'primary-card': '#37373F',
         'primary-text': '#FDFDFE',
+        'primary-cta': '#A6ABFF',
+        'secondary-cta': '#FF9E73',
         'faded-text': 'rgba(253, 253, 254, 0.75)',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
