@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+// LEFT is a modified version of outline (shadcn/ui button)
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
@@ -18,7 +19,7 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        left: "bg-background hover:bg-accent justify-start"
+        left: "justify-start bg-background border-2 hover:bg-accent hover:text-accent-foreground"
       },
       size: {
         default: "h-10 px-4 py-2",

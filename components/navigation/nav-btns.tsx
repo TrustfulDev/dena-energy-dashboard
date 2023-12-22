@@ -39,7 +39,7 @@ export const NavBtn: React.FC<NavBtnProps> = ({
 
     return (
         <SheetCloseWrapper {...sheetCloseWrapperProps}>
-            <Button variant="left" className={`hover:bg-primary-card hover:text-primary-text text-base py-7 ${active ? "text-primary-text bg-primary-card" : "text-faded-text"} ${className}`} 
+            <Button variant="left" className={`text-base py-7 ${active ? "text-accent-foreground bg-accent" : "text-accent-faded bg-background border-transparent"} ${className}`} 
                 asChild
                 onClick={clickHandler}
             >
