@@ -4,6 +4,7 @@ import { Kanit } from 'next/font/google'
 import { ClerkProvider, SignedIn, SignedOut } from '@clerk/nextjs'
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 import { MobileNav } from "@/components/navigation/mobile-nav"
 import { Sidebar } from "@/components/navigation/sidebar"
 import { DesktopHeader } from "@/components/navigation/desktop-header"
@@ -41,7 +42,9 @@ export default function RootLayout({
                 {children}
                 <Footer />
               </section>
+              <Toaster richColors closeButton />
             </ThemeProvider>
+            
           </body>
         </SignedIn>
 

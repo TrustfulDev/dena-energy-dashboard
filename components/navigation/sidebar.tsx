@@ -4,8 +4,8 @@ import {
     LayoutDashboard, 
     BarChart3,
     FilePieChart,
-    Settings,
-    LogOut
+    UserCog,
+    LogOut,
 } from "lucide-react"
 
 import { NavBtn } from "@/components/navigation/nav-btns"
@@ -28,7 +28,7 @@ export const Sidebar = () => {
             <NavBtn Icon={LayoutDashboard} text="Overview" link="/" active={pathname === "/"} className="" />
             <NavBtn Icon={BarChart3} text="Analytics" link="/analytics" active={pathname === "/analytics"} className="" />
             <NavBtn Icon={FilePieChart} text="Reports" link="/reports" active={pathname === "/reports"} className="" />
-            <NavBtn Icon={Settings} text="Settings" link="/settings" active={pathname === "/settings"} className="" />
+            <NavBtn Icon={UserCog} text="Account Linking" link="/linking" active={pathname === "/linking"} className="" />
 
             {/* Overwrite text color and hover effects. Destructive Button */}
             <NavBtn Icon={LogOut} text="Log out" link="#" active={false} className="mt-auto text-red-400 hover:border-red-400 hover:bg-red-400 hover:bg-opacity-10 hover:text-red-400" clickHandler={() => signOut(() => router.push("/"))} />

@@ -16,7 +16,7 @@ export const DesktopHeader = () => {
             "/": "Overview",
             "/analytics": "Analytics",
             "/reports": "Reports",
-            "/settings": "Settings"
+            "/linking": "Account Linking"
         };
 
         setPage(pathMap[pathname] || "Overview");
