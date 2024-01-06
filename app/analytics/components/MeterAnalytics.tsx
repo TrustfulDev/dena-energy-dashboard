@@ -148,18 +148,18 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
                 </div>
 
                 {/* Size, Meters, Occupancy */}
-                <div className="flex gap-4 mb-1">
+                <div className="flex gap-4 mb-1 sm:text-base text-sm">
                     <p className="flex items-center">
-                        <LandPlot className="mr-2" />
+                        <LandPlot className="mr-2 w-5 sm:w-6" />
                         {propertyDetail ? `${parseInt(propertyDetail.grossFloorArea.value).toLocaleString()} ft` : 'Loading...'}
                         <span className="relative bottom-1 text-xs">2</span>
                     </p>
-                    <p className="flex items-center gap-2"><Gauge /> {linkMeter.length} Meters</p>
-                    <p className="flex items-center gap-2"><Users /> {propertyDetail ? `${propertyDetail.occupancyPercentage}% Occupancy` : 'Loading...'}</p>
+                    <p className="flex items-center gap-2"><Gauge className="w-5 sm:w-6" /> {linkMeter.length} Meters</p>
+                    <p className="flex items-center gap-2"><Users className="w-5 sm:w-6" /> {propertyDetail ? `${propertyDetail.occupancyPercentage}% Occupancy` : 'Loading...'}</p>
                 </div>
 
                 {/* Command + Date */}
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                     <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild>
                             <Button

@@ -27,7 +27,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <SignedIn>
-          <body className={`${font.className} block md:flex`}>
+          <body className={`${font.className} flex flex-col lg:flex-row`}>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
@@ -37,7 +37,7 @@ export default function RootLayout({
               <MobileNav />
 
               <Sidebar />
-              <section className="md:px-6 md:pt-6 md:pb-4 flex-1 flex flex-col md:min-h-0 md:mt-0 max-h-screen" style={{ minHeight: 'calc(100vh - 88px)'}}>
+              <section className="px-3 lg:px-6 lg:pt-6 lg:pb-4 flex-1 flex flex-col min-h-0 lg:mt-0 max-h-screen" style={{ minHeight: 'calc(100vh - 88px)'}}>
                 <DesktopHeader />
                 {children}
                 <Footer />
@@ -49,7 +49,7 @@ export default function RootLayout({
         </SignedIn>
 
         <SignedOut>
-          <body className={`${font.className} block md:flex`}>
+          <body className={`${font.className} block lg:flex`}>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"

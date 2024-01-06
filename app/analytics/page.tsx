@@ -1,13 +1,14 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MeterAnalytics } from "./components/MeterAnalytics";
 import { CarbonFootprint } from "./components/CarbonFootprint";
+import { ScrollArea, ScrollBar  } from "@/components/ui/scroll-area"
 
 export default function Analytics() {
     return (
         <div className="flex h-full mb-6 md:overflow-y-auto">
             <Tabs defaultValue="meter" className="flex flex-col w-full">
-                <TabsList className="w-full justify-start">
-                    <TabsTrigger value="meter">Meter Analytics</TabsTrigger>
+                <TabsList className="w-full grid grid-cols-4">
+                    <TabsTrigger value="meter" className="">Meter Analytics</TabsTrigger>
                     <TabsTrigger value="carbon">Carbon Footprint</TabsTrigger>
                     <TabsTrigger value="expenses">Expenses</TabsTrigger>
                     <TabsTrigger value="energystar">Energy Star Score</TabsTrigger>

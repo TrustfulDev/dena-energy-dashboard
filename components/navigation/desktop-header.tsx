@@ -23,7 +23,7 @@ export const DesktopHeader = () => {
     }, [pathname]);
 
     return (
-        <header className="hidden md:flex justify-between mb-6 min-h-[48px]">
+        <header className="hidden lg:flex justify-between mb-6 min-h-[48px]">
             <h1 className="text-5xl text-indigo-500">{page}</h1>
             <div className="flex items-center gap-3">
                 <ThemeToggle />

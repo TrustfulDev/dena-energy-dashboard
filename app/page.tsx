@@ -83,8 +83,8 @@ export default function Home() {
   },[]);
 
   return (
-    <div className="flex gap-6 h-full mb-6 md:overflow-y-auto">
-      <Card className='w-full flex flex-col flex-grow h-full'>
+    <div className="flex flex-wrap gap-6 h-full mb-6 lg:overflow-y-auto">
+      <Card className='w-full flex flex-col flex-1 h-full'>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
             Daily Values - December 2023

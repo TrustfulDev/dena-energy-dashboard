@@ -19,7 +19,7 @@ export const Sidebar = () => {
     const { user } = useUser();
 
     return (
-        <aside className="hidden md:inline-flex flex-col gap-3 w-[368px] h-screen border-r-2 border-primary p-6">
+        <aside className="hidden lg:inline-flex flex-col gap-3 w-[368px] h-screen border-r-2 border-primary p-6">
             <header className="mb-4">
                 <h2>Welcome Back</h2>
                 <h1 className="text-5xl">{user?.fullName || "Valued User"}</h1>
