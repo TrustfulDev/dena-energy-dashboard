@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import xml2js from "xml2js"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar"
+import { Calendar as CalendarIcon } from "lucide-react"
 import {
   Command,
   CommandEmpty,
@@ -16,36 +19,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { 
+    ChevronsUpDown, 
+    CheckSquare, 
+    Gauge, 
+    Users, 
+    LandPlot, 
+    MapPin 
+} from 'lucide-react';
 
-import { ChevronsUpDown , CheckSquare, Gauge, Users, LandPlot, MapPin } from 'lucide-react';
-
-/* READ THIS 
-* Replace all "frameworks" with property ID
-* The rest of the code is based on this dummy data below (frameworks)
-* Suggestion: Ctrl + F and search for "framework"
-*/
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
 interface SingleLink {
     id: string;
     hint: string;
@@ -83,12 +65,11 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
 }) => {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
-    //const [propertyData, setPropertyData] = useState<MeterAnalyticsProps | null>(null);
     const [linksData, setLinksData] = useState<SingleLink[]>([]); // State to hold the array of links
     const [linkMeter, setLinkMeter] = useState<LinkMeters[]>([]); 
     const [propertyDetail, setPropertyDetail] = useState<PropertiesDetails | null>(null);
-
     const [selectedPropertyId, setSelectedPropertyId] = useState("");
+    const [date, setDate] = useState<Date>()
 
     useEffect(() => {
         async function fetchProperties() {
@@ -106,9 +87,8 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
         }
     
         fetchProperties().catch(console.error);
-      }, []);
-    
-    //console.log("checking ", linksData[0].id);
+        setDate(new Date());
+    }, []);
 
     useEffect(() => {
         async function fetchMeters() {
@@ -128,13 +108,6 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
             }
         }
 
-        if (selectedPropertyId) {
-            fetchMeters();
-        }
-
-    }, [selectedPropertyId]);
-
-    useEffect(() => {
         async function fetchProperties_detail() {
             if (selectedPropertyId) {
                 const response = await fetch(`/api/energystar/properties_detail?id=${selectedPropertyId}`);
@@ -153,75 +126,110 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
         }
 
         if (selectedPropertyId) {
+            fetchMeters();
             fetchProperties_detail();
         }
-
     }, [selectedPropertyId]);
-
-    //console.log("checked it: ", linkMeter.length);
 
     return (
         <>
-            <header className="flex items-center gap-8 mb-1">
-                <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={open}
-                            className="w-[400px] justify-between"
-                        >
-                            {/* THE INTIAL/DEFAULT VALUE set here, we should change it to use the first possible property */}
-                            {value
-                                ? linksData.find((properties) => properties.id === value)?.hint
-                                : "Select properties..."}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                    </PopoverTrigger>
+            <header className="flex flex-wrap gap-2 justify-between mb-1">
+                {/* Name & Address */}
+                <div>
+                    <h1 className="text-3xl min-[1930px]:text-4xl capitalize">{ value === "" ? "Select property" : value}</h1>
+                    <p className="flex items-center gap-1 text-sm">
+                        <MapPin className="w-4" />
+                        {propertyDetail ? `${propertyDetail.address.address1}, 
+                        ${propertyDetail.address.city}, 
+                        ${propertyDetail.address.state}, 
+                        ${propertyDetail.address.postalCode}, 
+                        ${propertyDetail.address.country}` : 'Loading...'}
+                    </p>
+                </div>
 
-                    <PopoverContent className="w-[400px] p-0">
-                        <Command>
-                            <CommandInput placeholder="Search properties..." className="h-9" />
-                            <CommandEmpty>No framework found.</CommandEmpty>
+                {/* Size, Meters, Occupancy */}
+                <div className="flex gap-4 mb-1">
+                    <p className="flex items-center">
+                        <LandPlot className="mr-2" />
+                        {propertyDetail ? `${parseInt(propertyDetail.grossFloorArea.value).toLocaleString()} ft` : 'Loading...'}
+                        <span className="relative bottom-1 text-xs">2</span>
+                    </p>
+                    <p className="flex items-center gap-2"><Gauge /> {linkMeter.length} Meters</p>
+                    <p className="flex items-center gap-2"><Users /> {propertyDetail ? `${propertyDetail.occupancyPercentage}% Occupancy` : 'Loading...'}</p>
+                </div>
 
-                            <CommandGroup>
-                                {linksData.map((properties) => (
-                                <CommandItem
-                                    key={properties.id}
-                                    value={properties.id}
-                                    onSelect={(currentValue) => {
-                                        setValue(currentValue === value ? "" : currentValue)
-                                        setSelectedPropertyId(properties.id) // Update the selectedPropertyId state
-                                        setOpen(false)
-                                    }}
-                                >
-                                    {properties.hint}
-                                    <CheckSquare
-                                        className={cn(
-                                            "ml-auto h-4 w-4",
-                                            value === properties.id ? "opacity-100" : "opacity-0"
-                                        )}
-                                    />
-                                </CommandItem>
-                                ))}
-                            </CommandGroup>
-                        </Command>
-                    </PopoverContent>
-                </Popover>
+                {/* Command + Date */}
+                <div className="flex items-center gap-4">
+                    <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={open}
+                                className="w-[280px] justify-between"
+                            >
+                                {/* THE INTIAL/DEFAULT VALUE set here, we should change it to use the first possible property */}
+                                {value
+                                    ? linksData.find((properties) => properties.hint.toLowerCase() === value)?.hint
+                                    : "Select properties..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
 
-                {/* REPLACE BELOW WITH ACTUAL DATA */}
-                <h1 className="text-3xl capitalize">{ value === "" ? "Select properties" : value}</h1>
-                <p className="flex items-center gap-2"><Gauge /> {linkMeter.length} Meters</p>
-                <p className="flex items-center gap-2"><Users /> {propertyDetail ? `${propertyDetail.occupancyPercentage}% Occupancy` : 'Loading...'}</p>
-                <p className="flex items-center"><LandPlot className="mr-2" />{propertyDetail ? `${propertyDetail.grossFloorArea.value} ft` : 'Loading...'}<span className="relative bottom-1 text-xs">2</span></p>
-                <p className="flex items-center gap-2">
-                    <MapPin />
-                    {propertyDetail ? `${propertyDetail.address.address1}, 
-                    ${propertyDetail.address.city}, 
-                    ${propertyDetail.address.state}, 
-                    ${propertyDetail.address.postalCode}, 
-                    ${propertyDetail.address.country}` : 'Loading...'}
-                </p>
+                        <PopoverContent className="w-[280px] p-0">
+                            <Command>
+                                <CommandInput placeholder="Search properties..." className="h-9" />
+                                <CommandEmpty>No properties found.</CommandEmpty>
+
+                                <CommandGroup>
+                                    {linksData.map((properties) => (
+                                    <CommandItem
+                                        key={properties.hint}
+                                        value={properties.hint}
+                                        onSelect={(currentValue) => {
+                                            setValue(currentValue)
+                                            setSelectedPropertyId(properties.id) // Update the selectedPropertyId state
+                                            setOpen(false)
+                                        }}
+                                    >
+                                        {properties.hint}
+                                        <CheckSquare
+                                            className={cn(
+                                                "ml-auto h-4 w-4",
+                                                value === properties.id ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                    </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-[280px] justify-start text-left font-normal",
+                                    !date && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                            </Button>
+                        </PopoverTrigger>
+
+                        <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                onSelect={setDate}
+                                initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                </div>
             </header>
 
             <div className="flex-grow">

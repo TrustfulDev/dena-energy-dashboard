@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -77,7 +77,10 @@ const data = [
 ];
 
 export default function Home() {
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>();
+  useEffect(() => {
+    setDate(new Date());
+  },[]);
 
   return (
     <div className="flex gap-6 h-full mb-6 md:overflow-y-auto">
