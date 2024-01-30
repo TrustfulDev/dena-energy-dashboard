@@ -32,3 +32,4 @@ To learn more about Next.js, take a look at the following resources:
 Everything is tentative for now. Add or remove as needed.
 - Clerk Authentication
 - ReCharts
+- zod (form validation)

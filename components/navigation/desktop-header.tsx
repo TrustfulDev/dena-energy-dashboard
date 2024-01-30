@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { ThemeToggle } from "../theme-toggle"
 import { usePathname } from "next/navigation"
+import { UserButton } from "@clerk/nextjs";
 
 export const DesktopHeader = () => {
     // Used to determine which page the user is on & sets the active nav-btn.
@@ -15,16 +16,31 @@ export const DesktopHeader = () => {
             "/": "Overview",
             "/analytics": "Analytics",
             "/reports": "Reports",
-            "/settings": "Settings"
+            "/linking": "Account Linking"
         };
 
         setPage(pathMap[pathname] || "Overview");
     }, [pathname]);
 
     return (
-        <header className="hidden md:flex justify-between mb-8">
-            <h1 className="text-4xl">{page}</h1>
-            <ThemeToggle />
+        <header className="hidden lg:flex justify-between mb-6 min-h-[48px]">
+            <h1 className="text-5xl text-indigo-500">{page}</h1>
+            <div className="flex items-center gap-3">
+                <ThemeToggle />
+                
+                <UserButton afterSignOutUrl="/" 
+                    appearance={{
+                        elements: {
+                            avatarBox: "w-[3rem] h-[3rem]"
+                        }
+                    }}
+                />
+                
+            </div>
+            
         </header>
+
+
+
     )
 }

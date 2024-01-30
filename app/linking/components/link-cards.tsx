@@ -1,7 +1,12 @@
 import React from 'react';
 import Image from 'next/image'
-import { NavBtn } from "@/components/navigation/nav-btns";
-import { Link } from "lucide-react";
+import { LinkForm } from './link-form';
+
+import {
+  Card,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card"
 
 interface LinkCardsProps {
   src: string;
@@ -17,7 +22,7 @@ const LinkCards: React.FC<LinkCardsProps> = ({
   list 
 }) => {
   return (
-    <div className='flex flex-col flex-1 bg-primary-card p-6 md:p-8 rounded-lg text-primary-text'>
+    <Card className='flex flex-col flex-1 bg-primary-card p-6 md:p-8 rounded-lg text-primary-text'>
       <header className="flex">
         <div className="min-w-[80px] md:min-w-[100px] max-w-[145px]">
             <Image
@@ -38,7 +43,7 @@ const LinkCards: React.FC<LinkCardsProps> = ({
 
       <p className="mt-4">{description}</p>
       
-      <div className="mt-6">
+      <CardContent className="p-0 mt-6">
         <h4 className="text-lg font-semibold">Linking Steps</h4>
         <ul className="list-decimal pl-4 text-lg">
           { list.map((item, index) => {
@@ -47,16 +52,12 @@ const LinkCards: React.FC<LinkCardsProps> = ({
             )
           })}
         </ul>
-      </div>
+      </CardContent>
 
-      <NavBtn 
-        Icon={Link}
-        text="Link Account"
-        link=""
-        active={true}
-        className="bg-primary-cta text-primary-bg ml-auto md:mt-auto mt-6 hover:bg-secondary-cta hover:text-primary-bg"
-      />
-    </div>
+      <CardFooter className='mt-auto p-0'>
+        <LinkForm />
+      </CardFooter>
+    </Card>
   );
 };
 
