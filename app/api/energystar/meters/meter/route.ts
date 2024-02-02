@@ -3,15 +3,13 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
 
   const {searchParams} = new URL(req.url||"");
-  const propertyId = searchParams.get("id");
+  const meterId = searchParams.get("id");
 
   const username = process.env.ENERGY_STAR_USERNAME;
   const password = process.env.ENERGY_STAR_PASSWORD;
 
-  console.log("Checking id passing pro : ", propertyId);
-
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
-  const url = `https://portfoliomanager.energystar.gov/ws/meter/${propertyId}`;
+  const url = `https://portfoliomanager.energystar.gov/ws/meter/${meterId}`;
 
   try {
     const apiRes = await fetch(url, {
@@ -33,5 +31,3 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
     return new Response (error.message);
   }
 }
-
-

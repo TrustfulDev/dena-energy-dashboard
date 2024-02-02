@@ -18,14 +18,14 @@ export default function Analytics() {
                     value="meter" 
                     className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]: px-4"
                 >
-                    <MeterAnalytics data="TEMPORARY VALUE. Need to adjust code for this page to take in the proper data."/>
+                    <MeterAnalytics />
                 </TabsContent>
 
                 <TabsContent 
                     value="carbon" 
                     className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col"
                 >
-                    <CarbonFootprint data1="TEMPORARY VALUE. Need to adjust code for this page to take in the proper data."/>
+                    <CarbonFootprint />
                 </TabsContent>
 
                 <TabsContent 

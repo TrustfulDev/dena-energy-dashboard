@@ -1,15 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-//import { useSearchParams } from 'next/navigation';
+import type { NextApiRequest } from 'next';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-
+// Fetches a list of meters for a given property ID
+export async function GET(req: NextApiRequest) {
   const {searchParams} = new URL(req.url||"");
   const propertyId = searchParams.get("id");
 
   const username = process.env.ENERGY_STAR_USERNAME;
   const password = process.env.ENERGY_STAR_PASSWORD;
-
-  // console.log("Checking id passing: ", propertyId);
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
   const url = `https://portfoliomanager.energystar.gov/ws/property/${propertyId}/meter/list`;

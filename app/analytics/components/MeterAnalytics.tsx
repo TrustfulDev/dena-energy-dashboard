@@ -1,12 +1,23 @@
 "use client"
 
+// React & Packages
 import { useState, useEffect } from "react"
+import { format } from "date-fns";
 import xml2js from "xml2js"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { 
+    ChevronsUpDown, 
+    CheckSquare, 
+    Gauge, 
+    Users, 
+    LandPlot, 
+    MapPin 
+} from 'lucide-react';
+
+// Components
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar"
-import { Calendar as CalendarIcon } from "lucide-react"
 import {
   Command,
   CommandEmpty,
@@ -19,24 +30,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { 
-    ChevronsUpDown, 
-    CheckSquare, 
-    Gauge, 
-    Users, 
-    LandPlot, 
-    MapPin 
-} from 'lucide-react';
-import { link } from "fs"
 
-interface SingleLink {
+// Interfaces
+interface PropertyListProps {
     id: string;
-    hint: string;
-    // Include other properties that each link object has
-}
-
-interface LinkMeters {
-    hint: string;
+    hint: string; // name - energy star calls it hint
 }
 
 interface PropertiesDetails {
@@ -46,65 +44,34 @@ interface PropertiesDetails {
         postalCode: string;
         state: string;
         country: string;
-    }
+    };
 
     grossFloorArea: {
         value: string;
-    }
+    };
 
     occupancyPercentage: {
         value: string;
-    }
-}
-interface MeterAnalyticsProps {
-    data: string; // CHANGE AS NEEDED
-    //link: SingleLink[];
-}
-
-interface MeterPropertyDatasId {
-    meters: {
-        meterId: string[];
-    }
-
-}
-interface MeterInfoData {
-    id: string;
-    type: string;
-    name: string;
-    metered: string;
-    unitOfMeasure: string;
-    firstBillDate: string;
-    inUse: string;
-    accessLevel: string;
-    audit: {
-      createdBy: string;
-      createdByAccountId: string;
-      createdDate: string;
-      lastUpdatedBy: string;
-      lastUpdatedByAccountId: string;
-      lastUpdatedDate: string;
     };
+
+    linkMeters: {
+        id: string,
+        hint: string; // name - energy star calls it hint
+    }[];
 }
 
-export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
-    data
-}) => {
-    const [open, setOpen] = useState(false)
-    const [value, setValue] = useState("")
-    const [linksData, setLinksData] = useState<SingleLink[]>([]); // State to hold the array of links
-    const [linkMeter, setLinkMeter] = useState<LinkMeters[]>([]); 
+export const MeterAnalytics = ({}) => {
+    // Used for Pop-Over components (dropdown selection)
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState("");                             // Stores name
+    const [selectedPropertyId, setSelectedPropertyId] = useState("");   // Stores ID
+    const [date, setDate] = useState<Date>();                           // Stores date
+
+    // Properties & Their Details
+    const [propertyList, setpropertyList] = useState<PropertyListProps[]>([]);
     const [propertyDetail, setPropertyDetail] = useState<PropertiesDetails | null>(null);
-    const [selectedPropertyId, setSelectedPropertyId] = useState("");
-    const [date, setDate] = useState<Date>()
-    const [energyDataId, setEnergyDataId] = useState<MeterPropertyDatasId | null>(null);
-    const [waterDataId, setWaterDataId] = useState<MeterPropertyDatasId | null>(null);
-    const [wasteDataId, setWasteDataId] = useState<MeterPropertyDatasId | null>(null);
 
-    const [energyInfoData, setEnergyInfoData] = useState<MeterInfoData[] | null>(null);
-    const [waterInfoData, setWaterInfoData] = useState<MeterInfoData[] | null>(null);
-    const [wasteInfoData, setWasteInfoData] = useState<MeterInfoData[] | null>(null);
-
-    //get properties ID 
+    // GET a list of all properties & Initialize Date
     useEffect(() => {
         async function fetchProperties() {
           const response = await fetch('/api/energystar/properties');
@@ -113,157 +80,113 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
     
           parser.parseString(xml, (err: any, result: any) => {
             if (err) {
-              console.error('Could not parse XML', err);
+                console.error('Could not parse XML', err);
             } else {
-                setLinksData(result.response.links.link);
+                setpropertyList(result.response.links.link);
             }
           });
         }
     
         fetchProperties().catch(console.error);
-        setDate(new Date());
+        setDate(new Date()); // Set current date as initial value
     }, []);
 
-    //total meters and properties details
+    // GET all the details of the selected property 
     useEffect(() => {
+        
         async function fetchMeters_Pdetails() {
+            // Check to make sure a property is selected
             if (!selectedPropertyId) {
                 return;
             }
             
+            // API URIs for METERS and DETAILS
             const metersPromise = fetch(`/api/energystar/meters?id=${selectedPropertyId}`).then(res => res.text());
             const detailsPromise = fetch(`/api/energystar/properties_detail?id=${selectedPropertyId}`).then(res => res.text());
     
             try {
-                const [metersXml, detailsXml] = await Promise.all([metersPromise, detailsPromise]);
                 const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
-    
+
+                // Fetch Meter Data
+                const [metersXml, detailsXml] = await Promise.all([metersPromise, detailsPromise]);
+                let meters: { id: string, hint: string }[];
                 parser.parseString(metersXml, (err: any, metersResult: any) => {
                     if (err) throw new Error('Failed to parse meters XML');
-                    setLinkMeter(metersResult.response.links.link);
+                    meters = metersResult.response.links.link;
+                    console.log(meters);
                 });
-    
+
+                // Fetch Property Details
                 parser.parseString(detailsXml, (err: any, detailsResult: any) => {
                     if (err) throw new Error('Failed to parse properties details XML');
-                    setPropertyDetail(detailsResult.property);
+                    setPropertyDetail({...detailsResult.property, linkMeters: meters}); // Sets both the details & meter data
                 });
     
             } catch (error) {
                 console.error('An error occurred while fetching data:', error);
             }
         }
-    
+        
         fetchMeters_Pdetails();
     }, [selectedPropertyId]);
 
-    //(energy data ID),, (water data ID),, (waste and materials data ID)
-    useEffect(() => {
-        async function fetchMetersId() {
-            if (selectedPropertyId) {
-                const response = await fetch(`/api/energystar/meters/property_meters_ids?id=${selectedPropertyId}`);
-                const xml = await response.text();
-                const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+    // GET meter data
+    // useEffect(() => {
+    //     async function fetchMeters() {
+    //         // Check to make sure there are details
+    //         if (!propertyDetail) {
+    //             return;
+    //         }
 
+    //         try {
+    //             const response = fetch(`/api/energystar/meters/meter?id=${propertyDetail?.linkMeters[0].id}`).then(res => res.text());
+    //             const xml = await response;
+    //             const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+                
+    //             parser.parseString(xml, (err: any, result: any) => {
+    //                 if (err) {
+    //                     console.error('Could not parse XML', err);
+    //                 } else {
+    //                     console.log(result);
+    //                 }
+    //             })
+
+    //         } catch (error) {
+    //             console.error('An error occurred while fetching data:', error);
+    //         }
+    //     }
+
+    //     fetchMeters();
+    // }, [propertyDetail])
+
+    useEffect(() => {
+        async function fetchMeters() {
+            // Check to make sure there are details
+            if (!propertyDetail) {
+                return;
+            }
+
+            try {
+                const response = fetch(`/api/energystar/meters/consumption?id=${propertyDetail?.linkMeters[1].id}`).then(res => res.text());
+                const xml = await response;
+                console.log(xml);
+                const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+                
                 parser.parseString(xml, (err: any, result: any) => {
                     if (err) {
-                      console.error('Could not parse XML', err);
+                        console.error('Could not parse XML', err);
                     } else {
-                        setEnergyDataId(result.meterPropertyAssociationList.energyMeterAssociation);
-                        setWaterDataId(result.meterPropertyAssociationList.waterMeterAssociation);
-                        setWasteDataId(result.meterPropertyAssociationList.wasteMeterAssociation);
+                        console.log(result);
                     }
-                });
+                })
 
-            }
-        }
-        fetchMetersId();
-    }, [selectedPropertyId]);
-
-    
-    //all meters info 
-    useEffect(() => {
-        async function fetchMeterData(meterId: any, meterName: any) {
-            try {
-                const response = await fetch(`/api/energystar/meters/${meterName}?id=${encodeURIComponent(meterId)}`);
-                const xml = await response.text();
-                const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
-                const result = await new Promise<MeterInfoData>((resolve, reject) => {
-                    parser.parseString(xml, (err: any, result: any) => {
-                        if (err) {
-                            console.error('Could not parse XML for meter ID:', meterId, err);
-                            reject(err);
-                        } else {
-                            resolve(result.meter); // Assume result.meter matches MeterInfoData
-                        }
-                    });
-                });
-                return result;
             } catch (error) {
-                console.error('Failed to fetch meter data for meter ID:', meterId, error);
-                return null;
+                console.error('An error occurred while fetching data:', error);
             }
         }
-    
-        async function processAllMeters() {
-            if (!selectedPropertyId) {
-                return; //return if no meter id
-            }
-    
-            // const energyIds = energyDataId.meters.meterId;
-            // const waterIds = waterDataId.meters.meterId;
-            // const wasteIds = wasteDataId.meters.meterId;
-            const energyIds = typeof energyDataId?.meters.meterId === 'string' ? [energyDataId.meters.meterId] : energyDataId?.meters?.meterId || [];
-            const waterIds = typeof waterDataId?.meters.meterId === 'string' ? [waterDataId.meters.meterId] : waterDataId?.meters?.meterId || [];
-            const wasteIds = typeof wasteDataId?.meters.meterId === 'string' ? [wasteDataId.meters.meterId] : wasteDataId?.meters?.meterId || [];
 
-            console.log("check my id: waste" , wasteIds);
-            
-            var combinedMeterData1: MeterInfoData[] = [];
-            var combinedMeterData2: MeterInfoData[] = [];
-            var combinedMeterData3: MeterInfoData[] = [];
-
-            //energy
-            for (const meterId of energyIds) {
-                const meterData = await fetchMeterData(meterId, "energy");
-                if (meterData) {
-                    combinedMeterData1.push(meterData);
-                }
-            }
-            setEnergyInfoData(combinedMeterData1);
-
-            //water
-            for (const meterId2 of waterIds) {
-                const meterData2 = await fetchMeterData(meterId2, "water");
-                if (meterData2) {
-                    combinedMeterData2.push(meterData2);
-                }
-            }
-            setWaterInfoData(combinedMeterData2);
-
-            //waste
-            for (const meterId3 of wasteIds) {
-                const meterData3 = await fetchMeterData(meterId3, "waste_materials");
-                if (meterData3) {
-                    combinedMeterData3.push(meterData3);
-                }
-            }
-
-
-            setWasteInfoData(combinedMeterData3);
-
-        }
-    
-        processAllMeters();
-    }, [selectedPropertyId, energyDataId?.meters.meterId, waterDataId?.meters.meterId, wasteDataId?.meters.meterId]);
-
-    
-    console.log("Energy Info: ", energyInfoData);
-    console.log("Water Info: ", waterInfoData);
-    console.log("Waste Info: ", wasteInfoData);
-
-    // console.log("energy id: ", energyDataId?.meters.meterId);
-    // console.log("water id: ", waterDataId?.meters.meterId);
-    // console.log("waste id: ", wasteDataId?.meters.meterId);
+        fetchMeters();
+    }, [propertyDetail])
 
     return (
         <>
@@ -288,7 +211,7 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
                         {propertyDetail ? `${parseInt(propertyDetail.grossFloorArea.value).toLocaleString()} ft` : 'Loading...'}
                         <span className="relative bottom-1 text-xs">2</span>
                     </p>
-                    <p className="flex items-center gap-2"><Gauge className="w-5 sm:w-6" /> {linkMeter.length} Meters</p>
+                    <p className="flex items-center gap-2"><Gauge className="w-5 sm:w-6" /> {propertyDetail ? propertyDetail.linkMeters.length : 'Loading...'} Meters</p>
                     <p className="flex items-center gap-2"><Users className="w-5 sm:w-6" /> {propertyDetail ? `${propertyDetail.occupancyPercentage}% Occupancy` : 'Loading...'}</p>
                 </div>
 
@@ -304,7 +227,7 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
                             >
                                 {/* THE INTIAL/DEFAULT VALUE set here, we should change it to use the first possible property */}
                                 {value
-                                    ? linksData.find((properties) => properties.hint.toLowerCase() === value)?.hint
+                                    ? propertyList.find((properties) => properties.hint.toLowerCase() === value)?.hint
                                     : "Select properties..."}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -316,7 +239,7 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
                                 <CommandEmpty>No properties found.</CommandEmpty>
 
                                 <CommandGroup>
-                                    {linksData.map((properties) => (
+                                    {propertyList.map((properties) => (
                                     <CommandItem
                                         key={properties.hint}
                                         value={properties.hint}
