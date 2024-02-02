@@ -25,14 +25,14 @@ const LinkCards: React.FC<LinkCardsProps> = ({
     <Card className='flex flex-col flex-1 bg-primary-card p-6 md:p-8 rounded-lg text-primary-text'>
       <header className="flex">
         <div className="min-w-[80px] md:min-w-[100px] max-w-[145px]">
-            <Image
+            {/* <Image
               src={src}
               layout="responsive"
               width={140}
               height={140}
               objectFit="cover"
               alt=''
-            />
+            /> */}
         </div>
 
         <div className="ml-4">
