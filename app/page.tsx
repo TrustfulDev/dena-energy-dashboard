@@ -1,14 +1,5 @@
 "use client";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis,
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer 
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import {
   Card,
@@ -22,6 +13,7 @@ import {
 import { useState, useEffect } from 'react';
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { Landmark, Gauge, Thermometer } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -33,45 +25,45 @@ import {
 
 const data = [
   {
-    name: 'Building A',
-    electricity: 4000,
-    water: 2400,
+    name: 'Page A',
+    uv: 4000,
+    pv: 2400,
     amt: 2400,
   },
   {
-    name: 'Building B',
-    electricity: 3000,
-    water: 1398,
+    name: 'Page B',
+    uv: 3000,
+    pv: 1398,
     amt: 2210,
   },
   {
-    name: 'Building C',
-    electricity: 2000,
-    water: 9800,
+    name: 'Page C',
+    uv: 2000,
+    pv: 9800,
     amt: 2290,
   },
   {
-    name: 'Building D',
-    electricity: 2780,
-    water: 3908,
+    name: 'Page D',
+    uv: 2780,
+    pv: 3908,
     amt: 2000,
   },
   {
-    name: 'Building E',
-    electricity: 1890,
-    water: 4800,
+    name: 'Page E',
+    uv: 1890,
+    pv: 4800,
     amt: 2181,
   },
   {
-    name: 'Building F',
-    electricity: 2390,
-    water: 3800,
+    name: 'Page F',
+    uv: 2390,
+    pv: 3800,
     amt: 2500,
   },
   {
-    name: 'Building G',
-    electricity: 3490,
-    water: 4300,
+    name: 'Page G',
+    uv: 3490,
+    pv: 4300,
     amt: 2100,
   },
 ];
@@ -83,11 +75,11 @@ export default function Home() {
   },[]);
 
   return (
-    <div className="flex flex-wrap gap-6 h-full mb-6 lg:overflow-y-auto">
-      <Card className='w-full flex flex-col flex-1 h-full'>
+    <div className="grid grid-cols-6 gap-6 h-full mb-6 lg:overflow-y-auto pr-6">
+      <Card className='w-full flex flex-col col-span-6 min-h-[500px]'>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
-            Daily Values - December 2023
+            Monthly Usage
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -112,47 +104,96 @@ export default function Home() {
             </Popover>
           </CardTitle>
 
-          <CardDescription>Electricity, Water, Heating, Garbage...</CardDescription>
-
-          <CardContent className='p-0 pt-4 flex gap-8'>
-            <div>
-              <p className='text-accent-faded text-sm'>ELECTRICITY USE</p>
-              <h3 className='text-2xl'>1,569 kWh</h3>
-            </div>
-
-            <div>
-              <p className='text-accent-faded text-sm'>CARBON FOOTPRINT</p>
-              <h3 className='text-2xl'>51,265 t C0<span className='text-base'>2e</span></h3>
-            </div>
-
-            <div>
-              <p className='text-accent-faded text-sm'>EXPENSES</p>
-              <h3 className='text-2xl'>$123,510</h3>
-            </div>
-          </CardContent>
+          <CardDescription>Electricity, Water, and Waste</CardDescription>
         </CardHeader>
+
         <CardContent className='flex-grow'>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} >
-              <CartesianGrid strokeDasharray="3 3" />
+            <LineChart
+              width={500}
+              height={300}
+              data={data}
+              margin={{
+                top: 0,
+                right: 0,
+                left: 0,
+                bottom: 0,
+              }}
+            >
+              <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="electricity" stackId="a" fill="#82ca9d" />
-              <Bar dataKey="water" stackId="a" fill="#8884d8" />
-              <Bar dataKey="amt" stackId="a" fill="#50c89d" />
-            </BarChart>
+              <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
+              <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+            </LineChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className='col-span-3 min-h-[500px]'>
         <CardHeader>
-          <CardTitle>Test Card</CardTitle>
-          <CardDescription>Test description for test card</CardDescription>
+          <CardTitle>Energy Costs</CardTitle>
+          <CardDescription>Total Monthly Costs From All Properties</CardDescription>
         </CardHeader>
 
+        <CardContent>
+          <p>Go for the PieChartWithPaddingAngle</p>
+        </CardContent>
+      </Card>
+
+      <Card className='col-span-3 min-h-[500px]'>
+        <CardHeader>
+          <CardTitle>Change In Cost</CardTitle>
+          <CardDescription>Compare Current and Last Month Costs</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <p>Bar Chart maybe?</p>
+        </CardContent>
+      </Card>
+
+      <Card className='col-span-2 aspect-square'>
+        <CardHeader>
+          <CardTitle>Active Elements</CardTitle>
+          <CardDescription>Total Amount of Properties & Meters</CardDescription>
+        </CardHeader>
+
+        <CardContent className='space-y-4'>
+          <p className='flex items-center gap-4 text-lg'><Landmark className='w-12 h-auto' /> 26 Properties</p>
+          <p className='flex items-center gap-4 text-lg'><Gauge className='w-12 h-auto' /> 366 Meters</p>
+          <p className='flex items-center gap-4 text-lg'><Thermometer className='w-12 h-auto' /> 23 Sub-Meters</p>
+        </CardContent>
+
+        <CardFooter className='flex-col items-start'>
+          <hr className='w-full mb-4' />
+          SOMETHING HERE!!!
+          Maybe Connections like Energy Star/PG&E?
+          Or we could include some type of information through the form of a paragraph.
+        </CardFooter>
+      </Card>
+
+      <Card className='col-span-2 aspect-square'>
+        <CardHeader>
+          <CardTitle>Consumption By Utilities</CardTitle>
+          <CardDescription>Find Which Utility You Use The Most</CardDescription>
+        </CardHeader>
+              
+        <CardContent>
+          <p>Bar Chart!! Should Have: Electricity, Water, Waste</p>
+        </CardContent>
+      </Card>
+
+      <Card className='col-span-2 aspect-square'>
+        <CardHeader>
+          <CardTitle>Carbon Footprint</CardTitle>
+          <CardDescription>Monthly Total CO2 Emission</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <p>Open to any graph</p>
+        </CardContent>
       </Card>
     </div>
   )

@@ -19,17 +19,23 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+    CommandShortcut,
 } from "@/components/ui/command"
+  
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { MultiSelect } from "./multiSelect";
 
 // Interfaces
 interface PropertyListProps {
@@ -290,7 +296,7 @@ export const MeterAnalytics = ({}) => {
             </header>
 
             <div className="flex-grow">
-                PUT DATA/GRAPHS/INFORMATION HERE
+                <MultiSelect />
             </div>
         </>
     )
