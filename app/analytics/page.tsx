@@ -2,17 +2,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MeterAnalytics } from "@/components/analytics/MeterAnalytics";
 import { CarbonFootprint } from "@/components/analytics/CarbonFootprint";
 import { ScrollArea, ScrollBar  } from "@/components/ui/scroll-area"
+import { PropertiesAnalytics } from "@/components/analytics/PropertiesAnalytics";
 
 export default function Analytics() {
     return (
         <div className="flex h-full mb-6 md:overflow-y-auto">
-            <Tabs defaultValue="meter" className="flex flex-col w-full">
-                <TabsList className="w-full grid grid-cols-4">
-                    <TabsTrigger value="meter" className="">Meter Analytics</TabsTrigger>
+            <Tabs defaultValue="property" className="flex flex-col w-full">
+                <TabsList className="w-full grid grid-cols-5">
+                    <TabsTrigger value="property" className="">Properties</TabsTrigger>
+                    <TabsTrigger value="meter" className="">Meters</TabsTrigger>
                     <TabsTrigger value="carbon">Carbon Footprint</TabsTrigger>
                     <TabsTrigger value="expenses">Expenses</TabsTrigger>
                     <TabsTrigger value="energystar">Energy Star Score</TabsTrigger>
                 </TabsList>
+
+                <TabsContent 
+                    value="property" 
+                    className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]: px-4"
+                >
+                    <PropertiesAnalytics />
+                </TabsContent>
 
                 <TabsContent 
                     value="meter" 

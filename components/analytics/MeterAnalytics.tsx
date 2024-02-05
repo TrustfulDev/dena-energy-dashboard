@@ -35,7 +35,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { MultiSelect } from "./multiSelect";
 
 // Interfaces
 interface PropertyListProps {
@@ -288,6 +287,9 @@ export const MeterAnalytics = ({}) => {
                                 mode="single"
                                 selected={date}
                                 onSelect={setDate}
+                                disabled={(date) =>
+                                    date > new Date() || date < new Date("1900-01-01")
+                                }
                                 initialFocus
                             />
                         </PopoverContent>
@@ -296,7 +298,7 @@ export const MeterAnalytics = ({}) => {
             </header>
 
             <div className="flex-grow">
-                <MultiSelect />
+                Test
             </div>
         </>
     )

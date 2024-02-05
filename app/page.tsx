@@ -98,6 +98,9 @@ export default function Home() {
                   mode="single"
                   selected={date}
                   onSelect={setDate}
+                  disabled={(date) =>
+                    date > new Date() || date < new Date("1900-01-01")
+                  }
                   initialFocus
                 />
               </PopoverContent>
@@ -123,7 +126,7 @@ export default function Home() {
               <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip />
+              <Tooltip contentStyle={{ backgroundColor: "#000"}}  />
               <Legend />
               <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
               <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
