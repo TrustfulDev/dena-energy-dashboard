@@ -7,6 +7,8 @@ interface Property {
 
 export interface PropertyDetails {
     id: string;
+    name: string;
+    numberOfBuildings: string;
 
     address: {
         address1: string;
@@ -20,9 +22,7 @@ export interface PropertyDetails {
         value: string;
     };
 
-    occupancyPercentage: {
-        value: string;
-    };
+    occupancyPercentage: string;
 
     linkMeters: Property[]; // Changed linkMeters to use Property interface directly
 }
@@ -61,6 +61,8 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
 
     let propertyDetails: PropertyDetails = {
         id: '',
+        name: '',
+        numberOfBuildings: '',
         address: {
             address1: '',
             city: '',
@@ -71,9 +73,7 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
         grossFloorArea: {
             value: ''
         },
-        occupancyPercentage: {
-            value: ''
-        },
+        occupancyPercentage: '',
         linkMeters: []
     };
     

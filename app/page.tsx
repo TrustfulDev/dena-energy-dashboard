@@ -94,9 +94,6 @@ export default function Home() {
     setDate(new Date());
   },[]);
 
-  const { properties } = useDataContext();
-  console.log(properties);
-
   return (
     <div className="grid grid-cols-6 xl:gap-6 gap-2 h-full mb-6 lg:overflow-y-auto xl:pr-6">
       <Card className='w-full flex flex-col col-span-6 min-h-[500px]'>
