@@ -1,5 +1,6 @@
 "use client";
-import {  Cell, PieChart, Pie,LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {  Cell, PieChart, Rectangle, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 
 import {
   Card,
@@ -26,6 +27,19 @@ import {
 // utility consumption bar chart 
 const consumption_data = [
   { name: 'Utilities', Electricity: 4000, Water: 2400, Waste: 2400 },
+];
+// energy cost from all properties pie chart 
+const energyCost_data = [
+  { name: 'Property A', value: 400 },
+  { name: 'Property B', value: 300 },
+  { name: 'Property C', value: 300 },
+  { name: 'Property D', value: 200 },
+];
+// colors for pie chart with padding angle 
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+// change in cost bar chart 
+const changeCost_data = [
+  { name: 'Cost', Past: 4000, Current: 2400},
 ];
 // carbon footprint pie chart 
 const carbon_data = [
@@ -87,7 +101,7 @@ const data = [
 ];
 
 
-export default function Home() {
+export default function Home(this: any) {
   const [date, setDate] = useState<Date>();
   useEffect(() => {
     setDate(new Date());
@@ -161,18 +175,69 @@ export default function Home() {
         </CardHeader>
 
         <CardContent>
-          <p>Go for the PieChartWithPaddingAngle</p>
+        <PieChart width={1000} height={600}>
+        <Pie
+          data={energyCost_data}
+          cx={140}
+          cy={200}
+          innerRadius={60}
+          outerRadius={80}
+          fill="#8884d8"
+          paddingAngle={5}
+          dataKey="value"
+          label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Pie
+          data={energyCost_data}
+          cx={420}
+          cy={200}
+          startAngle={180}
+          endAngle={0}
+          innerRadius={60}
+          outerRadius={80}
+          fill="#8884d8"
+          paddingAngle={5}
+          dataKey="value"
+          label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+      </PieChart>
         </CardContent>
       </Card>
 
-      <Card className='md:col-span-3 col-span-6 min-h-[500px]'>
+      <Card className='flex flex-col 2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
         <CardHeader>
           <CardTitle>Change In Cost</CardTitle>
           <CardDescription>Compare Current and Last Month Costs</CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <p>Bar Chart maybe?</p>
+        <CardContent className='flex-grow'>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={changeCost_data}
+              margin={{
+                top: 10,
+                right: 10,
+                left: -15,
+                bottom: 10,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip contentStyle={{ backgroundColor: "#000"}} />
+              <Legend />
+              <Bar dataKey="Past" fill="#8884d8" />
+              <Bar dataKey="Current" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
 
