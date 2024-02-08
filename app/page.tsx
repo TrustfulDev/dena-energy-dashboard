@@ -1,5 +1,5 @@
 "use client";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {  Cell, PieChart, Pie,LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import {
   Card,
@@ -23,6 +23,31 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+// utility consumption bar chart 
+const consumption_data = [
+  { name: 'Utilities', Electricity: 4000, Water: 2400, Waste: 2400 },
+];
+// carbon footprint pie chart 
+const carbon_data = [
+  { name: 'Electricity', value: 400, fill: '#8884d8' },
+  { name: 'Water', value: 300, fill: '#82ca9d' },
+  { name: 'Waste', value: 300, fill: '#ffc658' },
+];
+const renderCustomizedLabel = ({
+  cx, cy, midAngle, innerRadius, outerRadius, percent,
+}: any) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+  const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+
+  return (
+    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
+//
 const data = [
   {
     name: 'Page A',
@@ -67,6 +92,7 @@ const data = [
     amt: 2100,
   },
 ];
+
 
 export default function Home() {
   const [date, setDate] = useState<Date>();
@@ -184,8 +210,20 @@ export default function Home() {
         </CardHeader>
               
         <CardContent>
-          <p>Bar Chart!! Should Have: Electricity, Water, Waste</p>
-        </CardContent>
+          
+          <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={consumption_data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="Electricity" fill="#8884d8" />
+            <Bar dataKey="Water" fill="#82ca9d" />
+            <Bar dataKey="Waste" fill="#ffc658" />
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
       </Card>
 
       <Card className='col-span-2 aspect-square'>
@@ -195,7 +233,26 @@ export default function Home() {
         </CardHeader>
 
         <CardContent>
-          <p>Open to any graph</p>
+          <ResponsiveContainer width="100%" height={400}>
+            <PieChart>
+              <Pie
+                dataKey="value"
+                isAnimationActive={false}
+                data={carbon_data}
+                cx="50%"
+                cy="50%"
+                outerRadius="100%"
+                label={renderCustomizedLabel}
+                labelLine={false}
+              >
+                {carbon_data.map((entry, index) => (
+                  <Cell key={'cell-${index}'} fill={entry.fill} />
+                ))}
+              </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
     </div>
