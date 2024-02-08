@@ -19,17 +19,29 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
+    Command,
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+    CommandShortcut,
 } from "@/components/ui/command"
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 
 // Interfaces
 interface PropertyListProps {
@@ -60,7 +72,7 @@ interface PropertiesDetails {
     }[];
 }
 
-export const MeterAnalytics = ({}) => {
+export const PropertiesAnalytics = ({}) => {
     // Used for Pop-Over components (dropdown selection)
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");                             // Stores name
@@ -190,7 +202,7 @@ export const MeterAnalytics = ({}) => {
 
     return (
         <>
-            <header className="flex flex-wrap gap-2 justify-between mb-1">
+            <header className="flex flex-wrap gap-2 justify-between mb-2">
                 {/* Name & Address */}
                 <div>
                     <h1 className="text-3xl min-[1930px]:text-4xl capitalize">{ value === "" ? "Select property" : value}</h1>
@@ -211,7 +223,7 @@ export const MeterAnalytics = ({}) => {
                         {propertyDetail ? `${parseInt(propertyDetail.grossFloorArea.value).toLocaleString()} ft` : 'Loading...'}
                         <span className="relative bottom-1 text-xs">2</span>
                     </p>
-                    <p className="flex items-center gap-2"><Gauge className="w-5 sm:w-6" /> {propertyDetail ? propertyDetail.linkMeters.length : 'Loading...'} Meters</p>
+                    <p className="flex items-center gap-2"><Gauge className="w-5 sm:w-6" /> {propertyDetail ? `${propertyDetail.linkMeters.length} Meters` : 'Loading...'}</p>
                     <p className="flex items-center gap-2"><Users className="w-5 sm:w-6" /> {propertyDetail ? `${propertyDetail.occupancyPercentage}% Occupancy` : 'Loading...'}</p>
                 </div>
 
@@ -282,6 +294,9 @@ export const MeterAnalytics = ({}) => {
                                 mode="single"
                                 selected={date}
                                 onSelect={setDate}
+                                disabled={(date) =>
+                                    date > new Date() || date < new Date("1900-01-01")
+                                }
                                 initialFocus
                             />
                         </PopoverContent>
@@ -289,8 +304,86 @@ export const MeterAnalytics = ({}) => {
                 </div>
             </header>
 
-            <div className="flex-grow">
-                PUT DATA/GRAPHS/INFORMATION HERE
+            <div className="grid grid-cols-6 gap-6 h-full">
+                <Card className='w-full flex flex-col col-span-4 min-h-[500px]'>
+                    <CardHeader>
+                        <CardTitle className="">
+                            Monthly Usage
+                        </CardTitle>
+
+                        <CardDescription>Electricity, Water, and Waste</CardDescription>
+                    </CardHeader>
+
+                    <CardContent className='flex-grow'>
+                        Maybe a linechart, piechart, or barchart. Shows the usage of all utilities (Electric, Water, Waste)
+                    </CardContent>
+                </Card>
+
+                <div className="col-span-2 flex flex-col gap-6">
+                    <Card className='w-full flex flex-col h-full'>
+                        <CardHeader>
+                            <CardTitle className="">
+                                
+                            </CardTitle>
+                        </CardHeader>
+
+                        <CardContent className='flex-grow'>
+                            
+                        </CardContent>
+                    </Card>
+
+                    <Card className='w-full flex flex-col h-full'>
+                        <CardHeader>
+                            <CardTitle className="">
+                                
+                            </CardTitle>
+                        </CardHeader>
+
+                        <CardContent className='flex-grow'>
+                            
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className='w-full flex flex-col h-full'>
+                        <CardHeader>
+                            <CardTitle className="">
+                                Carboon Footprint
+                            </CardTitle>
+                        </CardHeader>
+
+                        <CardContent className='flex-grow'>
+                            
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <Card className='w-full flex flex-col col-span-3 min-h-[500px]'>
+                    <CardHeader>
+                        <CardTitle className="">
+                            Utility Costs
+                        </CardTitle>
+
+                        <CardDescription>Total Costs Of All Utilities</CardDescription>
+                    </CardHeader>
+
+                    <CardContent className='flex-grow'>
+                        Most likely a barchart OR a piechart here to show the prices of: Electricity, Water, Waste side by side
+                    </CardContent>
+                </Card>
+
+                <Card className='w-full flex flex-col col-span-3 min-h-[500px]'>
+                    <CardHeader>
+                        <CardTitle className="">
+                            Highest Consumers
+                        </CardTitle>
+
+                        <CardDescription>Find Which Meter Is Consuming The Highest</CardDescription>
+                    </CardHeader>
+
+                    <CardContent className='flex-grow'>
+                        Maybe a barchart showing the top 5 highest meter consumptions.
+                    </CardContent>
+                </Card>
             </div>
         </>
     )

@@ -27,7 +27,7 @@ export const MobileNav = () => {
     const { user } = useUser();
 
     return (
-        <div className="h-[88px] lg:hidden">
+        <div className="h-[88px] lg:hidden z-10">
             <nav className="flex justify-between p-6 fixed w-full bg-background">
                 <Sheet>
                     <SheetTrigger><Menu /></SheetTrigger>
