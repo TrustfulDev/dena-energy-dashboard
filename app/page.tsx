@@ -22,6 +22,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useDataContext } from '@/context';
 
 // utility consumption bar chart 
 const consumption_data = [
@@ -92,6 +93,9 @@ export default function Home() {
   useEffect(() => {
     setDate(new Date());
   },[]);
+
+  const { properties } = useDataContext();
+  console.log(properties);
 
   return (
     <div className="grid grid-cols-6 xl:gap-6 gap-2 h-full mb-6 lg:overflow-y-auto xl:pr-6">
