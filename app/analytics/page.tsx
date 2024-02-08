@@ -1,7 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MeterAnalytics } from "@/components/analytics/MeterAnalytics";
 import { CarbonFootprint } from "@/components/analytics/CarbonFootprint";
-import { ScrollArea, ScrollBar  } from "@/components/ui/scroll-area"
 import { PropertiesAnalytics } from "@/components/analytics/PropertiesAnalytics";
 
 export default function Analytics() {

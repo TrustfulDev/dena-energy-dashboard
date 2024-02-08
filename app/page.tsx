@@ -25,46 +25,39 @@ import {
 
 const data = [
   {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
+    name: 'February 2',
+    "EPA SAMPLE OFFICE": 4000,
+    "EPA SAMPLE LABORATORY": 2400,
   },
   {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
+    name: 'February 7',
+    "EPA SAMPLE OFFICE": 3000,
+    "EPA SAMPLE LABORATORY": 1398,
   },
   {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
+    name: 'February 12',
+    "EPA SAMPLE OFFICE": 2000,
+    "EPA SAMPLE LABORATORY": 9800,
   },
   {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
+    name: 'February 17',
+    "EPA SAMPLE OFFICE": 2780,
+    "EPA SAMPLE LABORATORY": 3908,
   },
   {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
+    name: 'February 22',
+    "EPA SAMPLE OFFICE": 1890,
+    "EPA SAMPLE LABORATORY": 4800,
   },
   {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
+    name: 'February 27',
+    "EPA SAMPLE OFFICE": 2390,
+    "EPA SAMPLE LABORATORY": 3800,
   },
   {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
+    name: 'February 29',
+    "EPA SAMPLE OFFICE": 3490,
+    "EPA SAMPLE LABORATORY": 4300,
   },
 ];
 
@@ -79,7 +72,7 @@ export default function Home() {
       <Card className='w-full flex flex-col col-span-6 min-h-[500px]'>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
-            Monthly Usage
+            Overall Electricity Usage
             <Popover>
               <PopoverTrigger asChild>
                 <Button
@@ -107,7 +100,7 @@ export default function Home() {
             </Popover>
           </CardTitle>
 
-          <CardDescription>Electricity, Water, and Waste</CardDescription>
+          <CardDescription>Electricity Usage From All Properties (kWh)</CardDescription>
         </CardHeader>
 
         <CardContent className='flex-grow'>
@@ -126,10 +119,10 @@ export default function Home() {
               <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip contentStyle={{ backgroundColor: "#000"}}  />
+              <Tooltip contentStyle={{ backgroundColor: "#000"}} />
               <Legend />
-              <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-              <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+              <Line type="monotone" dataKey="EPA SAMPLE LABORATORY" stroke="#8884d8" activeDot={{ r: 8 }} />
+              <Line type="monotone" dataKey="EPA SAMPLE OFFICE" stroke="#82ca9d" />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
