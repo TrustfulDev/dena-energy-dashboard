@@ -45,7 +45,7 @@ const changeCost_data = [
 const carbon_data = [
   { name: 'Electricity', value: 400, fill: '#8884d8' },
   { name: 'Water', value: 300, fill: '#82ca9d' },
-  { name: 'Waste', value: 300, fill: '#ffc658' },
+  { name: 'Waste', value: 300, fill: '#FF8042' },
 ];
 const renderCustomizedLabel = ({
   cx, cy, midAngle, innerRadius, outerRadius, percent,
@@ -168,52 +168,47 @@ export default function Home(this: any) {
         </CardContent>
       </Card>
 
-      <Card className='md:col-span-3 col-span-6 min-h-[500px]'>
+      <Card className='flex flex-col md:col-span-3 col-span-6 min-h-[500px] h-full w-full'>
         <CardHeader>
           <CardTitle>Energy Costs</CardTitle>
           <CardDescription>Total Monthly Costs From All Properties</CardDescription>
         </CardHeader>
 
-        <CardContent>
-        <PieChart width={1000} height={600}>
-        <Pie
-          data={energyCost_data}
-          cx={140}
-          cy={200}
-          innerRadius={60}
-          outerRadius={80}
-          fill="#8884d8"
-          paddingAngle={5}
-          dataKey="value"
-          label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Pie
-          data={energyCost_data}
-          cx={420}
-          cy={200}
-          startAngle={180}
-          endAngle={0}
-          innerRadius={60}
-          outerRadius={80}
-          fill="#8884d8"
-          paddingAngle={5}
-          dataKey="value"
-          label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-      </PieChart>
+        <CardContent className='flex-grow'>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart >
+              <Pie
+                cy="100%"
+                data={energyCost_data}
+                startAngle={180}
+                endAngle={0}
+                innerRadius={160}
+                outerRadius={200}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="value"
+                label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend align='center' verticalAlign='bottom' height={36} 
+                wrapperStyle={{
+                  paddingTop: "1rem"
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
         </CardContent>
+
+        <CardFooter>
+          <p>PUT TEXT HERE TO SHOW THE TOTAL COST of everything added up.</p>
+        </CardFooter>
       </Card>
 
-      <Card className='flex flex-col 2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
+      <Card className='flex flex-col md:col-span-3 col-span-6 min-h-[500px] h-fit sm:h-full w-full'>
         <CardHeader>
           <CardTitle>Change In Cost</CardTitle>
           <CardDescription>Compare Current and Last Month Costs</CardDescription>
@@ -229,7 +224,7 @@ export default function Home(this: any) {
                 bottom: 10,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip contentStyle={{ backgroundColor: "#000"}} />
@@ -277,14 +272,14 @@ export default function Home(this: any) {
                 bottom: 10,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip contentStyle={{ backgroundColor: "#000"}} />
               <Legend />
               <Bar dataKey="Electricity" fill="#8884d8" />
               <Bar dataKey="Water" fill="#82ca9d" />
-              <Bar dataKey="Waste" fill="#ffc658" />
+              <Bar dataKey="Waste" fill="#FF8042" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
