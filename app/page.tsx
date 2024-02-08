@@ -101,7 +101,7 @@ export default function Home() {
   },[]);
 
   return (
-    <div className="grid grid-cols-6 gap-6 h-full mb-6 lg:overflow-y-auto pr-6">
+    <div className="grid grid-cols-6 xl:gap-6 gap-2 h-full mb-6 lg:overflow-y-auto xl:pr-6">
       <Card className='w-full flex flex-col col-span-6 min-h-[500px]'>
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
@@ -161,7 +161,7 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      <Card className='col-span-3 min-h-[500px]'>
+      <Card className='md:col-span-3 col-span-6 min-h-[500px]'>
         <CardHeader>
           <CardTitle>Energy Costs</CardTitle>
           <CardDescription>Total Monthly Costs From All Properties</CardDescription>
@@ -172,7 +172,7 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      <Card className='col-span-3 min-h-[500px]'>
+      <Card className='md:col-span-3 col-span-6 min-h-[500px]'>
         <CardHeader>
           <CardTitle>Change In Cost</CardTitle>
           <CardDescription>Compare Current and Last Month Costs</CardDescription>
@@ -183,7 +183,7 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      <Card className='col-span-2 aspect-square'>
+      <Card className='2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
         <CardHeader>
           <CardTitle>Active Elements</CardTitle>
           <CardDescription>Total Amount of Properties & Meters</CardDescription>
@@ -203,38 +203,51 @@ export default function Home() {
         </CardFooter>
       </Card>
 
-      <Card className='col-span-2 aspect-square'>
+      <Card className='flex flex-col 2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
         <CardHeader>
           <CardTitle>Consumption By Utilities</CardTitle>
           <CardDescription>Find Which Utility You Use The Most</CardDescription>
         </CardHeader>
               
-        <CardContent>
-          
-          <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={consumption_data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="Electricity" fill="#8884d8" />
-            <Bar dataKey="Water" fill="#82ca9d" />
-            <Bar dataKey="Waste" fill="#ffc658" />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
+        <CardContent className='flex-grow'>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={consumption_data}
+              margin={{
+                top: 10,
+                right: 10,
+                left: -15,
+                bottom: 10,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip contentStyle={{ backgroundColor: "#000"}} />
+              <Legend />
+              <Bar dataKey="Electricity" fill="#8884d8" />
+              <Bar dataKey="Water" fill="#82ca9d" />
+              <Bar dataKey="Waste" fill="#ffc658" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
       </Card>
 
-      <Card className='col-span-2 aspect-square'>
+      <Card className='flex flex-col 2xl:col-span-2 col-span-6 2xl:aspect-square xl:aspect-video aspect-square h-full w-full'>
         <CardHeader>
           <CardTitle>Carbon Footprint</CardTitle>
           <CardDescription>Monthly Total CO2 Emission</CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <PieChart>
+        <CardContent className='flex-grow'>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart
+              margin={{
+                top: 40,
+                right: 40,
+                left: 40,
+                bottom: 40,
+              }}
+            >
               <Pie
                 dataKey="value"
                 isAnimationActive={false}
@@ -250,7 +263,11 @@ export default function Home() {
                 ))}
               </Pie>
             <Tooltip />
-            <Legend />
+            <Legend align='center' verticalAlign='bottom' height={36} 
+              wrapperStyle={{
+                paddingTop: "1rem"
+              }}
+            />
           </PieChart>
           </ResponsiveContainer>
         </CardContent>
