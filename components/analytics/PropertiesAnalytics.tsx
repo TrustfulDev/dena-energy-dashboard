@@ -55,10 +55,16 @@ const consumption_data = [
     {month: 'Jan',name:'Water', value : 240, type :'Cost', fill: '#82ca9d'},
     {month: 'Jan',name:'Waste',value : 240, type : 'Cost', fill: '#FF8042'}
   ];
+  const highestConsumer_data = [
+    {month: 'Jan',name: 'Electricity', value : 400, type : 'Electricity',fill: '#8884d8'},
+    {month: 'Jan',name:'Water', value : 220, type :'Water', fill: '#82ca9d'},
+    {month: 'Jan',name:'Waste',value : 240, type : 'Waste', fill: '#FF8042'},
+    {month: 'Jan',name:'Gas',value : 280, type : 'Gas', fill: '#FF8042'}
+  ];
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const { name, value, type } = payload[0].payload;
-      const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Cost' ? ' $' : '';
+      const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Gas' ? 'therm' : type === 'Cost' ? ' $' : '';
       return (
         <div className="custom-tooltip">
           <p>{`${name}: ${value} ${unit}`}</p>
@@ -447,7 +453,25 @@ export const PropertiesAnalytics = ({}) => {
                     </CardHeader>
 
                     <CardContent className='flex-grow'>
-                        Maybe a barchart showing the top 5 highest meter consumptions.
+                        <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={highestConsumer_data}
+                            margin={{
+                                top: 10,
+                                right: 10,
+                                left: -15,
+                                bottom: 10,
+                            }}
+                            >
+                            <CartesianGrid opacity={0.15} />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+
+                            <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+                            <Legend />
+                            <Bar dataKey="value" name="Highest Consumption"/>         
+                            </BarChart>
+                        </ResponsiveContainer>
+                    
                     </CardContent>
                 </Card>
             </div>
