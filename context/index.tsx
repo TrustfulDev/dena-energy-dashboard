@@ -10,6 +10,7 @@ interface Data {
 // Create the Context and pass in default values
 const DataContext = createContext<Data>({
     properties: null,
+    
 });
 
 export function ContextWrapper({ children } : {
@@ -23,7 +24,7 @@ export function ContextWrapper({ children } : {
         const fetchProperties = async () => {
             try {
                 const propertyData = await fetchAllPropertyDetails();
-                setProperties(propertyData);
+                setProperties(propertyData);  
             } catch (err) {
                 console.error("Failed to fetch property details: ", err)
             }
@@ -31,6 +32,8 @@ export function ContextWrapper({ children } : {
 
         fetchProperties();
     }, [])
+
+    console.log("check here: ", properties);
 
     // Pass the data into the context
     return (
