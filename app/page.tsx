@@ -26,8 +26,26 @@ import {
 
 // utility consumption bar chart 
 const consumption_data = [
-  { name: 'Utilities', Electricity: 4000, Water: 2400, Waste: 2400 },
+  {name: 'Electricity', value : 4000, type : 'Electricity',fill: '#8884d8'},
+  {name:'Water', value : 2400, type :'Water', fill: '#82ca9d'},
+  {name:'Waste',value : 2400, type : 'Waste', fill: '#FF8042'}
 ];
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const { name, value, type } = payload[0].payload;
+    const unit = type === 'Electricity' ? 'kWh' : type === 'Waste' ? 'pounds' : 'gallons';
+
+    return (
+      <div className="custom-tooltip">
+        <p>{`${name}: ${value} ${unit}`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+
 // energy cost from all properties pie chart 
 const energyCost_data = [
   { name: 'Property A', value: 400 },
@@ -56,7 +74,7 @@ const renderCustomizedLabel = ({
 
   return (
     <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)}%`}
+      {`${(percent * 100).toFixed(0)} CO₂e`}
     </text>
   );
 };
@@ -275,11 +293,11 @@ export default function Home(this: any) {
               <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip contentStyle={{ backgroundColor: "#000"}} />
+
+              <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
               <Legend />
-              <Bar dataKey="Electricity" fill="#8884d8" />
-              <Bar dataKey="Water" fill="#82ca9d" />
-              <Bar dataKey="Waste" fill="#FF8042" />
+              <Bar dataKey="value" name="Utility Consumption"/>
+              
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -315,7 +333,7 @@ export default function Home(this: any) {
                   <Cell key={'cell-${index}'} fill={entry.fill} />
                 ))}
               </Pie>
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />}/>
             <Legend align='center' verticalAlign='bottom' height={36} 
               wrapperStyle={{
                 paddingTop: "1rem"
