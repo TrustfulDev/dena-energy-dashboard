@@ -42,7 +42,42 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import {  Cell, PieChart, Rectangle, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+// utility consumption bar chart 
+const consumption_data = [
+    {month: 'Jan',name: 'Electricity', value : 4000, type : 'Electricity',fill: '#8884d8'},
+    {month: 'Jan',name:'Water', value : 2400, type :'Water', fill: '#82ca9d'},
+    {month: 'Jan',name:'Waste',value : 2400, type : 'Waste', fill: '#FF8042'}
+  ];
+  const cost_data = [
+    {month: 'Jan',name: 'Electricity', value : 400, type : 'Cost',fill: '#8884d8'},
+    {month: 'Jan',name:'Water', value : 240, type :'Cost', fill: '#82ca9d'},
+    {month: 'Jan',name:'Waste',value : 240, type : 'Cost', fill: '#FF8042'}
+  ];
+  const highestConsumer_data = [
+    {month: 'Jan',name: 'Electricity', value : 400, type : 'Electricity',fill: '#8884d8'},
+    {month: 'Jan',name:'Water', value : 220, type :'Water', fill: '#82ca9d'},
+    {month: 'Jan',name:'Waste',value : 240, type : 'Waste', fill: '#FF8042'},
+    {month: 'Jan',name:'Gas',value : 280, type : 'Gas', fill: '#FF8042'}
+  ];
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const { name, value, type } = payload[0].payload;
+      const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Gas' ? 'therm' : type === 'Cost' ? ' $' : '';
+      return (
+        <div className="custom-tooltip">
+          <p>{`${name}: ${value} ${unit}`}</p>
+        </div>
+      );
+    }
+  
+    return null;
+  };
+  
+
+  
+  
 // Interfaces
 interface PropertyListProps {
     id: string;
@@ -315,7 +350,25 @@ export const PropertiesAnalytics = ({}) => {
                     </CardHeader>
 
                     <CardContent className='flex-grow'>
-                        Maybe a linechart, piechart, or barchart. Shows the usage of all utilities (Electric, Water, Waste)
+                        <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={consumption_data}
+                            margin={{
+                                top: 10,
+                                right: 10,
+                                left: -15,
+                                bottom: 10,
+                            }}
+                            >
+                            <CartesianGrid opacity={0.15} />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+
+                            <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+                            <Legend />
+                            <Bar dataKey="value" name="Monthly Consumption"/>
+                            
+                            </BarChart>
+                        </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
@@ -341,18 +394,19 @@ export const PropertiesAnalytics = ({}) => {
 
                         <CardContent className='flex-grow'>
                             
+                            
                         </CardContent>
                     </Card>
                     
                     <Card className='w-full flex flex-col h-full'>
                         <CardHeader>
                             <CardTitle className="">
-                                Carboon Footprint
+                                Carbon Footprint
                             </CardTitle>
                         </CardHeader>
 
-                        <CardContent className='flex-grow'>
-                            
+                        <CardContent className='flex-grow' style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#8884d8' }} >
+                         Total 4000 Co2
                         </CardContent>
                     </Card>
                 </div>
@@ -367,7 +421,25 @@ export const PropertiesAnalytics = ({}) => {
                     </CardHeader>
 
                     <CardContent className='flex-grow'>
-                        Most likely a barchart OR a piechart here to show the prices of: Electricity, Water, Waste side by side
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={cost_data}
+                            margin={{
+                                top: 10,
+                                right: 10,
+                                left: -15,
+                                bottom: 10,
+                            }}
+                            >
+                            <CartesianGrid opacity={0.15} />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+
+                            <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+                            <Legend />
+                            <Bar dataKey="value" name="Monthly Cost"/>
+                            
+                            </BarChart>
+                        </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
@@ -381,7 +453,25 @@ export const PropertiesAnalytics = ({}) => {
                     </CardHeader>
 
                     <CardContent className='flex-grow'>
-                        Maybe a barchart showing the top 5 highest meter consumptions.
+                        <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={highestConsumer_data}
+                            margin={{
+                                top: 10,
+                                right: 10,
+                                left: -15,
+                                bottom: 10,
+                            }}
+                            >
+                            <CartesianGrid opacity={0.15} />
+                            <XAxis dataKey="name" />
+                            <YAxis />
+
+                            <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+                            <Legend />
+                            <Bar dataKey="value" name="Highest Consumption"/>         
+                            </BarChart>
+                        </ResponsiveContainer>
+                    
                     </CardContent>
                 </Card>
             </div>
