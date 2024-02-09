@@ -9,6 +9,7 @@ import { MobileNav } from "@/components/navigation/mobile-nav"
 import { Sidebar } from "@/components/navigation/sidebar"
 import { DesktopHeader } from "@/components/navigation/desktop-header"
 import { Footer } from "@/components/navigation/footer"
+import { ContextWrapper } from '@/context'
 
 
 const font = Kanit({ weight: "400", style: "normal", subsets: ['latin'] })
@@ -39,7 +40,9 @@ export default function RootLayout({
               <Sidebar />
               <section className="px-3 lg:px-6 lg:pt-6 lg:pb-4 flex-1 flex flex-col min-h-0 lg:mt-0 max-h-screen" style={{ minHeight: 'calc(100vh - 88px)'}}>
                 <DesktopHeader />
-                {children}
+                <ContextWrapper>
+                  {children}
+                </ContextWrapper>
                 <Footer />
               </section>
               <Toaster richColors closeButton />
