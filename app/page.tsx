@@ -23,6 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useDataContext } from '@/context';
 
 // utility consumption bar chart 
 const consumption_data = [
