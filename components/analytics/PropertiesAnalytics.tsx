@@ -2,8 +2,7 @@
 
 // React & Packages
 import { useState } from "react"
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react"
+import { BadgeDollarSign, Droplets, Footprints, Trash2, Zap } from 'lucide-react';
 import { 
     ChevronsUpDown, 
     CheckSquare, 
@@ -16,7 +15,6 @@ import {
 // Components
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import {
     Command,
     CommandEmpty,
@@ -47,15 +45,14 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       const { name, value, type } = payload[0].payload;
       const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Gas' ? 'therm' : type === 'Cost' ? ' $' : '';
       return (
-        <div className="custom-tooltip">
-          <p>{`${name}: ${value} ${unit}`}</p>
+        <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
+          <p className="drop-shadow text-lg">{`${name}: ${value} ${unit}`}</p>
         </div>
       );
     }
     return null;
 };
 
-import { useDataContext } from "@/context";
 import { PropertyDetails } from "@/lib/propertiesApi";
 // Interfaces
 interface ConsumptionData {
@@ -168,11 +165,16 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
         {month: 'Recent',name:highestWasteMeterName,value : highestWasteMeterUsage, type : 'Waste', fill: '#FF8042'},
       ];
     return {consumption_data,cost_data,highestConsumer_data};
-  }
+}
 
-export const PropertiesAnalytics = ({}) => {
+interface PropertiesAnalyticsProps {
+    properties: PropertyDetails[]
+}
+
+export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
+    properties
+}) => {
     // Properties & Their Details: Will be an array of property details (CHECK context/index.ts)
-    const { properties } = useDataContext();
     const [selected, setSelected] = useState<PropertyDetails | null>(properties ? properties[0] : null);
     let consumption_data: ConsumptionData[] = [];
     let cost_data: ConsumptionData[] = [];
@@ -190,7 +192,6 @@ export const PropertiesAnalytics = ({}) => {
     // Used for Pop-Over components (dropdown selection)
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(properties ? properties[0].name : "");   // Stores name
-    const [date, setDate] = useState<Date>(); // Stores date
 
     return (
         <>
@@ -264,24 +265,6 @@ export const PropertiesAnalytics = ({}) => {
                             </Command>
                         </PopoverContent>
                     </Popover>
-
-                    {/* Date Popover */}
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                    "w-[280px] justify-start text-left font-normal",
-                                    !date && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                            </Button>
-                        </PopoverTrigger> 
-                        <PopoverContent className="w-auto p-0">
-                        </PopoverContent>
-                    </Popover>
                 </div>
             </header>
 
@@ -295,59 +278,71 @@ export const PropertiesAnalytics = ({}) => {
                     </CardHeader>
                     <CardContent className='flex-grow'>
                         <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={consumption_data}
-                            margin={{
-                                top: 10,
-                                right: 10,
-                                left: 10,
-                                bottom: 10,
-                            }}
+                            <BarChart data={consumption_data}
+                                margin={{
+                                    top: 10,
+                                    right: 10,
+                                    left: 10,
+                                    bottom: 10,
+                                }}
                             >
-                            <CartesianGrid opacity={0.15} />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
-                            <Legend />
-                            <Bar dataKey="value" name="Recent Month Consumption"/>
+                                <CartesianGrid opacity={0.15} />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#fff"}} cursor={{fill: '#000', opacity: '20%'}} />
+                                <Bar dataKey="value" name="Recent Month Consumption"/>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
                 <div className="col-span-2 flex flex-col gap-6">
-                    <Card className='w-full flex flex-col h-full'>
-                        <CardHeader>
-                            <CardTitle className="">
-                                
+                    <Card className='relative w-full flex flex-col h-full'>
+                        <CardHeader className="p-0 absolute inset-0 flex justify-center items-center z-[-1] opacity-5">
+                            <CardTitle className="text-7xl font-bold">
+                                METERS
                             </CardTitle>
                         </CardHeader>
 
-                        <CardContent className='flex-grow'>
-                            
+                        <CardContent className='flex justify-between items-center h-full py-0 !px-16 z-[1]'>
+                            <div className="text-center">
+                                <Zap className="w-12 h-auto text-yellow-500 mb-2" />
+                                <p className="text-xl">{selected?.meterAssociations.energyMeters.length}</p>
+                            </div>
+
+                            <div className="text-center">
+                                <Droplets className="w-12 h-auto text-sky-500 mb-2" />
+                                <p className="text-xl">{selected?.meterAssociations.waterMeters.length}</p>
+                            </div>
+
+                            <div className="text-center">
+                                <Trash2 className="w-12 h-auto text-amber-600 mb-2" />
+                                <p className="text-xl">{selected?.meterAssociations.wasteMeters.length}</p>
+                            </div>
                         </CardContent>
                     </Card>
 
-                    <Card className='w-full flex flex-col h-full'>
-                        <CardHeader>
-                            <CardTitle className="">
-                                
+                    <Card className='relative w-full flex flex-col h-full'>
+                        <CardHeader className="p-0 absolute inset-0 flex justify-center items-center z-[-1] opacity-5">
+                            <CardTitle className="text-7xl font-bold">
+                                EXPENSE
                             </CardTitle>
                         </CardHeader>
 
-                        <CardContent className='flex-grow'>
-                            
-                            
+                        <CardContent className='flex gap-4 justify-center items-center h-full py-0 !px-12 z-[1]'>
+                            <p className="text-4xl text-red-500">-${(cost_data[0].value + cost_data[1].value + cost_data[2].value).toLocaleString()}</p>
                         </CardContent>
                     </Card>
                     
-                    <Card className='w-full flex flex-col h-full'>
-                        <CardHeader>
-                            <CardTitle className="">
-                                Carbon Footprint
+                    <Card className='relative w-full flex flex-col h-full'>
+                        <CardHeader className="p-0 absolute inset-0 flex justify-center items-center z-[-1] opacity-5">
+                            <CardTitle className="text-7xl font-bold">
+                                FOOTPRINT
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className='flex-grow' style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#8884d8' }} >
-                         Total 4000 Co2
+                        <CardContent className='flex gap-4 justify-center items-center h-full py-0 !px-12 z-[1]'>
+                            <Footprints className="w-12 h-auto" /> 
+                            <p className="text-xl">40,000 CO<span className="text-xs">2</span></p>
                         </CardContent>
                     </Card>
                 </div>
@@ -361,20 +356,20 @@ export const PropertiesAnalytics = ({}) => {
                     </CardHeader>
                     <CardContent className='flex-grow'>
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={cost_data}
-                            margin={{
-                                top: 10,
-                                right: 10,
-                                left: 10,
-                                bottom: 10,
-                            }}
+                            <BarChart data={cost_data}
+                                margin={{
+                                    top: 10,
+                                    right: 10,
+                                    left: 10,
+                                    bottom: 10,
+                                }}
                             >
-                            <CartesianGrid opacity={0.15} />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
-                            <Legend />
-                            <Bar dataKey="value" name="Recent Month Cost"/>
+                                <CartesianGrid opacity={0.15} />
+                                <XAxis dataKey="name" />
+                                <YAxis />
+                                <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
+                                <Legend />
+                                <Bar dataKey="value" name="Recent Month Cost"/>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -391,20 +386,20 @@ export const PropertiesAnalytics = ({}) => {
 
                     <CardContent className='flex-grow'>
                         <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={highestConsumer_data}
-                            margin={{
-                                top: 10,
-                                right: 10,
-                                left: 10,
-                                bottom: 10,
-                            }}
+                            <BarChart data={highestConsumer_data}
+                                margin={{
+                                    top: 10,
+                                    right: 10,
+                                    left: 10,
+                                    bottom: 10,
+                                }}
                             >
-                            <CartesianGrid opacity={0.15} />
-                            <XAxis dataKey="type" />
-                            <YAxis />
-                            <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
-                            <Legend />
-                            <Bar dataKey="value" name="Recent Month Highest Consumption Meter"/>         
+                                <CartesianGrid opacity={0.15} />
+                                <XAxis dataKey="type" />
+                                <YAxis />
+                                <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
+                                <Legend />
+                                <Bar dataKey="value" name="Recent Month Highest Consumption Meter"/>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>

@@ -5,9 +5,12 @@ import { NextResponse } from "next/server";
 // Please edit this to allow other routes to be public as needed.
 // See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your Middleware
 export default authMiddleware({
-  publicRoutes: ["/sign-in","/sign-up"],
   afterAuth(auth, req, evt) {
-    if (!auth.userId && !auth.isPublicRoute) {
+    const path = new URL(req.url).pathname;
+    const isApiRoute = path.startsWith('/api/');
+    const isPublicRoute = ["/sign-in", "/sign-up"].includes(path) || isApiRoute;
+
+    if (!auth.userId && !isPublicRoute) {
       const signin = new URL('/sign-in', req.url);
       return NextResponse.redirect(signin);
     }
@@ -17,4 +20,3 @@ export default authMiddleware({
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };
- 

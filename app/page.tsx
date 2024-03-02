@@ -1,7 +1,6 @@
 "use client";
 import {  Cell, PieChart, Rectangle, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-
 import {
   Card,
   CardContent,
@@ -23,7 +22,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useDataContext } from '@/context';
 
 // utility consumption bar chart 
 const consumption_data = [

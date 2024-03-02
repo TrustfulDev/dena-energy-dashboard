@@ -1,4 +1,4 @@
-import { rejects } from 'assert';
+'use server';
 import xml2js from 'xml2js';
 
 interface Property {
@@ -53,14 +53,15 @@ export interface PropertyDetails {
 
     linkMeters: Property[]; // Changed linkMeters to use Property interface directly
 
-    meterAssociations: MeterAssociation[];
+    meterAssociations: MeterAssociation;
 
     energyConsumption: EnergyConsumption[];
 
 }
 
 async function fetchProperties(): Promise<Property[]> {
-    const response = await fetch('/api/energystar/properties');
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/energystar/properties`);
     const xml = await response.text();
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
@@ -78,9 +79,10 @@ async function fetchProperties(): Promise<Property[]> {
 }
 
 async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails> {
-    const metersPromise = fetch(`/api/energystar/meters?id=${propertyId}`).then(res => res.text());
-    const detailsPromise = fetch(`/api/energystar/properties_detail?id=${propertyId}`).then(res => res.text());
-    const associationPromise = fetch(`/api/energystar/meters/property_meters_ids?id=${propertyId}`).then(res => res.text());
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const metersPromise = fetch(`${baseUrl}/api/energystar/meters?id=${propertyId}`).then(res => res.text());
+    const detailsPromise = fetch(`${baseUrl}/api/energystar/properties_detail?id=${propertyId}`).then(res => res.text());
+    const associationPromise = fetch(`${baseUrl}/api/energystar/meters/property_meters_ids?id=${propertyId}`).then(res => res.text());
 
     const [metersXml, detailsXml, associationsXml] = await Promise.all([metersPromise, detailsPromise, associationPromise]);
 
@@ -132,10 +134,10 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
 
     //fetch EnergyConsumption data for each energy meter
     for (let meter of meterAssociations.energyMeters) {
-        const consumptionResponse = await fetch(`/api/energystar/meters/consumption?id=${meter.meterId}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}`);
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`/api/energystar/meters/meter?id=${meter.meterId}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}`);
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {
@@ -165,10 +167,10 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
 
     //fetch EnergyConsumption data for each water meter
     for (let meter of meterAssociations.waterMeters) {
-        const consumptionResponse = await fetch(`/api/energystar/meters/consumption?id=${meter.meterId}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}`);
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`/api/energystar/meters/meter?id=${meter.meterId}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}`);
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {
@@ -198,10 +200,10 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
 
     //fetch EnergyConsumption data for each waste meter
     for (let meter of meterAssociations.wasteMeters) {
-        const consumptionResponse = await fetch(`/api/energystar/meters/consumption/waste?id=${meter.meterId}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption/waste?id=${meter.meterId}`);
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`/api/energystar/meters/meter?id=${meter.meterId}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}`);
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {

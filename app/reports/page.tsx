@@ -1,6 +1,6 @@
 import ReportStatements from '@/components/report-statements'
 
-export default function Reports() {
+export default async function Reports() {
     return (
         <div className="mx-4 md:m-0">
             <ReportStatements reportName={'Energy Audit'} date={'10/10/2023'}/>
@@ -9,4 +9,4 @@ export default function Reports() {
             <ReportStatements reportName={'Energy Audit'} date={'8/10/2023'}/>
         </div>
     )
-}  
+}

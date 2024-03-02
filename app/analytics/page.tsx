@@ -3,7 +3,11 @@ import { MeterAnalytics } from "@/components/analytics/MeterAnalytics";
 import { CarbonFootprint } from "@/components/analytics/CarbonFootprint";
 import { PropertiesAnalytics } from "@/components/analytics/PropertiesAnalytics";
 
-export default function Analytics() {
+import { PropertyDetails, fetchAllPropertyDetails } from "@/lib/propertiesApi";
+
+export default async function Analytics() {
+    const data: PropertyDetails[] = await fetchAllPropertyDetails();
+
     return (
         <div className="flex h-full mb-6 md:overflow-y-auto">
             <Tabs defaultValue="property" className="flex flex-col w-full">
@@ -19,14 +23,14 @@ export default function Analytics() {
                     value="property" 
                     className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]: px-4"
                 >
-                    <PropertiesAnalytics />
+                    <PropertiesAnalytics properties={data} />
                 </TabsContent>
 
                 <TabsContent 
                     value="meter" 
                     className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]: px-4"
                 >
-                    <MeterAnalytics />
+                    <MeterAnalytics properties={data} />
                 </TabsContent>
 
                 <TabsContent 
