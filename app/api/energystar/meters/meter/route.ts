@@ -1,4 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import db from '../../../../utils/database';
+import { RowDataPacket } from 'mysql2';
+
 
 export async function GET(req: NextApiRequest, res: NextApiResponse) {
 
@@ -8,6 +11,14 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
   const username = process.env.ENERGY_STAR_USERNAME;
   const password = process.env.ENERGY_STAR_PASSWORD;
 
+  /*
+  const [rows] = await db.query<RowDataPacket[]>('SELECT username, password FROM EnergyData.credentials WHERE id = ?', [1]);
+  if (rows.length === 0) {
+    throw new Error('No credentials found');
+  }
+  const { username, password } = rows[0];
+  */
+ 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
   const url = `https://portfoliomanager.energystar.gov/ws/meter/${meterId}`;
 

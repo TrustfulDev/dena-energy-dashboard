@@ -19,7 +19,9 @@ import {
 import { Input } from "@/components/ui/input"
 
 const formSchema = z.object({
-    id: z.string().min(1).regex(/^\d+$/)
+    id: z.string().min(1, "ID is required"),
+    id2: z.string().min(1, "ID2 is required"),
+
 });
 
 export const LinkForm: React.FC = () => {
@@ -34,7 +36,9 @@ export const LinkForm: React.FC = () => {
             setLoading(true);
             const res = await fetch(`/api/energystar/linking/`, {
                 method: 'POST',
-                body: values.id,
+                //body: values.id,
+                body: JSON.stringify({ id: values.id, id2: values.id2 }), 
+
             });
 
             if (res.ok) {
@@ -71,6 +75,18 @@ export const LinkForm: React.FC = () => {
                                 Find your account ID in Account Settings --&gt; About Yourself
                             </FormDescription>
                             <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="id2" 
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>ID 2</FormLabel>
+                            <FormControl>
+                                <Input disabled={loading} placeholder="Enter ID 2" {...field} />
+                            </FormControl>
                         </FormItem>
                     )}
                 />
