@@ -349,37 +349,6 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                     </Card>
                 </div>
 
-                <Card className='w-full flex flex-col col-span-2 min-h-[500px]'>
-                    <CardHeader>
-                        <CardTitle className="">
-                            Utility Costs
-                        </CardTitle>
-                        <CardDescription>Total Costs Of All Utilities</CardDescription>
-                    </CardHeader>
-                    <CardContent className='flex-grow'>
-                    <ResponsiveContainer width="100%" height="100%">
-                            <BarChart 
-                                data={cost_data}
-                                margin={{
-                                    top: 10,
-                                    right: 5,
-                                    left: 15,
-                                    bottom: 10,
-                                }}
-                            >
-                                <CartesianGrid opacity={0.15} />
-                                <XAxis dataKey="name"  tick={{ fontSize: 10 }} angle={-25} textAnchor="end" interval={0}/>
-                                <YAxis hide/>
-                                <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                                <Legend /> 
-                                <Bar dataKey="value" name="Recent Month Cost">
-                                    <LabelList dataKey="value" position="top" /> 
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-
                 <Card className='w-full flex flex-col col-span-4 min-h-[500px]'>
                     <CardHeader>
                         <CardTitle className="">
@@ -406,6 +375,37 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 <Legend />
                                 <Bar dataKey="value" name="Recent Month Highest Cost Meter">
                                     <LabelList dataKey="value" position="right"  /> 
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+
+                <Card className='w-full flex flex-col col-span-2 min-h-[500px]'>
+                    <CardHeader>
+                        <CardTitle className="">
+                            Utility Costs
+                        </CardTitle>
+                        <CardDescription>Total Costs Of All Utilities</CardDescription>
+                    </CardHeader>
+                    <CardContent className='flex-grow'>
+                    <ResponsiveContainer width="100%" height="100%">
+                            <BarChart 
+                                data={cost_data}
+                                margin={{
+                                    top: 10,
+                                    right: 5,
+                                    left: 15,
+                                    bottom: 10,
+                                }}
+                            >
+                                <CartesianGrid opacity={0.15} />
+                                <XAxis dataKey="name"  tick={{ fontSize: 10 }} angle={-25} textAnchor="end" interval={0}/>
+                                <YAxis hide/>
+                                <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
+                                <Legend /> 
+                                <Bar dataKey="value" name="Recent Month Cost">
+                                    <LabelList dataKey="value" position="top" /> 
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
