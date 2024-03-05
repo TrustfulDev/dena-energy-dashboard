@@ -35,11 +35,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {  Cell, PieChart, Rectangle, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {  Cell, PieChart, LabelList, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
  
 
-  // data units
+// data units
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const { name, value, type } = payload[0].payload;
@@ -73,13 +73,6 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
     let totalEnergyCost = 0;
     let totalWaterCost = 0;
     let totalWasteCost = 0;
-    let highestEngergyMeterName = '';
-    let highestEnergyMeterUsage = 0;
-    let highestWaterMeterName = '';
-    let highestWaterMeterUsage = 0;
-    let highestWasteMeterName = '';
-    let highestWasteMeterUsage = 0;
-
     const Usage = selected.meterAssociations;
     const energyUsageData = (Usage as any).energyMeters;
     const waterUsageData = (Usage as any).waterMeters;
@@ -94,11 +87,15 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
             for (let i = 0; i < meter.energyConsumption.length; i++) {
                 if((meter.energyConsumption[i].startDate as any) === recentDate){
                     let quantity = parseFloat(meter.energyConsumption[i]?.usage as string);
-                    if (quantity > highestEnergyMeterUsage) {
-                        highestEnergyMeterUsage = quantity;
-                        highestEngergyMeterName = meter.details.name;
-                      }
                     let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
+                    const newItem: ConsumptionData = {
+                        month: "Recent",
+                        name: meter.details.name,
+                        value: isNaN(cost) ? 0 : cost,
+                        type: "Cost",
+                        fill: '#8884d8',
+                      };
+                    highestConsumer_data.push(newItem);
                     totalEnergyCost += isNaN(cost) ? 0 : cost;
                     totalEnergyUsage += isNaN(quantity) ? 0 : quantity;
                 }
@@ -114,11 +111,15 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
             for (let i = 0; i < meter.energyConsumption.length; i++) {
                 if((meter.energyConsumption[i].startDate as any) ===  recentDate){
                     let quantity = parseFloat(meter.energyConsumption[i]?.usage as string);
-                    if (quantity > highestWaterMeterUsage) {
-                        highestWaterMeterUsage = quantity;
-                        highestWaterMeterName = meter.details.name;
-                      }
                     let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
+                    const newItem: ConsumptionData = {
+                        month: "Recent",
+                        name: meter.details.name,
+                        value: isNaN(cost) ? 0 : cost,
+                        type: "Cost",
+                        fill: '#82ca9d',
+                      };
+                    highestConsumer_data.push(newItem);
                     totalWaterCost += isNaN(cost) ? 0 : cost;
                     totalWaterUsage += isNaN(quantity) ? 0 : quantity;
                 }
@@ -134,11 +135,15 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
             for (let i = 0; i < meter.energyConsumption.length; i++) {
                 if((meter.energyConsumption[i].startDate as any) ===  recentDate){
                     let quantity = parseFloat(meter.energyConsumption[i]?.quantity as string);
-                    if (quantity > highestWasteMeterUsage) {
-                        highestWasteMeterUsage = quantity;
-                        highestWasteMeterName = meter.details.name;
-                      }
                     let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
+                    const newItem: ConsumptionData = {
+                        month: "Recent",
+                        name: meter.details.name,
+                        value: isNaN(cost) ? 0 : cost,
+                        type: "Cost",
+                        fill: '#FF8042',
+                      };
+                    highestConsumer_data.push(newItem);
                     totalWasteCost += isNaN(cost) ? 0 : cost;
                     totalWasteUsage += isNaN(quantity) ? 0 : quantity;
                 }
@@ -159,11 +164,8 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
         {month: 'Recent',name:'Water', value : totalWaterCost, type :'Cost', fill: '#82ca9d'},
         {month: 'Recent',name:'Waste',value : totalWasteCost, type : 'Cost', fill: '#FF8042'}
       ];
-    highestConsumer_data = [
-        {month: 'Recent',name: highestEngergyMeterName, value : highestEnergyMeterUsage, type : 'Electricity',fill: '#8884d8'},
-        {month: 'Recent',name:highestWaterMeterName, value : highestWaterMeterUsage, type :'Water', fill: '#82ca9d'},
-        {month: 'Recent',name:highestWasteMeterName,value : highestWasteMeterUsage, type : 'Waste', fill: '#FF8042'},
-      ];
+    highestConsumer_data = highestConsumer_data.sort((a, b) => b.value - a.value);
+    highestConsumer_data = highestConsumer_data.slice(0, 5);    
     return {consumption_data,cost_data,highestConsumer_data};
 }
 
@@ -282,7 +284,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 margin={{
                                     top: 10,
                                     right: 10,
-                                    left: 10,
+                                    left: 20,
                                     bottom: 10,
                                 }}
                             >
@@ -347,7 +349,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                     </Card>
                 </div>
 
-                <Card className='w-full flex flex-col col-span-3 min-h-[500px]'>
+                <Card className='w-full flex flex-col col-span-2 min-h-[500px]'>
                     <CardHeader>
                         <CardTitle className="">
                             Utility Costs
@@ -356,50 +358,55 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                     </CardHeader>
                     <CardContent className='flex-grow'>
                     <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={cost_data}
+                            <BarChart 
+                                data={cost_data}
                                 margin={{
                                     top: 10,
-                                    right: 10,
-                                    left: 10,
+                                    right: 5,
+                                    left: 15,
                                     bottom: 10,
                                 }}
                             >
                                 <CartesianGrid opacity={0.15} />
-                                <XAxis dataKey="name" />
-                                <YAxis />
+                                <XAxis dataKey="name"  tick={{ fontSize: 10 }} angle={-25} textAnchor="end" interval={0}/>
+                                <YAxis hide/>
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                                <Legend />
-                                <Bar dataKey="value" name="Recent Month Cost"/>
+                                <Legend /> 
+                                <Bar dataKey="value" name="Recent Month Cost">
+                                    <LabelList dataKey="value" position="top" /> 
+                                </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                <Card className='w-full flex flex-col col-span-3 min-h-[500px]'>
+                <Card className='w-full flex flex-col col-span-4 min-h-[500px]'>
                     <CardHeader>
                         <CardTitle className="">
                             Highest Consumers
                         </CardTitle>
-
                         <CardDescription>Find Which Meter Is Consuming The Highest</CardDescription>
                     </CardHeader>
-
                     <CardContent className='flex-grow'>
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={highestConsumer_data}
+                            <BarChart 
+                                data={highestConsumer_data}
+                                layout="vertical"
                                 margin={{
                                     top: 10,
-                                    right: 10,
-                                    left: 10,
+                                    right: 55,
+                                    left: 15,
                                     bottom: 10,
                                 }}
                             >
                                 <CartesianGrid opacity={0.15} />
-                                <XAxis dataKey="type" />
-                                <YAxis />
+                                <XAxis type="number" opacity={0.75} /> 
+                                <YAxis dataKey="name" type="category" width={80} /> 
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                                 <Legend />
-                                <Bar dataKey="value" name="Recent Month Highest Consumption Meter"/>
+                                <Bar dataKey="value" name="Recent Month Highest Cost Meter">
+                                    <LabelList dataKey="value" position="right"  /> 
+                                </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
