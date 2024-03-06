@@ -1,7 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest } from 'next';
 import { NextResponse } from 'next/server';
 import db from '../../../utils/database';
-import { auth, currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 
 
 export async function POST(req: NextApiRequest) {
@@ -14,7 +14,7 @@ export async function POST(req: NextApiRequest) {
             return new NextResponse("ClerkID is required", {status: 400});
         }
 
-        const deleteQuery = 'DELETE FROM Dashboard.ENERGYSTAR WHERE ClerkUID = ?';
+        const deleteQuery = 'DELETE FROM ENERGYSTAR WHERE ClerkUID = ?';
         await db.execute(deleteQuery, [userId]);
 
         return new NextResponse("Row successfully deleted", {status: 200});

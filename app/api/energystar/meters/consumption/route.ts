@@ -13,7 +13,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
 
   //--------------------- This pack of code it's to base clerkID to find energystar username and password
   const { userId } = auth();
-  const query = 'SELECT Username, Password FROM Dashboard.ENERGYSTAR WHERE ClerkUID = ?';
+  const query = 'SELECT Username, Password FROM ENERGYSTAR WHERE ClerkUID = ?';
   const [rows] = await db.execute<RowDataPacket[]>(query, [userId]);
 
   if (rows.length > 0) {
@@ -30,8 +30,6 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
   }
   const { username, password } = rows[0];
   */
-
-
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
   const url = `https://portfoliomanager.energystar.gov/ws/meter/${meterId}/consumptionData`;

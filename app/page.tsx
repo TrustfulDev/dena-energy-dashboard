@@ -1,5 +1,5 @@
 "use client";
-import {  Cell, PieChart, Pie,LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {  Cell, PieChart, Rectangle, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import {
   Card,
@@ -22,17 +22,48 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useDataContext } from '@/context';
 
 // utility consumption bar chart 
 const consumption_data = [
-  { name: 'Utilities', Electricity: 4000, Water: 2400, Waste: 2400 },
+  {name: 'Electricity', value : 4000, type : 'Electricity',fill: '#8884d8'},
+  {name:'Water', value : 2400, type :'Water', fill: '#82ca9d'},
+  {name:'Waste',value : 2400, type : 'Waste', fill: '#FF8042'}
+];
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const { name, value, type } = payload[0].payload;
+    const unit = type === 'Electricity' ? 'kWh' : type === 'Cost' ? ' $' : type === 'Waste' ? 'pounds' : 'gallons';
+
+    return (
+      <div className="custom-tooltip">
+        <p>{`${name}: ${value} ${unit}`}</p>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+
+// energy cost from all properties pie chart 
+const energyCost_data = [
+  { name: 'Property A', value: 400, type : 'Cost' },
+  { name: 'Property B', value: 300, type : 'Cost' },
+  { name: 'Property C', value: 300, type : 'Cost' },
+  { name: 'Property D', value: 200, type : 'Cost' },
+];
+// colors for pie chart with padding angle 
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+// change in cost bar chart 
+const changeCost_data = [
+  { name: 'Past Cost', value: 4000, type : 'Cost'},
+  { name: 'Current Cost', value: 2000, type : 'Cost'},
 ];
 // carbon footprint pie chart 
 const carbon_data = [
   { name: 'Electricity', value: 400, fill: '#8884d8' },
   { name: 'Water', value: 300, fill: '#82ca9d' },
-  { name: 'Waste', value: 300, fill: '#ffc658' },
+  { name: 'Waste', value: 300, fill: '#FF8042' },
 ];
 const renderCustomizedLabel = ({
   cx, cy, midAngle, innerRadius, outerRadius, percent,
@@ -43,7 +74,7 @@ const renderCustomizedLabel = ({
 
   return (
     <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)}%`}
+      {`${(percent * 100).toFixed(0)} CO₂e`}
     </text>
   );
 };
@@ -88,7 +119,7 @@ const data = [
 ];
 
 
-export default function Home() {
+export default function Home(this: any) {
   const [date, setDate] = useState<Date>();
   useEffect(() => {
     setDate(new Date());
@@ -155,25 +186,71 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      <Card className='md:col-span-3 col-span-6 min-h-[500px]'>
+      <Card className='flex flex-col md:col-span-3 col-span-6 min-h-[500px] h-full w-full'>
         <CardHeader>
           <CardTitle>Energy Costs</CardTitle>
           <CardDescription>Total Monthly Costs From All Properties</CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <p>Go for the PieChartWithPaddingAngle</p>
+        <CardContent className='flex-grow'>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart >
+              <Pie
+                cy="100%"
+                data={energyCost_data}
+                startAngle={180}
+                endAngle={0}
+                innerRadius={160}
+                outerRadius={200}
+                fill="#8884d8"
+                paddingAngle={5}
+                dataKey="value"
+                label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+              <Legend align='center' verticalAlign='bottom' height={36} 
+                wrapperStyle={{
+                  paddingTop: "1rem"
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
         </CardContent>
+
+        <CardFooter>
+          <p>PUT TEXT HERE TO SHOW THE TOTAL COST of everything added up.</p>
+        </CardFooter>
       </Card>
 
-      <Card className='md:col-span-3 col-span-6 min-h-[500px]'>
+      <Card className='flex flex-col md:col-span-3 col-span-6 min-h-[500px] h-fit sm:h-full w-full'>
         <CardHeader>
           <CardTitle>Change In Cost</CardTitle>
           <CardDescription>Compare Current and Last Month Costs</CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <p>Bar Chart maybe?</p>
+        <CardContent className='flex-grow'>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={changeCost_data}
+              margin={{
+                top: 10,
+                right: 10,
+                left: -15,
+                bottom: 10,
+              }}
+            >
+              <CartesianGrid opacity={0.15} />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+              <Legend />
+              <Bar dataKey="value"  name="Cost" fill="#82ca9d" />
+              {/* <Bar dataKey="" fill="#82ca9d" /> */}
+            </BarChart>
+          </ResponsiveContainer>
         </CardContent>
       </Card>
 
@@ -213,14 +290,14 @@ export default function Home() {
                 bottom: 10,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip contentStyle={{ backgroundColor: "#000"}} />
+
+              <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
               <Legend />
-              <Bar dataKey="Electricity" fill="#8884d8" />
-              <Bar dataKey="Water" fill="#82ca9d" />
-              <Bar dataKey="Waste" fill="#ffc658" />
+              <Bar dataKey="value" name="Utility Consumption"/>
+              
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -256,7 +333,7 @@ export default function Home() {
                   <Cell key={'cell-${index}'} fill={entry.fill} />
                 ))}
               </Pie>
-            <Tooltip />
+            <Tooltip content={<CustomTooltip />}/>
             <Legend align='center' verticalAlign='bottom' height={36} 
               wrapperStyle={{
                 paddingTop: "1rem"

@@ -10,7 +10,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
   //const username = process.env.ENERGY_STAR_USERNAME;
   //const password = process.env.ENERGY_STAR_PASSWORD;
 
-  const [rows] = await db.query<RowDataPacket[]>('SELECT username, password FROM EnergyData.credentials WHERE id = ?', [1]);
+  const [rows] = await db.query<RowDataPacket[]>('SELECT username, password FROM credentials WHERE id = ?', [1]);
   if (rows.length === 0) {
     throw new Error('No credentials found');
   }

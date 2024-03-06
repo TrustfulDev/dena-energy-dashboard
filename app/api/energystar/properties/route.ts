@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
   const username = process.env.ENERGY_STAR_USERNAME;
   const password = process.env.ENERGY_STAR_PASSWORD;
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
