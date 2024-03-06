@@ -1,9 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../../../utils/database';
 import { RowDataPacket } from 'mysql2';
 import { auth } from "@clerk/nextjs";
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest) {
 
   const {searchParams} = new URL(req.url||"");
   const meterId = searchParams.get("id");
@@ -20,7 +20,7 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
     const { Username, Password } = rows[0];
     console.log(Username, Password);
   } else {
-    res.status(404).json({ error: 'Credentials not found for the given ClerkID' }); //if not found error print 
+    return new NextResponse("Credentials not found for the given ClerkID", { status: 404 });
   }
   //-----------------------
   /*

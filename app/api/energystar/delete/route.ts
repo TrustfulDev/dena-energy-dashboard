@@ -1,12 +1,9 @@
-import type { NextApiRequest } from 'next';
 import { NextResponse } from 'next/server';
 import db from '../../../utils/database';
 import { auth } from "@clerk/nextjs";
 
 
-export async function POST(req: NextApiRequest) {
-    //const check = req.json();
-
+export async function POST() {
     const { userId } = auth();
 
     try {

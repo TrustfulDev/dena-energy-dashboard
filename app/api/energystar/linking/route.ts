@@ -1,10 +1,7 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs";
 import db from '../../../utils/database';
 import { RowDataPacket } from 'mysql2';
-import { request } from "http";
-import { getAuth } from "@clerk/nextjs/server";
-
 
 export async function POST(
     req: Request,
@@ -47,13 +44,10 @@ export async function POST(
     }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
 
-    const { userId } = getAuth(req);
-
-    console.log("qqqqqq", userId);
-
-    //if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
+    const { userId } = auth();
+    if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
 
     //return NextResponse.json({ username: null }, { status: 200 })
     const query = `
@@ -71,8 +65,6 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ username: Username }, { status: 200 })
 
     } else {
-
         return NextResponse.json({ username: null }, { status: 400 })
     }
-
 }

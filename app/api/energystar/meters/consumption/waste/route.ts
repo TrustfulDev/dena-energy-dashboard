@@ -1,8 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import db from '../../../../../utils/database';
 import { RowDataPacket } from 'mysql2';
+import { NextRequest } from 'next/server';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest) {
 
   const {searchParams} = new URL(req.url||"");
   const meterId = searchParams.get("id");

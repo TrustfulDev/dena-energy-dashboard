@@ -1,7 +1,7 @@
-import type { NextApiRequest } from 'next';
+import { NextRequest } from 'next/server';
 
 // Fetches a list of meters for a given property ID
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
   const {searchParams} = new URL(req.url||"");
   const propertyId = searchParams.get("id");
 

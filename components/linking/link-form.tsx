@@ -25,12 +25,12 @@ const formSchema = z.object({
 
 interface LinkFormProps {
     api: string,
-    company: string,
+    callback: Function
 }
 
 export const LinkForm: React.FC<LinkFormProps> = ({
     api,
-    company
+    callback
 }) => {
     const [loading, setLoading] = useState(false);
 
@@ -48,6 +48,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
             });
 
             if (res.ok) {
+                callback(values.username);
                 toast.success("Account Linked!", {
                     description: `Your account [${values.username}] is now linked with us.`
                 })
@@ -67,23 +68,6 @@ export const LinkForm: React.FC<LinkFormProps> = ({
             setLoading(false);
         }
     }
-
-    //Unlink behavior 
-    const onDelete = async () => {
-        const response = await fetch(`/api/${api}/delete/`, {
-            method: 'POST',
-        });
-
-        if (response.ok) {
-            toast.success("Account Unlinked!", {
-                description: `Your ${company} account has been successfully unlinked.`
-            });
-        } else {
-            toast.error("Failed to unlink account!", {
-                description: "Please contact us directly if the problem persists."
-            });
-        }
-    };
 
     return (
         <Form {...form}>
@@ -109,17 +93,14 @@ export const LinkForm: React.FC<LinkFormProps> = ({
                         <FormItem className="relative">
                             <FormLabel className="font-bold ml-3 absolute -top-[7px] bg-background px-2">PASSWORD</FormLabel>
                             <FormControl>
-                                <Input disabled={loading} placeholder="Enter Password" {...field} className="!mt-1 !py-6" />
+                                <Input disabled={loading} placeholder="Enter Password" type="password" {...field} className="!mt-1 !py-6" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 
-                <div className="flex gap-4">
-                    <Button disabled={loading} variant="outline" type="submit" className="border-2 border-primary">Save</Button>
-                    <Button disabled={loading} variant="destructive" type="button" onClick={onDelete}>Unlink Account</Button>
-                </div>
+                <Button disabled={loading} variant="outline" type="submit" className="border-2 border-primary">Link Account</Button>
             </form>
         </Form>
     )

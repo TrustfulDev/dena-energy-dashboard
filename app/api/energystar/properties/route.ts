@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-
 export async function GET() {
   const username = process.env.ENERGY_STAR_USERNAME;
   const password = process.env.ENERGY_STAR_PASSWORD;

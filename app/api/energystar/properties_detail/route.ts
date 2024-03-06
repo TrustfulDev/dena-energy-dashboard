@@ -1,7 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-//import { useSearchParams } from 'next/navigation';
+import { NextRequest } from 'next/server';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest) {
 
   const {searchParams} = new URL(req.url||"");
   const propertyId = searchParams.get("id");
