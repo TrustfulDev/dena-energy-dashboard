@@ -1,7 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs";
 import db from '../../../utils/database';
 import { RowDataPacket } from 'mysql2';
+import { request } from "http";
+import { getAuth } from "@clerk/nextjs/server";
+
 
 export async function POST(
     req: Request,
@@ -42,4 +45,34 @@ export async function POST(
         
         return new NextResponse("Internal Error", { status: 500 });
     }
+}
+
+export async function GET(req: NextRequest) {
+
+    const { userId } = getAuth(req);
+
+    console.log("qqqqqq", userId);
+
+    //if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
+
+    //return NextResponse.json({ username: null }, { status: 200 })
+    const query = `
+        SELECT Username
+        FROM ENERGYSTAR
+        WHERE ClerkUID = ?
+    `;
+    
+    const [rows] = await db.execute<RowDataPacket[]>(query, [userId]);
+
+    if (rows.length > 0) {
+        const { Username } = rows[0];
+        
+        //return new NextResponse("Account already linked", { status: 200 });
+        return NextResponse.json({ username: Username }, { status: 200 })
+
+    } else {
+
+        return NextResponse.json({ username: null }, { status: 400 })
+    }
+
 }
