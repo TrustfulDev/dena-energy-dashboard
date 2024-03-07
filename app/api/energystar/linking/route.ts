@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs";
-import db from '../../../utils/database';
+import db from '../../../../utils/database';
 import { RowDataPacket } from 'mysql2';
 
 export async function POST(

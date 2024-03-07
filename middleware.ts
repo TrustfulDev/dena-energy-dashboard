@@ -14,9 +14,13 @@ export default authMiddleware({
       const signin = new URL('/sign-in', req.url);
       return NextResponse.redirect(signin);
     }
+
+    return NextResponse.next();
   },
 });
- 
+
+
+
 export const config = {
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };

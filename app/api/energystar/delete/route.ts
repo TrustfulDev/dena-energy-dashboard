@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import db from '../../../utils/database';
+import db from '../../../../utils/database';
 import { auth } from "@clerk/nextjs";
-
 
 export async function POST() {
     const { userId } = auth();

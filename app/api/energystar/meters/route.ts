@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server';
 export async function GET(req: NextRequest) {
   const {searchParams} = new URL(req.url||"");
   const propertyId = searchParams.get("id");
+  const userId = searchParams.get("userId");
 
   const username = process.env.ENERGY_STAR_USERNAME;
   const password = process.env.ENERGY_STAR_PASSWORD;
