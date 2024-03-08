@@ -1,6 +1,6 @@
 import db from '../../../../../utils/database';
 import { RowDataPacket } from 'mysql2';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
 
@@ -8,19 +8,26 @@ export async function GET(req: NextRequest) {
   const propertyId = searchParams.get("id");
   const userId = searchParams.get("userId");
 
-  const username = process.env.ENERGY_STAR_USERNAME;
-  const password = process.env.ENERGY_STAR_PASSWORD;
+  //const username = process.env.ENERGY_STAR_USERNAME;
+  //const password = process.env.ENERGY_STAR_PASSWORD;
+  let username = '';
+  let password = '';
 
-  //console.log("Checking id passing pro : ", propertyId);
+  const query = `
+    SELECT Username, Password
+    FROM ENERGYSTAR
+    WHERE ClerkUID = ?
+  `
+  const [rows] = await db.execute<RowDataPacket[]>(query, [userId]);
 
-  /*
-  const [rows] = await db.query<RowDataPacket[]>('SELECT username, password FROM EnergyData.credentials WHERE id = ?', [1]);
-  if (rows.length === 0) {
-    throw new Error('No credentials found');
+  if ( rows.length > 0 ){
+    username = rows[0].Username;
+    password = rows[0].Password; 
+
+  }else {
+
+    return new NextResponse("Can't find aaccount", { status: 400 }) 
   }
-  const { username, password } = rows[0];
-  */
- 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
   const url = `https://portfoliomanager.energystar.gov/ws/association/property/${propertyId}/meter`;
 

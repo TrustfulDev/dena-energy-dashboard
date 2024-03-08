@@ -1,4 +1,6 @@
-import { NextRequest } from 'next/server';
+import db from '../../../../utils/database';
+import { NextRequest, NextResponse } from 'next/server';
+import { RowDataPacket } from 'mysql2';
 
 export async function GET(req: NextRequest) {
 
@@ -6,8 +8,26 @@ export async function GET(req: NextRequest) {
   const propertyId = searchParams.get("id");
   const userId = searchParams.get("userId");
 
-  const username = process.env.ENERGY_STAR_USERNAME;
-  const password = process.env.ENERGY_STAR_PASSWORD;
+  //const username = process.env.ENERGY_STAR_USERNAME;
+  //const password = process.env.ENERGY_STAR_PASSWORD;
+  let username = '';
+  let password = '';
+
+  const query = `
+    SELECT Username, Password
+    FROM ENERGYSTAR
+    WHERE ClerkUID = ?
+  `
+  const [rows] = await db.execute<RowDataPacket[]>(query, [userId]);
+
+  if ( rows.length > 0 ){
+    username = rows[0].Username;
+    password = rows[0].Password; 
+
+  }else {
+
+    return new NextResponse("Can't find aaccount", { status: 400 }) 
+  }
 
   //console.log("Checking id passing pro : ", propertyId);
 
