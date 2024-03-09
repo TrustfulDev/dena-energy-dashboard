@@ -17,7 +17,31 @@ export async function POST(
 
         if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
 
-        //need to put this code somewhere so it could auto check exist account
+        //--------------
+        //fetch check account valid in energystar environment first
+        const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+        const url = `https://portfoliomanager.energystar.gov/ws/account`;
+
+        const energyStarResponse = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': basicAuth,
+            },
+        });
+
+        if (!energyStarResponse.ok) {
+            console.log("account NOTTTT found!!!!!!")
+
+            return new NextResponse("EnergyStar account validation failed", { status: 401 });
+        }else {
+
+            console.log("account found!!!!!!")
+        }
+        //----------------------
+
+
+        //need to put this code somewhere so it could auto check exist account or add account
+        //only check and add clerk user into USER table database
         const userInsertQuery = `
             INSERT IGNORE INTO USERS (ClerkUID, FirstName, LastName)
             VALUES (?, ?, ?)
