@@ -61,7 +61,7 @@ export interface PropertyDetails {
 
 async function fetchProperties(id: string): Promise<Property[]> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const response = await fetch(`${baseUrl}/api/energystar/properties?id=${id}`);
+    const response = await fetch(`${baseUrl}/api/energystar/properties?id=${id}`, { next: { tags: ['energystar_properties'] } });
     const xml = await response.text();
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
@@ -80,9 +80,9 @@ async function fetchProperties(id: string): Promise<Property[]> {
 
 async function fetchPropertyDetails(propertyId: string, id: string): Promise<PropertyDetails> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const metersPromise = fetch(`${baseUrl}/api/energystar/meters?id=${propertyId}&userId=${id}`).then(res => res.text());
-    const detailsPromise = fetch(`${baseUrl}/api/energystar/properties_detail?id=${propertyId}&userId=${id}`).then(res => res.text());
-    const associationPromise = fetch(`${baseUrl}/api/energystar/meters/property_meters_ids?id=${propertyId}&userId=${id}`).then(res => res.text());
+    const metersPromise = fetch(`${baseUrl}/api/energystar/meters?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    const detailsPromise = fetch(`${baseUrl}/api/energystar/properties_detail?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    const associationPromise = fetch(`${baseUrl}/api/energystar/meters/property_meters_ids?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
 
     const [metersXml, detailsXml, associationsXml] = await Promise.all([metersPromise, detailsPromise, associationPromise]);
 
@@ -134,10 +134,10 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
     //fetch EnergyConsumption data for each energy meter
     for (let meter of meterAssociations.energyMeters) {
-        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}&userId=${id}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {
@@ -167,10 +167,10 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
     //fetch EnergyConsumption data for each water meter
     for (let meter of meterAssociations.waterMeters) {
-        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}&userId=${id}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {
@@ -200,10 +200,10 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
     //fetch EnergyConsumption data for each waste meter
     for (let meter of meterAssociations.wasteMeters) {
-        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption/waste?id=${meter.meterId}&userId=${id}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption/waste?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {

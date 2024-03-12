@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import db from '../../../../utils/database';
 import { auth } from "@clerk/nextjs";
+import { revalidateTag } from 'next/cache';
 
 export async function POST() {
     const { userId } = auth();
@@ -12,6 +13,7 @@ export async function POST() {
 
         const deleteQuery = 'DELETE FROM ENERGYSTAR WHERE ClerkUID = ?';
         await db.execute(deleteQuery, [userId]);
+        revalidateTag('energystar_properties');
 
         return new NextResponse("Row successfully deleted", {status: 200});
 

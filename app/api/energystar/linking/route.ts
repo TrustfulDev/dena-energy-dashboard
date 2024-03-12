@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs";
 import db from '../../../../utils/database';
 import { RowDataPacket } from 'mysql2';
+import { revalidateTag } from "next/cache";
 
 export async function POST(
     req: Request,
@@ -55,10 +56,9 @@ export async function POST(
             VALUES (?, ?, ?);
         `;
         await db.execute(energyStarInsertQuery, [username, password, userId]);
+        revalidateTag('energystar_properties');
 
         return new NextResponse("Account linked successfully", { status: 200 });
-
-
     } catch(err: any) {
         if (err.errno === 1062) {
             return new NextResponse("Account already linked", { status: 409 });
