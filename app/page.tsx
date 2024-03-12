@@ -1,7 +1,5 @@
 "use client";
-import {  Cell, PieChart, Rectangle, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
-
+import {  Cell, PieChart,Rectangle, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts';
 import {
   Card,
   CardContent,
@@ -26,12 +24,6 @@ import {
 import { useDataContext } from '@/context';
 import { PropertyDetails } from "@/lib/propertiesApi";
 
-// utility consumption bar chart 
-const consumption_dataTest = [
-  {name: 'Electricity', value : 4000, type : 'Electricity',fill: '#8884d8'},
-  {name:'Water', value : 2400, type :'Water', fill: '#82ca9d'},
-  {name:'Waste',value : 2400, type : 'Waste', fill: '#FF8042'}
-];
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const { name, value, type } = payload[0].payload;
@@ -43,46 +35,31 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       </div>
     );
   }
-
   return null;
 };
 
-
-// energy cost from all properties pie chart 
-const energyCost_data = [
-  { name: 'Property A', value: 400, type : 'Cost' },
-  { name: 'Property B', value: 300, type : 'Cost' },
-  { name: 'Property C', value: 300, type : 'Cost' },
-  { name: 'Property D', value: 200, type : 'Cost' },
-];
 // colors for pie chart with padding angle 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-// change in cost bar chart 
-const changeCost_data = [
-  { name: 'Past Cost', value: 4000, type : 'Cost'},
-  { name: 'Current Cost', value: 2000, type : 'Cost'},
-];
 // carbon footprint pie chart 
 const carbon_data = [
   { name: 'Electricity', value: 400, fill: '#8884d8' },
   { name: 'Water', value: 300, fill: '#82ca9d' },
   { name: 'Waste', value: 300, fill: '#FF8042' },
 ];
-const renderCustomizedLabel = ({
-  cx, cy, midAngle, innerRadius, outerRadius, percent,
-}: any) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
-  const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
 
-  return (
-    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)} CO₂e`}
-    </text>
-  );
+const renderCustomizedLabel = ({
+  cx, cy, midAngle, innerRadius, outerRadius, percent,}: any) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+    const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+    return (
+      <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {`${(percent * 100).toFixed(0)} CO₂e`}
+      </text>
+    );
 };
 
-//
+  
 const data = [
   {
     name: 'February 2',
@@ -123,10 +100,6 @@ const data = [
 ];
 
 
-const electricityData = { name: "Test" };
-//electricityData.newKey = "New Value";
-
-
 interface ConsumptionData {
   month: string;
   name: string;
@@ -135,155 +108,6 @@ interface ConsumptionData {
   fill: string;
 }
 
-interface PropertyData {
-  month: string;
-  name: string;
-  value: number;
-  type : string;
-  fill: string;
-}
-
-interface ElectricityUsage {
-  month : string;
-  name : string;
-  value : number;
-  type : string;
-  fill : string;
-}
-
-// Function that gets all bills from all properties rather than just the latest one 
-// function processAllProperty(properties: PropertyDetails[]): { consumption_data: ConsumptionData[], cost_data: PropertyData[], electricity_data: ElectricityUsage[], totalNumberOfMeters: number, highestConsumer_data: ConsumptionData[] } {
-//   let consumption_data: ConsumptionData[] = [];
-//   let cost_data: PropertyData[] = [];
-//   let highestConsumer_data: ConsumptionData[] = [];
-//   let electricity_data: ElectricityUsage[] = [];
-//   let totalEnergyUsage = 0;
-//   let totalWaterUsage = 0;
-//   let totalWasteUsage = 0;
-//   let totalEnergyCost = 0;
-//   let totalWaterCost = 0;
-//   let totalWasteCost = 0;
-//   let name = "";
-//   let individualPropertiesTotalCost: number[] = [];
-//   let individualPropertiesElectricUse: number[] =[];
-//   let propertiesTotalCost = 0;
-//   let propertiesEnergyUse = 0;
-//   let totalNumberOfMeters = 0;
-//   let totalNumberOfEnergyMeters = 0;
-//   let totalNumberOfWaterMeters = 0;
-//   let totalNumberOfWasteMeters = 0;
-  
- 
-//   let numProperties = properties.length; // Number of properties
- 
-//   // Loop through each property in the property array
-//   properties.forEach(property => {
-//       const Usage = property.meterAssociations;
-//       const energyUsageData = (Usage as any).energyMeters;
-//       const waterUsageData = (Usage as any).waterMeters;
-//       const wasteUsageData = (Usage as any).wasteMeters;
-//       totalNumberOfEnergyMeters += energyUsageData.length;
-//       totalNumberOfWaterMeters += waterUsageData.length;
-//       totalNumberOfWasteMeters += wasteUsageData.length;
-
-//       // Loop through the energy meters array 
-//       energyUsageData.forEach((meter: any) => {
-//           // Loop through the energyConsumption array which contains all the bills
-//           meter.energyConsumption.forEach((consumption: any) => {
-//               let quantity = parseFloat(consumption.usage);
-//               totalEnergyUsage += isNaN(quantity) ? 0 : quantity;
-//               propertiesEnergyUse += isNaN(quantity) ? 0 : quantity;
-//               let cost = parseFloat(consumption.cost);
-//               totalEnergyCost += isNaN(cost) ? 0 : cost;
-//           });
-//       });
-
-//       // Loop through the water meters array 
-//       waterUsageData.forEach((meter: any) => {
-//           // Loop through the energyConsumption array which contains all the bills
-//           meter.energyConsumption.forEach((consumption: any) => {
-//               let quantity = parseFloat(consumption.usage);
-//               totalWaterUsage += isNaN(quantity) ? 0 : quantity;
-//               let cost = parseFloat(consumption.cost);
-//               totalWaterCost += isNaN(cost) ? 0 : cost;
-              
-//           });
-//       });
-
-//       // Loop through the waste meters array 
-//       wasteUsageData.forEach((meter: any) => {
-//           // Loop through the energyConsumption array which contains all the bills
-//           meter.energyConsumption.forEach((consumption: any) => {
-//               let quantity = parseFloat(consumption.quantity);
-//               totalWasteUsage += isNaN(quantity) ? 0 : quantity;
-//               let cost = parseFloat(consumption.cost);
-//               totalWasteCost += isNaN(cost) ? 0 : cost;
-              
-//           });
-//       });
-//       // Adding up the total cost of all meters for an individual property
-//       propertiesTotalCost = totalEnergyCost + totalWasteCost + totalWaterCost;
-//       propertiesTotalCost = Math.round((propertiesTotalCost + Number.EPSILON) * 100) / 100;
-//       // Store that properties total cost in an array called individual properties total cost 
-//       individualPropertiesTotalCost.push(propertiesTotalCost);
-//       // Reset the value of propertiesTotalCost to zero so the next property being looped through starts at 0 cost and not added up from the previous property
-//       propertiesTotalCost = 0;
-//       propertiesEnergyUse = Math.round((propertiesEnergyUse + Number.EPSILON) * 100) / 100;
-//       // Storing the individual properties electricity usage in an array called individualPropertiesElectricUse 
-//       individualPropertiesElectricUse.push(propertiesEnergyUse);
-//       // Reset the value of propertiesEnergyUse to zero so the next property being looped through starts its electricity use at 0 
-//       propertiesEnergyUse = 0;
-      
-      
-      
-//   });
-//   // Calculate the total number of meters from each property added up
-//   totalNumberOfMeters = totalNumberOfWasteMeters + totalNumberOfEnergyMeters + totalNumberOfWaterMeters;
-
-//   // Calculate the average
-//   totalEnergyUsage /= numProperties;
-//   totalWaterUsage /= numProperties;
-//   totalWasteUsage /= numProperties;
-//   totalEnergyCost /= numProperties;
-//   totalWaterCost /= numProperties;
-//   totalWasteCost /= numProperties;
-  
-//   // Populate consumption data
-//   totalEnergyUsage = Math.round((totalEnergyUsage + Number.EPSILON) * 100) / 100;
-//   totalWaterUsage = Math.round((totalWaterUsage + Number.EPSILON) * 100) / 100;
-//   totalWasteUsage = Math.round((totalWasteUsage + Number.EPSILON) * 100) / 100;
-//   consumption_data = [
-//       { month: 'Recent', name: 'Electricity', value: totalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
-//       { month: 'Recent', name: 'Water', value: totalWaterUsage, type: 'Water', fill: '#82ca9d' },
-//       { month: 'Recent', name: 'Waste', value: totalWasteUsage, type: 'Waste', fill: '#FF8042' },
-//   ];
-
-//   // Round cost to 2 decimal number.... i dont think i need to use this for overview 
-//   totalEnergyCost = Math.round((totalEnergyCost + Number.EPSILON) * 100) / 100;
-//   totalWaterCost = Math.round((totalWaterCost + Number.EPSILON) * 100) / 100;
-//   totalWasteCost = Math.round((totalWasteCost + Number.EPSILON) * 100) / 100;
-
-//   // Populate the cost data for the pie chart on overview 
-//   cost_data = [
-//       { month: 'Recent', name: properties[0].name, value: individualPropertiesTotalCost[0], type: 'Cost', fill: '#8884d8' },
-//       { month: 'Recent', name: properties[1].name, value: individualPropertiesTotalCost[1], type: 'Cost', fill: '#82ca9d' },
-//       { month: 'Recent', name: properties[2].name, value: individualPropertiesTotalCost[2], type: 'Cost', fill: '#82ca9d' },
-//       { month: 'Recent', name: properties[3].name, value: individualPropertiesTotalCost[3], type: 'Cost', fill: '#82ca9d' },
-//       { month: 'Recent', name: properties[4].name, value: individualPropertiesTotalCost[4], type: 'Cost', fill: '#FF8042' }
-//   ];
-
-//   // Populate the electricity data for the electricity graph on overview
-//   electricity_data = [
-//     { month: 'Recent', name: properties[0].name, value: individualPropertiesElectricUse[0], type: 'Electricity', fill: '#8884d8' },
-//     { month: 'Recent', name: properties[1].name, value: individualPropertiesElectricUse[1], type: 'Electricity', fill: '#82ca9d' },
-//     { month: 'Recent', name: properties[2].name, value: individualPropertiesElectricUse[2], type: 'Electricity', fill: '#82ca9d' },
-//     { month: 'Recent', name: properties[3].name, value: individualPropertiesElectricUse[3], type: 'Electricity', fill: '#82ca9d' },
-//     { month: 'Recent', name: properties[4].name, value: individualPropertiesElectricUse[4], type: 'Electricity', fill: '#FF8042' }
-// ];
- 
-
-//   return { consumption_data, cost_data, highestConsumer_data, electricity_data, totalNumberOfMeters };
-// }
 
 // Currently getting the most recent bill for each property for energy, water, and waste for their usage and cost 
 function processAllPropertyRecent(properties: PropertyDetails[]): { 
@@ -303,7 +127,6 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   let recentTotalEnergyCost = 0;
   let recentTotalWaterCost = 0;
   let recentTotalWasteCost = 0;
-  let change_cost = 0;
   let currentMonthCost = 0;
   let pastMonthCost = 0;
   let current_costEnergy = 0;
@@ -319,15 +142,12 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   let recentHighestWaterMeterUsage = 0;
   let recentHighestWasteMeterName = '';
   let recentHighestWasteMeterUsage = 0;
-  let fiveMonthsElectric: number[] =[];
   let individualPropertiesRecentCost: number[] = [];
   let addedUpRecentCost = 0;
   let totalNumberOfMeters = 0;
   let totalNumberOfEnergyMeters = 0;
   let totalNumberOfWaterMeters = 0;
   let totalNumberOfWasteMeters = 0;
- // electricityData.addedUpRecentCost = "something";
-
  // looping through each property
   properties.forEach(property => {
       const Usage = property.meterAssociations;
@@ -337,22 +157,16 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
       totalNumberOfEnergyMeters += energyUsageData.length;
       totalNumberOfWaterMeters += waterUsageData.length;
       totalNumberOfWasteMeters += wasteUsageData.length;
-
       // looping through electriciy meter
       energyUsageData.forEach((meter: {
-          details: any;
-          name: string; 
-          energyConsumption: {
-              startDate: any; 
-              usage: string | number; 
-              cost: string | number; 
-          }[];
-      }) => {
+        details: any; 
+        name: string; energyConsumption: {
+        startDate: any; usage: string | number; cost: string | number; }[];}) => {
           const sorted = meter.energyConsumption.sort((a, b) => new Date((b as any).startDate).getTime() - new Date((a as any).startDate).getTime());
           const recentDate = sorted[0].startDate;                     
           current_costEnergy = parseFloat(sorted[0]?.cost as string); // getting the most recent month for this meter for current month vs past month graph
           past_costEnergy = parseFloat(sorted[1]?.cost as string);    // getting the past month behind the current month for this meter for current month vs past month graph
-         
+          let j = 0;
           for (let i = 0; i < meter.energyConsumption.length; i++) {
               if ((meter.energyConsumption[i].startDate as any) === recentDate) {
                   let quantity = parseFloat(meter.energyConsumption[i]?.usage as string);
@@ -361,106 +175,83 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
                       highestEngergyMeterName = meter.details.name;
                   }
                   let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
-                  
                   recentTotalEnergyCost += isNaN(cost) ? 0 : cost;
                   recentTotalEnergyUsage += isNaN(quantity) ? 0 : quantity;
               }
+              
           }
-          // for (let i = 0; i < meter.energyConsumption.length; i++)
-          // {
-          //   if ((meter.energyConsumption[i].startDate as any) === recentDate) {
-          //     for (let j = i; j < i + 5; j++)
-          //     {
-          //       fiveMonthsElectric.push(parseFloat(meter.energyConsumption[j]?.usage as string));
-          //     }
-          //   }
-          // }
-          // console.log(fiveMonthsElectric);
       });
 
       // grap recent bill cycle for water usage with corresponding cost
       waterUsageData.forEach((meter: {
           details: any;
-          name: string; 
-          energyConsumption: {
-              startDate: any; 
-              usage: string | number; 
-              cost: string | number; 
-          }[];  
-      }) => {
-          const sorted = meter.energyConsumption.sort((a, b) => new Date((b as any).startDate).getTime() - new Date((a as any).startDate).getTime());
-          const recentDate = sorted[0].startDate;
-          current_costWater = parseFloat(sorted[0]?.cost as string); // getting the most recent month for this meter for current month vs past month graph
-          past_costWater = parseFloat(sorted[1]?.cost as string);    // getting the oast month
-          for (let i = 0; i < meter.energyConsumption.length; i++) {
-              if ((meter.energyConsumption[i].startDate as any) === recentDate) {
-                  let quantity = parseFloat(meter.energyConsumption[i]?.usage as string);
-                  if (quantity > recentHighestWaterMeterUsage) {
-                      recentHighestWaterMeterUsage = quantity;
-                      recentHighestWaterMeterName = meter.details.name;
-                  }
-                  let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
-                  //let current_costWater =  parseFloat(meter.energyConsumption[0]?.cost as string);
-                  recentTotalWaterCost += isNaN(cost) ? 0 : cost;
-                  recentTotalWaterUsage += isNaN(quantity) ? 0 : quantity;
-              }
-          }
+          name: string; energyConsumption: {
+          startDate: any; usage: string | number; cost: string | number; }[]; }) => {
+            const sorted = meter.energyConsumption.sort((a, b) => new Date((b as any).startDate).getTime() - new Date((a as any).startDate).getTime());
+            const recentDate = sorted[0].startDate;
+            current_costWater = parseFloat(sorted[0]?.cost as string); // getting the most recent month for this meter for current month vs past month graph
+            past_costWater = parseFloat(sorted[1]?.cost as string);    // getting the oast month
+            for (let i = 0; i < meter.energyConsumption.length; i++) {
+                if ((meter.energyConsumption[i].startDate as any) === recentDate) {
+                    let quantity = parseFloat(meter.energyConsumption[i]?.usage as string);
+                    if (quantity > recentHighestWaterMeterUsage) {
+                        recentHighestWaterMeterUsage = quantity;
+                        recentHighestWaterMeterName = meter.details.name;
+                    }
+                    let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
+                    //let current_costWater =  parseFloat(meter.energyConsumption[0]?.cost as string);
+                    recentTotalWaterCost += isNaN(cost) ? 0 : cost;
+                    recentTotalWaterUsage += isNaN(quantity) ? 0 : quantity;
+                }
+            }
       });
 
       // grap recent bill cycle for waste usage with corresponding cost
       wasteUsageData.forEach((meter: {
           details: any;
-          name: string; 
-          energyConsumption: {
-              startDate: any; 
-              quantity: string; 
-              cost: string | number; 
-          }[]; 
-      }) => {
-          const sorted = meter.energyConsumption.sort((a, b) => new Date((b as any).startDate).getTime() - new Date((a as any).startDate).getTime());
-          const recentDate = sorted[0].startDate;
-          current_costWaste = parseFloat(sorted[0]?.cost as string);  // getting the most recent month for this meter for current month vs past month graph
-          past_costWaste = parseFloat(sorted[1]?.cost as string);     // getting the past month
-          for (let i = 0; i < meter.energyConsumption.length; i++) {
-              if ((meter.energyConsumption[i].startDate as any) === recentDate) {
-                  let quantity = parseFloat(meter.energyConsumption[i]?.quantity as string);
-                  if (quantity > recentHighestWasteMeterUsage) {
-                      recentHighestWasteMeterUsage = quantity;
-                      recentHighestWasteMeterName = meter.details.name;
-                  }
-                  let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
-                  //let current_costWaste =  parseFloat(meter.energyConsumption[0]?.cost as string);
-                  recentTotalWasteCost += isNaN(cost) ? 0 : cost;
-                  recentTotalWasteUsage += isNaN(quantity) ? 0 : quantity;
-              }
-          }
+          name: string; energyConsumption: {
+          startDate: any; quantity: string; cost: string | number; }[]; }) => {
+            const sorted = meter.energyConsumption.sort((a, b) => new Date((b as any).startDate).getTime() - new Date((a as any).startDate).getTime());
+            const recentDate = sorted[0].startDate;
+            current_costWaste = parseFloat(sorted[0]?.cost as string);  // getting the most recent month for this meter for current month vs past month graph
+            past_costWaste = parseFloat(sorted[1]?.cost as string);     // getting the past month
+            for (let i = 0; i < meter.energyConsumption.length; i++) {
+                if ((meter.energyConsumption[i].startDate as any) === recentDate) {
+                    let quantity = parseFloat(meter.energyConsumption[i]?.quantity as string);
+                    if (quantity > recentHighestWasteMeterUsage) {
+                        recentHighestWasteMeterUsage = quantity;
+                        recentHighestWasteMeterName = meter.details.name;
+                    }
+                    let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
+                    //let current_costWaste =  parseFloat(meter.energyConsumption[0]?.cost as string);
+                    recentTotalWasteCost += isNaN(cost) ? 0 : cost;
+                    recentTotalWasteUsage += isNaN(quantity) ? 0 : quantity;
+                }
+            }
       });
       // add up the recent costs of all meters
       addedUpRecentCost = recentTotalEnergyCost + recentTotalWasteCost + recentTotalWaterCost;
       addedUpRecentCost = Math.round((addedUpRecentCost + Number.EPSILON) * 100) / 100;
       individualPropertiesRecentCost.push(addedUpRecentCost);
-      addedUpRecentCost = 0;
-      
+      addedUpRecentCost = 0;   
   });
   // adding up the total number of meters from each property combined
   totalNumberOfMeters = totalNumberOfWasteMeters + totalNumberOfEnergyMeters + totalNumberOfWaterMeters;   
   // Data to be used for the change in cost between current and past month graph on overview
   // Adding the latest month cost of all properties from all three different meters divided by the number of properties for the average 
-  currentMonthCost = current_costEnergy + current_costWaste + current_costWater / numProperties;
+  currentMonthCost = (current_costEnergy + current_costWaste + current_costWater) / numProperties;
   // Adding the past month cost of all properties from all three different meters divided by the number of properties for the average 
-  pastMonthCost = past_costEnergy + past_costWaste + past_costWater / numProperties;
-
+  pastMonthCost = (past_costEnergy + past_costWaste + past_costWater) / numProperties;
   // Populate recent consumption data
   recentTotalEnergyUsage = Math.round((recentTotalEnergyUsage + Number.EPSILON) * 100) / 100;
   recentTotalWaterUsage = Math.round((recentTotalWaterUsage + Number.EPSILON) * 100) / 100;
   recentTotalWasteUsage = Math.round((recentTotalWasteUsage + Number.EPSILON) * 100) / 100;
 
   // Populate change in cost data
-  
   recentConsumption_data = [
-      { month: 'Recent', name: 'Electricity', value: recentTotalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
-      { month: 'Recent', name: 'Water', value: recentTotalWaterUsage, type: 'Water', fill: '#82ca9d' },
-      { month: 'Recent', name: 'Waste', value: recentTotalWasteUsage, type: 'Waste', fill: '#FF8042' },
+    { month: 'Recent', name: 'Electricity', value: recentTotalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
+    { month: 'Recent', name: 'Water', value: recentTotalWaterUsage, type: 'Water', fill: '#82ca9d' },
+    { month: 'Recent', name: 'Waste', value: recentTotalWasteUsage, type: 'Waste', fill: '#FF8042' },
   ];
 
   // Populate recent cost data
@@ -468,44 +259,32 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   recentTotalWaterCost = Math.round((recentTotalWaterCost + Number.EPSILON) * 100) / 100;
   recentTotalWasteCost = Math.round((recentTotalWasteCost + Number.EPSILON) * 100) / 100;
   recentCost_data = [
-      { month: 'Recent', name: properties[0].name, value: individualPropertiesRecentCost[0], type: 'Cost', fill: '#8884d8' },
-      { month: 'Recent', name: properties[1].name, value: individualPropertiesRecentCost[1], type: 'Cost', fill: '#82ca9d' },
-      { month: 'Recent', name: properties[2].name, value: individualPropertiesRecentCost[2], type: 'Cost', fill: '#82ca9d' },
-      { month: 'Recent', name: properties[3].name, value: individualPropertiesRecentCost[3], type: 'Cost', fill: '#82ca9d' },
-      { month: 'Recent', name: properties[4].name, value: individualPropertiesRecentCost[4], type: 'Cost', fill: '#FF8042' }
+    { month: 'Recent', name: properties[0].name, value: individualPropertiesRecentCost[0], type: 'Cost', fill: '#8884d8' },
+    { month: 'Recent', name: properties[1].name, value: individualPropertiesRecentCost[1], type: 'Cost', fill: '#82ca9d' },
+    { month: 'Recent', name: properties[2].name, value: individualPropertiesRecentCost[2], type: 'Cost', fill: '#82ca9d' },
+    { month: 'Recent', name: properties[3].name, value: individualPropertiesRecentCost[3], type: 'Cost', fill: '#82ca9d' },
+    { month: 'Recent', name: properties[4].name, value: individualPropertiesRecentCost[4], type: 'Cost', fill: '#FF8042' }
   ];
 
   changeinCost_data = [
     { month: 'Recent', name: 'Past Cost', value: pastMonthCost, type : 'Cost',fill: '#82ca9d' },
-    { month: 'Recent', name: 'Current Cost', value: currentMonthCost, type : 'Cost', fill: '#82ca9d'},
+    { month: 'Recent', name: 'Current Cost', value: currentMonthCost, type : 'Cost', fill: '#8884d8'},
   ];
 
   recentHighestConsumer_data = [
-      { month: 'Recent', name: highestEngergyMeterName, value: recentHighestEnergyMeterUsage, type: 'Electricity', fill: '#8884d8' },
-      { month: 'Recent', name: recentHighestWaterMeterName, value: recentHighestWaterMeterUsage, type: 'Water', fill: '#82ca9d' },
-      { month: 'Recent', name: recentHighestWasteMeterName, value: recentHighestWasteMeterUsage, type: 'Waste', fill: '#FF8042' },
+    { month: 'Recent', name: highestEngergyMeterName, value: recentHighestEnergyMeterUsage, type: 'Electricity', fill: '#8884d8' },
+    { month: 'Recent', name: recentHighestWaterMeterName, value: recentHighestWaterMeterUsage, type: 'Water', fill: '#82ca9d' },
+    { month: 'Recent', name: recentHighestWasteMeterName, value: recentHighestWasteMeterUsage, type: 'Waste', fill: '#FF8042' },
   ];
 
   return { recentConsumption_data, recentCost_data, recentHighestConsumer_data, changeinCost_data, totalNumberOfMeters };
 }
 
-
-
-
-
 export default function Home(this: any) {
   const { properties } = useDataContext();
-  let consumption_data: ConsumptionData[] = [];
-  let cost_data: PropertyData[] = [];
-  let highestConsumer_data: ConsumptionData[] = [];
-  let electricity_data: ElectricityUsage[] = [];
   let totalNumberOfMeters = 0;
   let cost_data_added = 0;
   let numberOfProperties = 0;
-  let numberOfMeters = 0;
-  
-
- 
   let recentConsumption_data: ConsumptionData[] = [];
   let recentCost_data: ConsumptionData[] = [];
   let recentHighestConsumer_data: ConsumptionData[] = [];
@@ -522,8 +301,6 @@ export default function Home(this: any) {
     cost_data_added = recentCost_data[0].value + recentCost_data[1].value + recentCost_data[2].value + recentCost_data[3].value + recentCost_data[4].value;
     totalNumberOfMeters = processedData.totalNumberOfMeters;
     numberOfProperties = properties.length;
-    
-
   }
 
   // stuff above is what I changed
@@ -603,46 +380,32 @@ export default function Home(this: any) {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart >
               <Pie
-                cy="100%"
+                cy="45%"
+                cx = "45%"
                 data={recentCost_data}
-                startAngle={180}
+                startAngle={360}
                 endAngle={0}
-                innerRadius={160}
-                outerRadius={200}
+                innerRadius={80}
+                outerRadius={100}
                 fill="#8884d8"
-                paddingAngle={5}
+                paddingAngle={3}
                 dataKey="value"
                 label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
               >
+                <Label value={`Total: ${cost_data_added}`} position="center" />
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
-              <Legend align='center' verticalAlign='bottom' height={36} 
-                wrapperStyle={{
-                  paddingTop: "1rem"
-                }}
+              <Legend align='left' 
               />
             </PieChart>
           </ResponsiveContainer>
         </CardContent>
-
         <CardFooter>
-          <p>
-
-          <span className="text-blue-500">{recentCost_data && recentCost_data[0] ? recentCost_data[0].value : ""}$</span> + 
-          <span className="text-green-500">{recentCost_data && recentCost_data[1] ? recentCost_data[1].value : ""}$</span> + 
-          <span className="text-yellow-500">{recentCost_data && recentCost_data[2] ? recentCost_data[2].value : ""}$</span> + 
-          <span className="text-orange-500">{recentCost_data && recentCost_data[3] ? recentCost_data[3].value : ""}$</span> + 
-          <span className="text-blue-400">{recentCost_data && recentCost_data[4] ? recentCost_data[4].value : ""}$</span> = 
-          <span className="text-white-700">{cost_data_added}$</span>
-
-          </p>
- 
         </CardFooter>
       </Card>
-
       <Card className='flex flex-col md:col-span-3 col-span-6 min-h-[500px] h-fit sm:h-full w-full'>
         <CardHeader>
           <CardTitle>Change In Cost</CardTitle>
@@ -655,7 +418,7 @@ export default function Home(this: any) {
               margin={{
                 top: 10,
                 right: 10,
-                left: -15,
+                left: 10,
                 bottom: 10,
               }}
             >
@@ -671,7 +434,7 @@ export default function Home(this: any) {
         </CardContent>
       </Card>
 
-      <Card className='2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
+      <Card className='2xl:col-span-2 md:col-span-2 col-span-6 aspect-square h-full w-full'>
         <CardHeader>
           <CardTitle>Active Elements</CardTitle>
           <CardDescription>Total Amount of Properties & Meters</CardDescription>
@@ -691,7 +454,7 @@ export default function Home(this: any) {
         </CardFooter>
       </Card>
 
-      <Card className='flex flex-col 2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
+      <Card className='flex flex-col 2xl:col-span-2 md:col-span-4 col-span-6 aspect-square h-full w-full'>
         <CardHeader>
           <CardTitle>Consumption By Utilities</CardTitle>
           <CardDescription>Find Which Utility You Use The Most</CardDescription>
@@ -703,14 +466,13 @@ export default function Home(this: any) {
               margin={{
                 top: 10,
                 right: 10,
-                left: -15,
+                left: 25,
                 bottom: 10,
               }}
             >
               <CartesianGrid opacity={0.15} />
               <XAxis dataKey="name" />
               <YAxis />
-
               <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
               <Legend />
               <Bar dataKey="value" name="Utility Consumption"/>
@@ -751,11 +513,7 @@ export default function Home(this: any) {
                 ))}
               </Pie>
             <Tooltip content={<CustomTooltip />}/>
-            <Legend align='center' verticalAlign='bottom' height={36} 
-              wrapperStyle={{
-                paddingTop: "1rem"
-              }}
-            />
+            <Legend align='center' verticalAlign='bottom' height={36} wrapperStyle={{ paddingTop: "1rem" }}/>
           </PieChart>
           </ResponsiveContainer>
         </CardContent>
