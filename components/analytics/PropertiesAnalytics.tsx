@@ -155,6 +155,7 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
       { month: 'Recent', name: 'Water', value: totalWaterUsage, type: 'Water', fill: '#82ca9d' },
       { month: 'Recent', name: 'Waste', value: totalWasteUsage, type: 'Waste', fill: '#FF8042' },
     ];
+        
     // round cost to 2 decimal number
     totalEnergyCost = Math.round((totalEnergyCost+ Number.EPSILON) * 100) / 100;
     totalWaterCost =  Math.round((totalWaterCost+ Number.EPSILON) * 100) / 100;
