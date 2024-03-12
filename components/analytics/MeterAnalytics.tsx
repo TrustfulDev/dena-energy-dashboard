@@ -1,5 +1,6 @@
 import { PropertyDetails } from "@/lib/propertiesApi";
 import { MultiSelect } from "./multiSelect";
+import { MeterCard } from "./MeterCard";
 
 interface MeterAnalyticsProps {
     properties: PropertyDetails[]
@@ -10,7 +11,7 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
 }) => {
     return (
         <>
-            <header className="flex gap-2 justify-between mb-1">
+            <header className="flex gap-2 justify-between mb-2">
                 {/* Name & Address */}
                 <div>
                     <h1 className="text-3xl min-[1930px]:text-4xl capitalize">Select Meters To View</h1>
@@ -25,8 +26,9 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
                 </div>
             </header>
 
-            <div className="flex-grow">
-                Test
+            <div className="flex-grow grid grid-cols-4">
+                {/* Display selected meters here in these cards */}
+                <MeterCard />
             </div>
         </>
     )
