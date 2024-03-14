@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
   const {searchParams} = new URL(req.url||"");
   const meterId = searchParams.get("id");
   const userId = searchParams.get("userId");
+  const connection = await db.getConnection();
 
   //const username = process.env.ENERGY_STAR_USERNAME;
   //const password = process.env.ENERGY_STAR_PASSWORD;
@@ -19,15 +20,26 @@ export async function GET(req: NextRequest) {
     FROM ENERGYSTAR
     WHERE ClerkUID = ?
   `
-  const [rows] = await db.execute<RowDataPacket[]>(query, [userId]);
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
-  if ( rows.length > 0 ){
-    username = rows[0].Username;
-    password = rows[0].Password; 
+    if ( rows.length > 0 ){
+      username = rows[0].Username;
+      password = rows[0].Password; 
 
-  }else {
+    }else {
+      //console.log(`Releasing connection due to no account found: ${connection.threadId}`);
+      connection.release();
+      return new NextResponse("Can't find aaccount", { status: 400 }) 
+    }
+  } catch (error: any){
+    console.error('Database query error:', error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }finally {
+    //console.log(`Releasing connection after successful API call: ${connection.threadId}`);
 
-    return new NextResponse("Can't find aaccount", { status: 400 }) 
+    //console.log("hwlllllllw")
+    connection.release();
   }
  
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');

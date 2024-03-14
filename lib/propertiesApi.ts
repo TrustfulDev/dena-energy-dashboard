@@ -22,6 +22,8 @@ interface MeterAssociation {
     energyMeters: Meter[];
     waterMeters: Meter[];
     wasteMeters: Meter[];
+    electricMeters: Meter[];
+    naturalGasMeters: Meter[];
 }
 
 interface EnergyConsumption {
@@ -109,7 +111,9 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
                 const associations: MeterAssociation = {
                     energyMeters: [],
                     waterMeters: [],
-                    wasteMeters: []
+                    wasteMeters: [],
+                    electricMeters: [],
+                    naturalGasMeters: [],
                 };
 
                 if (result.meterPropertyAssociationList.energyMeterAssociation?.meters?.meterId) {
@@ -131,6 +135,29 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
             }
         });
     });
+
+        //split the gas and electric
+        await Promise.all(meterAssociations.energyMeters.map(async (meter) => {
+            const meterDetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`);
+            const meterDetailXml = await meterDetailResponse.text();
+        
+            return new Promise<void>((resolve, reject) => {
+                parser.parseString(meterDetailXml, (err: any, result: any) => {
+                    if (err) {
+                        console.error(`Failed to parse meter detail XML for meter ${meter.meterId}`, err);
+                        reject(err);
+                    } else {
+                        const meterType = result.meter.type;
+                        if (meterType === 'Electric') {
+                            meterAssociations.electricMeters.push(meter);
+                        } else if (meterType === 'Natural Gas') {
+                            meterAssociations.naturalGasMeters.push(meter);
+                        }
+                        resolve();
+                    }
+                });
+            });
+        }));
 
     //fetch EnergyConsumption data for each energy meter
     for (let meter of meterAssociations.energyMeters) {
@@ -248,6 +275,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
         });
     });
 
+    //console.log(propertyDetails.meterAssociations.electricMeters);
     return propertyDetails;
 }
 
