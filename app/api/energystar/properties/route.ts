@@ -5,7 +5,8 @@ import { RowDataPacket } from 'mysql2';
 export async function GET(req: NextRequest) {
   const {searchParams} = new URL(req.url||"");
   const userId = searchParams.get("id");
-  
+  const connection = await db.getConnection();
+
   //const username = process.env.ENERGY_STAR_USERNAME;
   //const password = process.env.ENERGY_STAR_PASSWORD;
   // const username = "process.env.ENERGY_STAR_USERNAME";
@@ -19,15 +20,24 @@ export async function GET(req: NextRequest) {
     FROM ENERGYSTAR
     WHERE ClerkUID = ?
   `
-  const [rows] = await db.execute<RowDataPacket[]>(query, [userId]);
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
-  if ( rows.length > 0 ){
-    username = rows[0].Username;
-    password = rows[0].Password; 
+    if ( rows.length > 0 ){
+      username = rows[0].Username;
+      password = rows[0].Password; 
 
-  }else {
+    }else {
+      connection.release();
+      return new NextResponse("Can't find aaccount", { status: 400 }) 
+    }
+  } catch (error){
 
-    return new NextResponse("Can't find aaccount", { status: 400 }) 
+    console.error('Database query error:', error);
+    return new NextResponse("Internal Server Error", { status: 500 });
+
+  } finally {
+    connection.release();
   }
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');

@@ -43,7 +43,7 @@ import {  Cell, PieChart, LabelList, Pie, Sector, LineChart, Line, BarChart, Bar
 const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const { name, value, type } = payload[0].payload;
-      const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Gas' ? 'therm' : type === 'Cost' ? ' $' : '';
+      const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Natrual Gas' ? 'therm' : type === 'Cost' ? ' $' : '';
       return (
         <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
           <p className="drop-shadow text-lg">{`${name}: ${value} ${unit}`}</p>
@@ -73,11 +73,37 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
     let totalEnergyCost = 0;
     let totalWaterCost = 0;
     let totalWasteCost = 0;
+    let totalNaturalGasCost = 0;
+    let totalNaturalGasUsage = 0;
     const Usage = selected.meterAssociations;
-    const energyUsageData = (Usage as any).energyMeters;
+    const energyUsageData = (Usage as any).electricMeters;
     const waterUsageData = (Usage as any).waterMeters;
     const wasteUsageData = (Usage as any).wasteMeters;
+    const natrualGasUsageData = (Usage as any).naturalGasMeters;
     // grap recent bill cycle for energy usage with corresponding cost
+    natrualGasUsageData.forEach((meter: {
+        details: any;
+        name: string; energyConsumption: {
+        startDate: any; usage: string | number; cost: string | number; }[]; }) => {
+            const sorted = meter.energyConsumption.sort((a, b) => new Date((b as any).startDate).getTime() - new Date((a as any).startDate).getTime());
+            const recentDate = sorted[0].startDate;
+            for (let i = 0; i < meter.energyConsumption.length; i++) {
+                if((meter.energyConsumption[i].startDate as any) === recentDate){
+                    let quantity = parseFloat(meter.energyConsumption[i]?.usage as string);
+                    let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
+                    const newItem: ConsumptionData = {
+                        month: "Recent",
+                        name: meter.details.name,
+                        value: isNaN(cost) ? 0 : cost,
+                        type: "Cost",
+                        fill: '#8884d8',
+                      };
+                    highestConsumer_data.push(newItem);
+                    totalNaturalGasCost += isNaN(cost) ? 0 : cost;
+                    totalNaturalGasUsage += isNaN(quantity) ? 0 : quantity;
+                }
+        }
+    });
     energyUsageData.forEach((meter: {
         details: any;
         name: string; energyConsumption: {
@@ -151,7 +177,8 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
     });
     // Populate consumption data
     consumption_data = [
-      { month: 'Recent', name: 'Electricity', value: totalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
+      { month: 'Recent', name:'Electricity', value: totalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
+      { month: 'Recent', name:'Gas', value : totalNaturalGasUsage, type :'Natrual Gas', fill: '#1F4E7D'},
       { month: 'Recent', name: 'Water', value: totalWaterUsage, type: 'Water', fill: '#82ca9d' },
       { month: 'Recent', name: 'Waste', value: totalWasteUsage, type: 'Waste', fill: '#FF8042' },
     ];
@@ -162,6 +189,7 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
     totalWasteCost =  Math.round(( totalWasteCost+ Number.EPSILON) * 100) / 100;
     cost_data = [
         {month: 'Recent',name: 'Electricity', value : totalEnergyCost, type : 'Cost',fill: '#8884d8'},
+        {month: 'Recent',name:'Natrual Gas', value : totalNaturalGasCost, type :'Cost', fill: '#1F4E7D'},
         {month: 'Recent',name:'Water', value : totalWaterCost, type :'Cost', fill: '#82ca9d'},
         {month: 'Recent',name:'Waste',value : totalWasteCost, type : 'Cost', fill: '#FF8042'}
       ];
@@ -277,7 +305,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                         <CardTitle className="">
                             Monthly Usage
                         </CardTitle>
-                        <CardDescription>Electricity, Water, and Waste</CardDescription>
+                        <CardDescription>Electricity, Natrual Gas, Water, and Waste</CardDescription>
                     </CardHeader>
                     <CardContent className='flex-grow'>
                         <ResponsiveContainer width="100%" height="100%">
@@ -290,7 +318,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 }}
                             >
                                 <CartesianGrid opacity={0.15} />
-                                <XAxis dataKey="name" />
+                                <XAxis dataKey="name"/>
                                 <YAxis />
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#fff"}} cursor={{fill: '#000', opacity: '20%'}} />
                                 <Bar dataKey="value" name="Recent Month Consumption"/>

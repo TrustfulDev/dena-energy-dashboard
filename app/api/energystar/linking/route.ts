@@ -2,10 +2,13 @@ import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs";
 import db from '../../../../utils/database';
 import { RowDataPacket } from 'mysql2';
+import { revalidateTag } from "next/cache";
 
 export async function POST(
     req: Request,
 ) {
+    const connection = await db.getConnection();
+
     try {
         const { userId } = auth();
         const currUser = await currentUser();
@@ -47,23 +50,24 @@ export async function POST(
             VALUES (?, ?, ?)
             ON DUPLICATE KEY UPDATE FirstName = VALUES(FirstName), LastName = VALUES(LastName);
         `;
-        await db.execute(userInsertQuery, [userId, firstname, lastname]);
+        await connection.execute(userInsertQuery, [userId, firstname, lastname]);
         
         //check account already exist in energystar
         const energyStarInsertQuery = `
             INSERT INTO ENERGYSTAR (Username, Password, ClerkUID)
             VALUES (?, ?, ?);
         `;
-        await db.execute(energyStarInsertQuery, [username, password, userId]);
+        await connection.execute(energyStarInsertQuery, [username, password, userId]);
+        revalidateTag('energystar_properties');
 
+        connection.release();
         return new NextResponse("Account linked successfully", { status: 200 });
-
-
     } catch(err: any) {
         if (err.errno === 1062) {
+            connection.release();
             return new NextResponse("Account already linked", { status: 409 });
         }
-        
+        connection.release();
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
@@ -72,6 +76,7 @@ export async function GET() {
 
     const { userId } = auth();
     if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
+    const connection = await db.getConnection();
 
     //return NextResponse.json({ username: null }, { status: 200 })
     const query = `
@@ -80,15 +85,22 @@ export async function GET() {
         WHERE ClerkUID = ?
     `;
     
-    const [rows] = await db.execute<RowDataPacket[]>(query, [userId]);
+    try {
+        const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
-    if (rows.length > 0) {
-        const { Username } = rows[0];
-        
-        //return new NextResponse("Account already linked", { status: 200 });
-        return NextResponse.json({ username: Username }, { status: 200 })
+        if (rows.length > 0) {
+            const { Username } = rows[0];
+            
+            //return new NextResponse("Account already linked", { status: 200 });
+            return NextResponse.json({ username: Username }, { status: 200 })
 
-    } else {
-        return NextResponse.json({ username: null }, { status: 400 })
+        } else {
+            return NextResponse.json({ username: null }, { status: 400 })
+        }
+    }catch (error: any){
+        console.error('Database query error:', error);
+        return new NextResponse("Internal Server Error", { status: 500 });
+    }finally {
+        connection.release();
     }
 }
