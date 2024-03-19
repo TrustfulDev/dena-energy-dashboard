@@ -138,6 +138,8 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   let recentTotalEnergyUsage = 0;
   let recentTotalWaterUsage = 0;
   let recentTotalWasteUsage = 0;
+  let recentTotalGasUsage = 0;
+  let recentTotalGasCost = 0;
   let recentTotalEnergyCost = 0;
   let recentTotalWaterCost = 0;
   let recentTotalWasteCost = 0;
@@ -146,6 +148,8 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   let current_costEnergy = 0;
   let current_costWaste = 0;
   let current_costWater = 0;
+  let current_costGas = 0;
+  let past_costGas = 0;
   let past_costEnergy = 0;
   let past_costWaste = 0;
   let past_costWater = 0;
@@ -165,7 +169,8 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
  // looping through each property
   properties.forEach(property => {
       const Usage = property.meterAssociations;
-      const energyUsageData = (Usage as any).energyMeters;
+      const energyUsageData = (Usage as any).electricMeters;
+      const gasUsageData = (Usage as any).naturalGasMeters;
       const waterUsageData = (Usage as any).waterMeters;
       const wasteUsageData = (Usage as any).wasteMeters;
       totalNumberOfEnergyMeters += energyUsageData.length;
@@ -191,6 +196,28 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
                   let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
                   recentTotalEnergyCost += isNaN(cost) ? 0 : cost;
                   recentTotalEnergyUsage += isNaN(quantity) ? 0 : quantity;
+              }   
+          }
+      });
+
+      gasUsageData.forEach((meter: {
+        details: any; 
+        name: string; energyConsumption: {
+        startDate: any; usage: string | number; cost: string | number; }[];}) => {
+          const sorted = meter.energyConsumption.sort((a, b) => new Date((b as any).startDate).getTime() - new Date((a as any).startDate).getTime());
+          const recentDate = sorted[0].startDate;                     
+          current_costGas = parseFloat(sorted[0]?.cost as string); // getting the most recent month for this meter for current month vs past month graph
+          past_costGas = parseFloat(sorted[1]?.cost as string);    // getting the past month behind the current month for this meter for current month vs past month graph
+          for (let i = 0; i < meter.energyConsumption.length; i++) {
+              if ((meter.energyConsumption[i].startDate as any) === recentDate) {
+                  let quantity = parseFloat(meter.energyConsumption[i]?.usage as string);
+                  if (quantity > recentHighestEnergyMeterUsage) {
+                      recentHighestEnergyMeterUsage = quantity;
+                      highestEngergyMeterName = meter.details.name;
+                  }
+                  let cost = parseFloat(meter.energyConsumption[i]?.cost as string);
+                  recentTotalGasCost += isNaN(cost) ? 0 : cost;
+                  recentTotalGasUsage += isNaN(quantity) ? 0 : quantity;
               }   
           }
       });
@@ -243,7 +270,7 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
             }
       });
       // add up the recent costs of all meters
-      addedUpRecentCost = recentTotalEnergyCost + recentTotalWasteCost + recentTotalWaterCost;
+      addedUpRecentCost = recentTotalEnergyCost + recentTotalWasteCost + recentTotalWaterCost + recentTotalGasCost;
       addedUpRecentCost = Math.round((addedUpRecentCost + Number.EPSILON) * 100) / 100;
       individualPropertiesRecentCost.push(addedUpRecentCost);
       addedUpRecentCost = 0;   
@@ -252,19 +279,21 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   totalNumberOfMeters = totalNumberOfWasteMeters + totalNumberOfEnergyMeters + totalNumberOfWaterMeters;   
   // Data to be used for the change in cost between current and past month graph on overview
   // Adding the latest month cost of all properties from all three different meters divided by the number of properties for the average 
-  currentMonthCost = (current_costEnergy + current_costWaste + current_costWater) / numProperties;
+  currentMonthCost = (current_costEnergy + current_costWaste + current_costWater + current_costGas) / numProperties;
   // Adding the past month cost of all properties from all three different meters divided by the number of properties for the average 
-  pastMonthCost = (past_costEnergy + past_costWaste + past_costWater) / numProperties;
+  pastMonthCost = (past_costEnergy + past_costWaste + past_costWater + past_costGas) / numProperties;
   // Populate recent consumption data
   recentTotalEnergyUsage = Math.round((recentTotalEnergyUsage + Number.EPSILON) * 100) / 100;
   recentTotalWaterUsage = Math.round((recentTotalWaterUsage + Number.EPSILON) * 100) / 100;
   recentTotalWasteUsage = Math.round((recentTotalWasteUsage + Number.EPSILON) * 100) / 100;
+  recentTotalGasUsage = Math.round((recentTotalGasUsage + Number.EPSILON) * 100) / 100;
 
   // Populate change in cost data
   recentConsumption_data = [
     { month: 'Recent', name: 'Electricity', value: recentTotalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
     { month: 'Recent', name: 'Water', value: recentTotalWaterUsage, type: 'Water', fill: '#82ca9d' },
     { month: 'Recent', name: 'Waste', value: recentTotalWasteUsage, type: 'Waste', fill: '#FF8042' },
+    { month: 'Recent', name: 'Gas', value: recentTotalGasUsage, type :'Natrual Gas', fill: '#1F4E7D' },
   ];
 
   // Populate recent cost data
@@ -293,11 +322,7 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   return { recentConsumption_data, recentCost_data, recentHighestConsumer_data, changeinCost_data, totalNumberOfMeters };
 }
 
-export const Overview = ({
-    properties
-} : {
-    properties: PropertyDetails[]
-}) => {
+export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
   let totalNumberOfMeters = 0;
   let cost_data_added = 0;
   let numberOfProperties = 0;
@@ -329,10 +354,8 @@ export const Overview = ({
                 <CardTitle className="flex justify-between items-center">
                     Overall Electricity Usage
                 </CardTitle>
-
                 <CardDescription>Electricity Usage From All Properties (kWh)</CardDescription>
                 </CardHeader>
-
                 <CardContent className='flex-grow'>
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart
@@ -370,7 +393,6 @@ export const Overview = ({
                 <CardTitle>Energy Costs</CardTitle>
                 <CardDescription>Total Monthly Costs From All Properties</CardDescription>
                 </CardHeader>
-
                 <CardContent className='flex-grow'>
                 <ResponsiveContainer width="100%" height="100%">
                 <PieChart >
@@ -388,16 +410,15 @@ export const Overview = ({
                     label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
                   >
                   <Label value={`Total: ${cost_data_added}`} position="center" />
-                  {recentCost_data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
+                    {recentCost_data.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+                  <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                   <Legend align='left' />
                 </PieChart>
                 </ResponsiveContainer>
                 </CardContent>
-
                 <CardFooter>
                 </CardFooter>
             </Card>
@@ -407,7 +428,6 @@ export const Overview = ({
                 <CardTitle>Change In Cost</CardTitle>
                 <CardDescription>Compare Current and Last Month Costs</CardDescription>
                 </CardHeader>
-
                 <CardContent className='flex-grow'>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={changeinCost_data}
@@ -421,10 +441,10 @@ export const Overview = ({
                     <CartesianGrid opacity={0.15} />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+                    <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                     <Legend />
-                    <Bar dataKey="value"  name="Cost" fill="#82ca9d" />
-                    {/* <Bar dataKey="" fill="#82ca9d" /> */}
+                    <Bar dataKey="value"  name="Past Cost" fill="#82ca9d" />
+                    <Bar dataKey="0"  name="Current Cost" fill="#8884d8" />  
                 </BarChart>   
                 </ResponsiveContainer>
                 </CardContent>
@@ -435,13 +455,11 @@ export const Overview = ({
                 <CardTitle>Active Elements</CardTitle>
                 <CardDescription>Total Amount of Properties & Meters</CardDescription>
                 </CardHeader>
-
                 <CardContent className='space-y-4'>
-                <p className='flex items-center gap-4 text-lg'><Landmark className='w-12 h-auto' /> 26 Properties</p>
-                <p className='flex items-center gap-4 text-lg'><Gauge className='w-12 h-auto' /> 366 Meters</p>
-                <p className='flex items-center gap-4 text-lg'><Thermometer className='w-12 h-auto' /> 23 Sub-Meters</p>
+                  <p className='flex items-center gap-4 text-lg'><Landmark className='w-12 h-auto' />{numberOfProperties} Properties</p>
+                  <p className='flex items-center gap-4 text-lg'><Gauge className='w-12 h-auto' /> {totalNumberOfMeters} Meters</p>
+                  <p className='flex items-center gap-4 text-lg'><Thermometer className='w-12 h-auto' /> 0 Sub-Meters</p>
                 </CardContent>
-
                 <CardFooter className='flex-col items-start'>
                 <hr className='w-full mb-4' />
                 SOMETHING HERE!!!
@@ -466,9 +484,9 @@ export const Overview = ({
                     }}
                   >
                     <CartesianGrid opacity={0.15} />
-                    <XAxis dataKey="name" />
+                    <XAxis dataKey="name"  tick={{ fontSize: 13 }}/>
                     <YAxis />
-                    <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} />
+                    <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                     <Legend />
                     <Bar dataKey="value" name="Utility Consumption"/>
                   </BarChart>
@@ -481,7 +499,6 @@ export const Overview = ({
                 <CardTitle>Carbon Footprint</CardTitle>
                 <CardDescription>Monthly Total CO2 Emission</CardDescription>
                 </CardHeader>
-
                 <CardContent className='flex-grow'>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart
