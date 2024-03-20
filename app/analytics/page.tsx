@@ -4,6 +4,7 @@ import { CarbonFootprint } from "@/components/analytics/CarbonFootprint";
 import { PropertiesAnalytics } from "@/components/analytics/PropertiesAnalytics";
 
 import { fetchData } from "@/lib/fetchAccounts";
+import NoAccount from "@/components/noAccount";
 
 export default async function Analytics() {
     const data = await fetchData();
@@ -56,9 +57,7 @@ export default async function Analytics() {
                     </TabsContent>
                 </Tabs>
                 :
-                <div>
-                    Oops! It seems like you don&apos;t have any accounts linked with us! Please navigate to the Account Linking tab and link at least one account.
-                </div>
+                <NoAccount />
             }
         </div>
     )

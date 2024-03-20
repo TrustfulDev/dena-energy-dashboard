@@ -351,165 +351,168 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
         <div className="grid grid-cols-6 xl:gap-6 gap-2 h-full mb-6 lg:overflow-y-auto xl:pr-6">
             <Card className='w-full flex flex-col col-span-6 min-h-[500px]'>
                 <CardHeader>
-                <CardTitle className="flex justify-between items-center">
-                    Overall Electricity Usage
-                </CardTitle>
-                <CardDescription>Electricity Usage From All Properties (kWh)</CardDescription>
+                  <CardTitle className="flex justify-between items-center">
+                      Top 5 Electricity Consumers
+                  </CardTitle>
+                  <CardDescription>The top monthly electric consumers (kWh)</CardDescription>
                 </CardHeader>
+
                 <CardContent className='flex-grow'>
-                <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%">
                     <LineChart
-                    width={500}
-                    height={300}
-                    data={chartData}
-                    margin={{
+                      width={500}
+                      height={300}
+                      data={chartData}
+                      margin={{
                         top: 0,
                         right: 10,
                         left: 10,
                         bottom: 0,
-                    }}
+                      }}
                     >
-                    <CartesianGrid opacity={0.15} />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip contentStyle={{ backgroundColor: "#000"}} />
-                    <Legend />
-                      {legendItems.map((propertyName, index) => (
-                        <Line
-                          key={propertyName}
-                          type="monotone"
-                          dataKey={propertyName}
-                          stroke={`#${Math.floor(Math.random()*16777215).toString(16)}`} // Random color for each line
-                          activeDot={{ r: 8 }}
-                        />
-                      ))}
-                  </LineChart>
-                </ResponsiveContainer>
+                      <CartesianGrid opacity={0.15} />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip contentStyle={{ backgroundColor: "#000"}} />
+                      <Legend />
+                        {legendItems.map((propertyName, index) => (
+                          <Line
+                            key={propertyName}
+                            type="monotone"
+                            dataKey={propertyName}
+                            stroke={`#${Math.floor(Math.random()*16777215).toString(16)}`} // Random color for each line
+                            activeDot={{ r: 8 }}
+                          />
+                        ))}
+                    </LineChart>
+                  </ResponsiveContainer>
                 </CardContent>
             </Card>
 
             <Card className='flex flex-col md:col-span-3 col-span-6 min-h-[500px] h-full w-full'>
                 <CardHeader>
-                <CardTitle>Energy Costs</CardTitle>
-                <CardDescription>Total Monthly Costs From All Properties</CardDescription>
+                  <CardTitle>Energy Costs</CardTitle>
+                  <CardDescription>Total monthly costs from all properties</CardDescription>
                 </CardHeader>
+
                 <CardContent className='flex-grow'>
-                <ResponsiveContainer width="100%" height="100%">
-                <PieChart >
-                  <Pie
-                    cy="45%"
-                    cx = "45%"
-                    data={recentCost_data}
-                    startAngle={360}
-                    endAngle={0}
-                    innerRadius={80}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    paddingAngle={3}
-                    dataKey="value"
-                    label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
-                  >
-                  <Label value={`Total: ${cost_data_added}`} position="center" />
-                    {recentCost_data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                  <Legend align='left' />
-                </PieChart>
-                </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart >
+                      <Pie
+                        cy="45%"
+                        cx = "45%"
+                        data={recentCost_data}
+                        startAngle={360}
+                        endAngle={0}
+                        innerRadius={80}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        paddingAngle={3}
+                        dataKey="value"
+                        label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
+                      >
+                      <Label value={`Total: ${cost_data_added}`} position="center" />
+                        {recentCost_data.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
+                      <Legend align='left' />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </CardContent>
-                <CardFooter>
-                </CardFooter>
             </Card>
 
             <Card className='flex flex-col md:col-span-3 col-span-6 min-h-[500px] h-fit sm:h-full w-full'>
                 <CardHeader>
-                <CardTitle>Change In Cost</CardTitle>
-                <CardDescription>Compare Current and Last Month Costs</CardDescription>
+                  <CardTitle>Change In Cost</CardTitle>
+                  <CardDescription>Compare current and last month costs</CardDescription>
                 </CardHeader>
+
                 <CardContent className='flex-grow'>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={changeinCost_data}
-                    margin={{
-                      top: 10,
-                      right: 10,
-                      left: 10,
-                      bottom: 10,
-                    }}
-                  >
-                    <CartesianGrid opacity={0.15} />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                    <Legend />
-                    <Bar dataKey="value"  name="Past Cost" fill="#82ca9d" />
-                    <Bar dataKey="0"  name="Current Cost" fill="#8884d8" />  
-                </BarChart>   
-                </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={changeinCost_data}
+                      margin={{
+                        top: 10,
+                        right: 10,
+                        left: 10,
+                        bottom: 10,
+                      }}
+                    >
+                      <CartesianGrid opacity={0.15} />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
+                      <Legend />
+                      <Bar dataKey="value" name="Past Cost" fill="#82ca9d" />
+                      <Bar dataKey="0" name="Current Cost" fill="#8884d8" />  
+                    </BarChart>   
+                  </ResponsiveContainer>
                 </CardContent>
             </Card>
 
             <Card className='2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
                 <CardHeader>
-                <CardTitle>Active Elements</CardTitle>
-                <CardDescription>Total Amount of Properties & Meters</CardDescription>
+                  <CardTitle>Active Elements</CardTitle>
+                  <CardDescription>Total amount of properties & meters</CardDescription>
                 </CardHeader>
+
                 <CardContent className='space-y-4'>
                   <p className='flex items-center gap-4 text-lg'><Landmark className='w-12 h-auto' />{numberOfProperties} Properties</p>
                   <p className='flex items-center gap-4 text-lg'><Gauge className='w-12 h-auto' /> {totalNumberOfMeters} Meters</p>
                   <p className='flex items-center gap-4 text-lg'><Thermometer className='w-12 h-auto' /> 0 Sub-Meters</p>
                 </CardContent>
+
                 <CardFooter className='flex-col items-start'>
-                <hr className='w-full mb-4' />
-                SOMETHING HERE!!!
-                Maybe Connections like Energy Star/PG&E?
-                Or we could include some type of information through the form of a paragraph.
+                  <hr className='w-full mb-4' />
+                  <p>This includes every single property and meter associated with all your accounts. Please go to ANALYTICS to see detailed views of properties and/or meters.</p>
                 </CardFooter>
             </Card>
 
             <Card className='flex flex-col 2xl:col-span-2 md:col-span-3 col-span-6 aspect-square h-full w-full'>
                 <CardHeader>
-                <CardTitle>Consumption By Utilities</CardTitle>
-                <CardDescription>Find Which Utility You Use The Most</CardDescription>
+                  <CardTitle>Consumption By Utilities</CardTitle>
+                  <CardDescription>Hover over the bar to get more details</CardDescription>
                 </CardHeader>   
+
                 <CardContent className='flex-grow'>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={recentConsumption_data}
-                    margin={{
-                      top: 10,
-                      right: 10,
-                      left: 25,
-                      bottom: 10,
-                    }}
-                  >
-                    <CartesianGrid opacity={0.15} />
-                    <XAxis dataKey="name"  tick={{ fontSize: 13 }}/>
-                    <YAxis />
-                    <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                    <Legend />
-                    <Bar dataKey="value" name="Utility Consumption"/>
-                  </BarChart>
-                </ResponsiveContainer>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={recentConsumption_data}
+                      margin={{
+                        top: 10,
+                        right: 10,
+                        left: 25,
+                        bottom: 10,
+                      }}
+                    >
+                      <CartesianGrid opacity={0.15} />
+                      <XAxis dataKey="name"  tick={{ fontSize: 13 }}/>
+                      {/* <YAxis /> */}
+                      <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
+                      <Legend />
+                      <Bar dataKey="value" name="Utility Consumption"/>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </CardContent>
             </Card>
 
             <Card className='flex flex-col 2xl:col-span-2 col-span-6 2xl:aspect-square xl:aspect-video aspect-square h-full w-full'>
                 <CardHeader>
-                <CardTitle>Carbon Footprint</CardTitle>
-                <CardDescription>Monthly Total CO2 Emission</CardDescription>
+                  <CardTitle>Carbon Footprint</CardTitle>
+                  <CardDescription>Monthly Total CO2 Emission</CardDescription>
                 </CardHeader>
+
                 <CardContent className='flex-grow'>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart
-                    margin={{
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart
+                      margin={{
                         top: 40,
                         right: 40,
                         left: 40,
                         bottom: 40,
-                    }}
-                    >
-                    <Pie
+                      }}
+                      >
+                      <Pie
                         dataKey="value"
                         isAnimationActive={false}
                         data={carbon_data}
@@ -518,19 +521,19 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                         outerRadius="100%"
                         label={renderCustomizedLabel}
                         labelLine={false}
-                    >
+                      >
                         {carbon_data.map((entry, index) => (
                         <Cell key={'cell-${index}'} fill={entry.fill} />
                         ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />}/>
-                    <Legend align='center' verticalAlign='bottom' height={36} 
-                    wrapperStyle={{
-                        paddingTop: "1rem"
-                    }}
-                    />
-                </PieChart>
-                </ResponsiveContainer>
+                      </Pie>
+                      <Tooltip content={<CustomTooltip />}/>
+                      <Legend align='center' verticalAlign='bottom' height={36} 
+                        wrapperStyle={{
+                          paddingTop: "1rem"
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
                 </CardContent>
             </Card>
         </div>

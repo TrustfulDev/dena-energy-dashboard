@@ -14,9 +14,9 @@ export async function POST() {
 
         const deleteQuery = 'DELETE FROM ENERGYSTAR WHERE ClerkUID = ?';
         await connection.execute(deleteQuery, [userId]);
-        revalidateTag('energystar_properties');
-
+        
         connection.release();
+        revalidateTag('energystar_properties');
         return new NextResponse("Row successfully deleted", {status: 200});
 
     } catch (error) {

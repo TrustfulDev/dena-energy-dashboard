@@ -58,9 +58,9 @@ export async function POST(
             VALUES (?, ?, ?);
         `;
         await connection.execute(energyStarInsertQuery, [username, password, userId]);
-        revalidateTag('energystar_properties');
-
+        
         connection.release();
+        revalidateTag('energystar_properties');
         return new NextResponse("Account linked successfully", { status: 200 });
     } catch(err: any) {
         if (err.errno === 1062) {

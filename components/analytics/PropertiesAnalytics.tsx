@@ -2,7 +2,7 @@
 
 // React & Packages
 import { useState } from "react"
-import { BadgeDollarSign, Droplets, Footprints, Trash2, Zap } from 'lucide-react';
+import { Fuel, Droplets, Footprints, Trash2, Zap } from 'lucide-react';
 import { 
     ChevronsUpDown, 
     CheckSquare, 
@@ -338,12 +338,17 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                         <CardContent className='flex justify-between items-center h-full py-0 !px-16 z-[1]'>
                             <div className="text-center">
                                 <Zap className="w-12 h-auto text-yellow-500 mb-2" />
-                                <p className="text-xl">{selected?.meterAssociations.energyMeters.length}</p>
+                                <p className="text-xl">{selected?.meterAssociations.electricMeters.length}</p>
                             </div>
 
                             <div className="text-center">
                                 <Droplets className="w-12 h-auto text-sky-500 mb-2" />
                                 <p className="text-xl">{selected?.meterAssociations.waterMeters.length}</p>
+                            </div>
+
+                            <div className="text-center">
+                                <Fuel className="w-12 h-auto text-violet-500 mb-2" />
+                                <p className="text-xl">{selected?.meterAssociations.naturalGasMeters.length}</p>
                             </div>
 
                             <div className="text-center">

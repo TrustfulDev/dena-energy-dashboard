@@ -70,7 +70,7 @@ async function fetchProperties(id: string): Promise<Property[]> {
     return new Promise((resolve, reject) => {
         parser.parseString(xml, (err: any, result: any) => {
             if (err) {
-                console.error('Could not parse XML', err);
+                console.error("fetchProperties FAILED... No account?");
                 reject(err);
             } else {
                 const properties: Property[] = result.response.links.link;
@@ -82,9 +82,9 @@ async function fetchProperties(id: string): Promise<Property[]> {
 
 async function fetchPropertyDetails(propertyId: string, id: string): Promise<PropertyDetails> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const metersPromise = fetch(`${baseUrl}/api/energystar/meters?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
-    const detailsPromise = fetch(`${baseUrl}/api/energystar/properties_detail?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
-    const associationPromise = fetch(`${baseUrl}/api/energystar/meters/property_meters_ids?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    const metersPromise = await fetch(`${baseUrl}/api/energystar/meters?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    const detailsPromise = await fetch(`${baseUrl}/api/energystar/properties_detail?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    const associationPromise = await fetch(`${baseUrl}/api/energystar/meters/property_meters_ids?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
 
     const [metersXml, detailsXml, associationsXml] = await Promise.all([metersPromise, detailsPromise, associationPromise]);
 
@@ -93,7 +93,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
     const linkMeters: Property[] = await new Promise((resolve, reject) => {
         parser.parseString(metersXml, (err: any, result: any) => {
             if (err) {
-                console.error('Failed to parse meters XML', err);
+                console.error('fetchPropertyDetails FAILED...', err);
                 reject(err);
             } else {
                 resolve(result.response.links.link);
@@ -105,7 +105,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
     const meterAssociations: MeterAssociation = await new Promise((resolve, reject) => {
         parser.parseString(associationsXml, (err: any, result: any) => {
             if (err) {
-                console.error('Failed to parse associations XML', err);
+                console.error('fetchPropertyDetails: Failed to parse meterAssociations XML', err);
                 reject(err);
             } else {
                 const associations: MeterAssociation = {
@@ -138,13 +138,13 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
         //split the gas and electric
         await Promise.all(meterAssociations.energyMeters.map(async (meter) => {
-            const meterDetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`);
+            const meterDetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
             const meterDetailXml = await meterDetailResponse.text();
         
             return new Promise<void>((resolve, reject) => {
                 parser.parseString(meterDetailXml, (err: any, result: any) => {
                     if (err) {
-                        console.error(`Failed to parse meter detail XML for meter ${meter.meterId}`, err);
+                        console.error(`fetchPropertyDetails: Failed to parse meter detail XML for meter ${meter.meterId}`, err);
                         reject(err);
                     } else {
                         const meterType = result.meter.type;
@@ -170,7 +170,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
         await new Promise<void>((resolve, reject) => {
             parser.parseString(consumptionXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.energyConsumption = result.meterData.meterConsumption;
@@ -182,7 +182,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
         await new Promise<void>((resolve, reject) => {
             parser.parseString(meterdetailXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.details = result.meter;
@@ -203,7 +203,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
         await new Promise<void>((resolve, reject) => {
             parser.parseString(consumptionXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.energyConsumption = result.meterData.meterConsumption;
@@ -215,7 +215,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
         await new Promise<void>((resolve, reject) => {
             parser.parseString(meterdetailXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.details = result.meter;
@@ -236,7 +236,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
         await new Promise<void>((resolve, reject) => {
             parser.parseString(consumptionXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.energyConsumption = result.wasteDataList.wasteData;
@@ -248,7 +248,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
         await new Promise<void>((resolve, reject) => {
             parser.parseString(meterdetailXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.details = result.wasteMeter;
@@ -261,7 +261,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
     const propertyDetails: PropertyDetails = await new Promise((resolve, reject) => {
         parser.parseString(detailsXml, (err: any, result: any) => {
             if (err) {
-                console.error('Failed to parse property details XML', err);
+                console.error('fetchPropertyDetails: Failed to parse property details XML', err);
                 reject(err);
             } else {
                 resolve({
