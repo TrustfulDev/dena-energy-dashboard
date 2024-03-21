@@ -1,3 +1,4 @@
+import { initializePool } from '@/utils/database';
 import { auth } from '@clerk/nextjs/server';
 import xml2js from 'xml2js';
 
@@ -283,6 +284,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
     const { userId } = auth();
 
+    await initializePool();
     const properties = await fetchProperties(userId || "");
     const propertyDetailsPromises = properties.map(property => fetchPropertyDetails(property.id, userId || ""));
     return await Promise.all(propertyDetailsPromises);

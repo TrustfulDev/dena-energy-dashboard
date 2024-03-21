@@ -1,14 +1,13 @@
-import db from '../../../../../utils/database';
+import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
-
 
 export async function GET(req: NextRequest) {
 
   const {searchParams} = new URL(req.url||"");
   const meterId = searchParams.get("id");
   const userId = searchParams.get("userId");
-  const connection = await db.getConnection();
+  const connection = await getPool();
 
   //const username = process.env.ENERGY_STAR_USERNAME;
   //const password = process.env.ENERGY_STAR_PASSWORD;
@@ -29,17 +28,11 @@ export async function GET(req: NextRequest) {
 
     }else {
       //console.log(`Releasing connection due to no account found: ${connection.threadId}`);
-      connection.release();
       return new NextResponse("Can't find aaccount", { status: 400 }) 
     }
   } catch (error: any){
     console.error('Database query error:', error);
     return new NextResponse("Internal Server Error", { status: 500 });
-  }finally {
-    //console.log(`Releasing connection after successful API call: ${connection.threadId}`);
-
-    //console.log("hwlllllllw")
-    connection.release();
   }
  
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');

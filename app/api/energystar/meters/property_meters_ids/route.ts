@@ -1,4 +1,4 @@
-import db from '../../../../../utils/database';
+import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const {searchParams} = new URL(req.url||"");
   const propertyId = searchParams.get("id");
   const userId = searchParams.get("userId");
-  const connection = await db.getConnection();
+  const connection = await getPool();
 
   //const username = process.env.ENERGY_STAR_USERNAME;
   //const password = process.env.ENERGY_STAR_PASSWORD;
@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
       password = rows[0].Password; 
       
     }else {
-      connection.release();
       return new NextResponse("Can't find aaccount", { status: 400 }) 
     }
 
@@ -36,9 +35,6 @@ export async function GET(req: NextRequest) {
     console.error('Database query error:', error);
     return new NextResponse("Internal Server Error", { status: 500 });
 
-  }finally {
-
-    connection.release();
   }
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');

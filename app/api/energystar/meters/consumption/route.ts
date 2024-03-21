@@ -1,16 +1,13 @@
-import db from '../../../../../utils/database';
+import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
-import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from 'next/server';
-import { NextApiRequest } from 'next';
-import { getAuth } from '@clerk/nextjs/server';
 
-export async function GET(req: NextApiRequest) {
+export async function GET(req: NextRequest) {
 
   const {searchParams} = new URL(req.url||"");
   const meterId = searchParams.get("id");
   const userId = searchParams.get("userId");
-  const connection = await db.getConnection();
+  const connection = await getPool();
 
   
   //const username = process.env.ENERGY_STAR_USERNAME;
@@ -33,15 +30,11 @@ export async function GET(req: NextApiRequest) {
       password = rows[0].Password; 
 
     }else {
-      connection.release();
       return new NextResponse("Can't find aaccount", { status: 400 }) 
     }
   } catch (error: any){
     console.error('Database query error:', error);
     return new NextResponse("Internal Server Error", { status: 500 });
-  } finally {
-
-    connection.release();
   }
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');

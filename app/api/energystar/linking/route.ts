@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs";
-import db from '../../../../utils/database';
+import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
 import { revalidateTag } from "next/cache";
 
 export async function POST(
     req: Request,
 ) {
-    const connection = await db.getConnection();
+    const connection = await getPool();
 
     try {
         const { userId } = auth();
@@ -33,12 +33,11 @@ export async function POST(
         });
 
         if (!energyStarResponse.ok) {
-            console.log("account NOTTTT found!!!!!!")
+            console.log("EnergyStar Linking route.ts: account NOTTTT found!!!!!!")
 
             return new NextResponse("EnergyStar account validation failed", { status: 401 });
         }else {
-
-            console.log("account found!!!!!!")
+            console.log("EnergyStar Linking route.ts: account found!!!!!!")
         }
         //----------------------
 
@@ -59,15 +58,12 @@ export async function POST(
         `;
         await connection.execute(energyStarInsertQuery, [username, password, userId]);
         
-        connection.release();
         revalidateTag('energystar_properties');
         return new NextResponse("Account linked successfully", { status: 200 });
     } catch(err: any) {
         if (err.errno === 1062) {
-            connection.release();
             return new NextResponse("Account already linked", { status: 409 });
         }
-        connection.release();
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
@@ -76,7 +72,7 @@ export async function GET() {
 
     const { userId } = auth();
     if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
-    const connection = await db.getConnection();
+    const connection = await getPool();
 
     //return NextResponse.json({ username: null }, { status: 200 })
     const query = `
@@ -100,7 +96,5 @@ export async function GET() {
     }catch (error: any){
         console.error('Database query error:', error);
         return new NextResponse("Internal Server Error", { status: 500 });
-    }finally {
-        connection.release();
     }
 }
