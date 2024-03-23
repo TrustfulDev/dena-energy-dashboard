@@ -10,7 +10,7 @@ export default async function Analytics() {
     const data = await fetchData();
 
     return (
-        <div className="flex h-full mb-6 md:overflow-y-auto">
+        <div className="flex flex-grow h-full mb-6 md:overflow-y-auto">
             { data ?
                 <Tabs defaultValue="property" className="flex flex-col w-full">
                     <TabsList className="w-full grid grid-cols-5">
@@ -23,14 +23,14 @@ export default async function Analytics() {
 
                     <TabsContent 
                         value="property" 
-                        className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]: px-4"
+                        className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]:px-4"
                     >
                         <PropertiesAnalytics properties={data} />
                     </TabsContent>
 
                     <TabsContent 
                         value="meter" 
-                        className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]: px-4"
+                        className="data-[state=active]:h-full data-[state=active]:flex data-[state=active]:flex-col data-[state=active]:px-4"
                     >
                         <MeterAnalytics properties={data} />
                     </TabsContent>
