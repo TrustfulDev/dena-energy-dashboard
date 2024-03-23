@@ -1,18 +1,12 @@
 import { getPool } from "@/utils/database";
-import { NextRequest, NextResponse } from "next/server";
 import { RowDataPacket } from 'mysql2';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
+
   const {searchParams} = new URL(req.url||"");
   const userId = searchParams.get("id");
-  const accountId = searchParams.get("account");
   const connection = await getPool();
-
-  //console.log("asdadwdadawdad", accountId);
-  //const username = process.env.ENERGY_STAR_USERNAME;
-  //const password = process.env.ENERGY_STAR_PASSWORD;
-  // const username = "process.env.ENERGY_STAR_USERNAME";
-  // const password = "process.sss.ENERGY_STAR_PASSWORD";
 
   let username = '';
   let password = '';
@@ -40,7 +34,7 @@ export async function GET(req: NextRequest) {
   }
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
-  const url = `https://portfoliomanager.energystar.gov/ws/account/${accountId}/property/list`;
+  const url = 'https://portfoliomanager.energystar.gov/ws/reports?type=ENERGY_STAR';
 
   try {
     const apiRes = await fetch(url, {
@@ -61,4 +55,5 @@ export async function GET(req: NextRequest) {
   } catch (error : any) {
     return new Response (error.message);
   }
+  
 }

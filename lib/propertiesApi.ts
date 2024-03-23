@@ -2,6 +2,9 @@ import { initializePool } from '@/utils/database';
 import { auth } from '@clerk/nextjs/server';
 import xml2js from 'xml2js';
 
+interface EnergyStarAccount {
+    id: string;
+}
 interface Property {
     id: string;
     hint: string;
@@ -35,6 +38,25 @@ interface EnergyConsumption {
     cost: string;
 }
 
+interface Metric {
+    name: string;
+    dataType: string;
+    value: string;  // Optional because of the directGHGEmissions can be nil
+    uom?: string;    // Unit of Measure is not always present
+}
+
+interface MetricScore {
+    propertyId: string;
+    month: string;
+    year: string;
+    measurementSystem: string;
+    metrics: Metric[];
+}
+
+interface Test {
+
+}
+
 export interface PropertyDetails {
     id: string;
     name: string;
@@ -60,11 +82,34 @@ export interface PropertyDetails {
 
     energyConsumption: EnergyConsumption[];
 
+    metricScores: MetricScore[];
+
+
 }
 
-async function fetchProperties(id: string): Promise<Property[]> {
+async function fetchEnergyStarAccount(id: string): Promise<EnergyStarAccount> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    const response = await fetch(`${baseUrl}/api/energystar/properties?id=${id}`, { next: { tags: ['energystar_properties'] } });
+    const response = await fetch(`${baseUrl}/api/energystar/account?id=${id}`);
+    const xml = await response.text();
+    const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+
+    return new Promise((resolve, reject) => {
+        parser.parseString(xml, (err: any, result: any) => {
+            if (err) {
+                console.error("fetchProperties FAILED... No account?");
+                reject(err);
+            } else {
+                const energystaraccount: EnergyStarAccount = result.account;
+                resolve(energystaraccount);
+            }
+        });
+    });
+
+}
+
+async function fetchProperties(account: string, id: string): Promise<Property[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/energystar/properties?id=${id}&account=${account}`, { next: { tags: ['energystar_properties'] } });
     const xml = await response.text();
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
@@ -81,11 +126,31 @@ async function fetchProperties(id: string): Promise<Property[]> {
     });
 }
 
+async function fetchScores(propertyId: string, id: string): Promise<Test[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/energystar/meters/scores?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
+    const xml = await response.text();
+    const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+
+    return new Promise((resolve, reject) => {
+        parser.parseString(xml, (err: any, result: any) => {
+            if (err) {
+                console.error("fetchProperties FAILED... No account?");
+                reject(err);
+            } else {
+                const test: Test[] = result;
+                resolve(test);
+            }
+        });
+    });
+}
+
 async function fetchPropertyDetails(propertyId: string, id: string): Promise<PropertyDetails> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const metersPromise = await fetch(`${baseUrl}/api/energystar/meters?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
     const detailsPromise = await fetch(`${baseUrl}/api/energystar/properties_detail?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
     const associationPromise = await fetch(`${baseUrl}/api/energystar/meters/property_meters_ids?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    //const scorePromise = await fetch(`${baseUrl}/api/energystar/meters/scores?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
 
     const [metersXml, detailsXml, associationsXml] = await Promise.all([metersPromise, detailsPromise, associationPromise]);
 
@@ -270,6 +335,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
                     id: propertyId,
                     linkMeters: linkMeters,
                     meterAssociations: meterAssociations,
+                    //test: test,
                     
                 });
             }
@@ -278,6 +344,8 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
     //console.log(propertyDetails.meterAssociations.electricMeters);
     return propertyDetails;
+
+
 }
 
 
@@ -285,7 +353,13 @@ export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
     const { userId } = auth();
 
     await initializePool();
-    const properties = await fetchProperties(userId || "");
+    
+    const energystaraccount = await fetchEnergyStarAccount(userId || "");
+    const scoresData = await fetchScores("1234", userId || "");
+    console.log("what",scoresData);
+
+    const properties = await fetchProperties(energystaraccount.id, userId || "");
+
     const propertyDetailsPromises = properties.map(property => fetchPropertyDetails(property.id, userId || ""));
     return await Promise.all(propertyDetailsPromises);
 }
