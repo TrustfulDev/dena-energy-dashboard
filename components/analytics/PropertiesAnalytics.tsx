@@ -96,7 +96,7 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
                         name: meter.details.name,
                         value: isNaN(cost) ? 0 : cost,
                         type: "Cost",
-                        fill: '#8884d8',
+                        fill: '#CECE00',
                       };
                     highestConsumer_data.push(newItem);
                     totalNaturalGasCost += isNaN(cost) ? 0 : cost;
@@ -178,7 +178,7 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
     // Populate consumption data
     consumption_data = [
       { month: 'Recent', name:'Electricity', value: totalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
-      { month: 'Recent', name:'Gas', value : totalNaturalGasUsage, type :'Natrual Gas', fill: '#1F4E7D'},
+      { month: 'Recent', name:'Gas', value : totalNaturalGasUsage, type :'Natrual Gas', fill: '#CECE00'},
       { month: 'Recent', name: 'Water', value: totalWaterUsage, type: 'Water', fill: '#82ca9d' },
       { month: 'Recent', name: 'Waste', value: totalWasteUsage, type: 'Waste', fill: '#FF8042' },
     ];
@@ -189,7 +189,7 @@ function processSelectedProperty(selected: PropertyDetails): { consumption_data:
     totalWasteCost =  Math.round(( totalWasteCost+ Number.EPSILON) * 100) / 100;
     cost_data = [
         {month: 'Recent',name: 'Electricity', value : totalEnergyCost, type : 'Cost',fill: '#8884d8'},
-        {month: 'Recent',name:'Natrual Gas', value : totalNaturalGasCost, type :'Cost', fill: '#1F4E7D'},
+        {month: 'Recent',name:'Natrual Gas', value : totalNaturalGasCost, type :'Cost', fill: '#CECE00'},
         {month: 'Recent',name:'Water', value : totalWaterCost, type :'Cost', fill: '#82ca9d'},
         {month: 'Recent',name:'Waste',value : totalWasteCost, type : 'Cost', fill: '#FF8042'}
       ];
@@ -318,9 +318,9 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                     bottom: 10,
                                 }}
                             >
-                                <CartesianGrid opacity={0.15} />
-                                <XAxis dataKey="name"/>
-                                <YAxis />
+                                <CartesianGrid  opacity={0.15} />
+                                <XAxis dataKey="name" stroke="#FFF"/>
+                                <YAxis stroke="#FFF"/>
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#fff"}} cursor={{fill: '#000', opacity: '20%'}} />
                                 <Bar dataKey="value" name="Recent Month Consumption"/>
                             </BarChart>
@@ -404,8 +404,8 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 }}
                             >
                                 <CartesianGrid opacity={0.15} />
-                                <XAxis type="number" opacity={0.75} /> 
-                                <YAxis dataKey="name" type="category" width={80} /> 
+                                <XAxis type="number" opacity={0.75} stroke="#FFF" /> 
+                                <YAxis dataKey="name" type="category" width={80} stroke="#FFF" /> 
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                                 <Legend />
                                 <Bar dataKey="value" name="Recent Month Highest Cost Meter">
@@ -435,8 +435,8 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 }}
                             >
                                 <CartesianGrid opacity={0.15} />
-                                <XAxis dataKey="name"  tick={{ fontSize: 10 }} angle={-25} textAnchor="end" interval={0}/>
-                                <YAxis hide/>
+                                <XAxis dataKey="name"  tick={{ fontSize: 10 }} angle={-25} textAnchor="end" interval={0} stroke="#FFF"/>
+                                <YAxis hide />
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                                 <Legend /> 
                                 <Bar dataKey="value" name="Recent Month Cost">

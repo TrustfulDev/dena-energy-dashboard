@@ -7,7 +7,7 @@ export default async function Reports() {
     //console.log("adasdas", data);
 
     return (
-        <div className="mx-4 md:m-0">
+        <div className="mx-4 md:m-0 overflow-y-auto">
             {
                 data?.map((report, index) => {
                     return (
