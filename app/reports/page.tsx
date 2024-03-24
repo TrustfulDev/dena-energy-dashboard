@@ -5,7 +5,7 @@ export default async function Reports() {
     const data = await fetchData();
 
     return (
-        <div className="mx-4 md:m-0">
+        <div className="mx-4 md:m-0 overflow-y-auto">
             {
                 data?.map((report, index) => {
                     return (
