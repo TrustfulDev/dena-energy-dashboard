@@ -239,8 +239,9 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                         ${selected.address.country}` : 'Loading...'}
                     </p>
                 </div>
+                
                 {/* Size, Meters, Occupancy */}
-                <div className="flex gap-4 mb-1 sm:text-base text-sm">
+                <div className="flex gap-4 mb-1 text-xs sm:text-base">
                     <p className="flex items-center">
                         <LandPlot className="mr-2 w-5 sm:w-6" />
                         {selected ? `${parseInt(selected.grossFloorArea.value).toLocaleString()} ft` : 'Loading...'}
@@ -299,8 +300,8 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                 </div>
             </header>
 
-            <div className="grid grid-cols-6 gap-6 h-full">
-                <Card className='w-full flex flex-col col-span-4 min-h-[500px]'>
+            <div className="grid grid-cols-6 gap-6 ">
+                <Card className='w-full flex flex-col col-span-6 2xl:col-span-4 min-h-[500px]'>
                     <CardHeader>
                         <CardTitle className="">
                             Monthly Usage
@@ -327,15 +328,15 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                     </CardContent>
                 </Card>
 
-                <div className="col-span-2 flex flex-col gap-6">
-                    <Card className='relative w-full flex flex-col h-full'>
+                <div className="col-span-6 2xl:col-span-2 flex flex-col xl:flex-row 2xl:flex-col gap-6">
+                    <Card className='relative w-full flex flex-col h-[116px] xl:h-full'>
                         <CardHeader className="p-0 absolute inset-0 flex justify-center items-center z-[-1] opacity-5">
-                            <CardTitle className="text-7xl font-bold">
+                            <CardTitle className="text-xl 2xl:text-6xl font-bold">
                                 METERS
                             </CardTitle>
                         </CardHeader>
 
-                        <CardContent className='flex justify-between items-center h-full py-0 !px-16 z-[1]'>
+                        <CardContent className='flex justify-between items-center h-full py-4 !px-16 z-[1]'>
                             <div className="text-center">
                                 <Zap className="w-12 h-auto text-yellow-500 mb-2" />
                                 <p className="text-xl">{selected?.meterAssociations.electricMeters.length}</p>
@@ -358,32 +359,32 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                         </CardContent>
                     </Card>
 
-                    <Card className='relative w-full flex flex-col h-full'>
+                    <Card className='relative w-full flex flex-col h-[116px] xl:h-full'>
                         <CardHeader className="p-0 absolute inset-0 flex justify-center items-center z-[-1] opacity-5">
-                            <CardTitle className="text-7xl font-bold">
+                            <CardTitle className="text-xl 2xl:text-6xl font-bold">
                                 EXPENSE
                             </CardTitle>
                         </CardHeader>
 
-                        <CardContent className='flex gap-4 justify-center items-center h-full py-0 !px-12 z-[1]'>
+                        <CardContent className='flex gap-4 justify-center items-center h-full py-4 px-4 2xl:!px-12 z-[1]'>
                             <p className="text-4xl text-red-500">-${(cost_data[0].value + cost_data[1].value + cost_data[2].value).toLocaleString()}</p>
                         </CardContent>
                     </Card>
                     
-                    <Card className='relative w-full flex flex-col h-full'>
+                    <Card className='relative w-full flex flex-col h-[116px] xl:h-full'>
                         <CardHeader className="p-0 absolute inset-0 flex justify-center items-center z-[-1] opacity-5">
-                            <CardTitle className="text-7xl font-bold">
+                            <CardTitle className="text-xl 2xl:text-6xl font-bold">
                                 FOOTPRINT
                             </CardTitle>
                         </CardHeader>
-                        <CardContent className='flex gap-4 justify-center items-center h-full py-0 !px-12 z-[1]'>
+                        <CardContent className='flex gap-4 justify-center items-center h-full py-4 px-4 2xl:!px-12 z-[1]'>
                             <Footprints className="w-12 h-auto" /> 
                             <p className="text-xl">40,000 CO<span className="text-xs">2</span></p>
                         </CardContent>
                     </Card>
                 </div>
 
-                <Card className='w-full flex flex-col col-span-4 min-h-[500px]'>
+                <Card className='w-full flex flex-col col-span-6 xl:col-span-4 min-h-[500px]'>
                     <CardHeader>
                         <CardTitle className="">
                             Highest Consumers
@@ -415,7 +416,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                     </CardContent>
                 </Card>
 
-                <Card className='w-full flex flex-col col-span-2 min-h-[500px]'>
+                <Card className='w-full flex flex-col col-span-6 xl:col-span-2 min-h-[500px]'>
                     <CardHeader>
                         <CardTitle className="">
                             Utility Costs
