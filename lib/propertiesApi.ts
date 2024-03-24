@@ -38,11 +38,12 @@ interface EnergyConsumption {
     cost: string;
 }
 
+/*
 interface Metric {
     name: string;
     dataType: string;
-    value: string;  // Optional because of the directGHGEmissions can be nil
-    uom?: string;    // Unit of Measure is not always present
+    value: string;
+    uom?: string;    
 }
 
 interface MetricScore {
@@ -52,7 +53,9 @@ interface MetricScore {
     measurementSystem: string;
     metrics: Metric[];
 }
+*/
 
+//testing for socres
 interface Test {
 
 }
@@ -82,7 +85,7 @@ export interface PropertyDetails {
 
     energyConsumption: EnergyConsumption[];
 
-    metricScores: MetricScore[];
+    //metricScores: MetricScore[];
 
 
 }
@@ -126,6 +129,7 @@ async function fetchProperties(account: string, id: string): Promise<Property[]>
     });
 }
 
+//testing
 async function fetchScores(propertyId: string, id: string): Promise<Test[]> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const response = await fetch(`${baseUrl}/api/energystar/meters/scores?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
@@ -356,7 +360,7 @@ export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
     
     const energystaraccount = await fetchEnergyStarAccount(userId || "");
     const scoresData = await fetchScores("1234", userId || "");
-    console.log("what",scoresData);
+    //console.log("what",scoresData);
 
     const properties = await fetchProperties(energystaraccount.id, userId || "");
 

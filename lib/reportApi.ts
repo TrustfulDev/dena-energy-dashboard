@@ -25,6 +25,7 @@ export interface ReportDetail {
     templateName: string;
     properties: string[];
     reportGenerationStatus: string;
+    downloadUrl?: string;
 }
 
 async function fetchReport(id: string): Promise<Report[]> {
@@ -49,6 +50,9 @@ async function fetchReport(id: string): Promise<Report[]> {
 async function fetchReportDetail(reportId: string, userId: string): Promise<ReportDetail> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const response = await fetch(`${baseUrl}/api/energystar/report_detail?id=${reportId}&userId=${userId}`);
+    const downloadResponse = await fetch(`${baseUrl}/api/energystar/report_download?id=${reportId}&userId=${userId}`);
+    const downloadUrl = downloadResponse.url;
+
     const xml = await response.text();
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
@@ -65,8 +69,9 @@ async function fetchReportDetail(reportId: string, userId: string): Promise<Repo
                     timeframe: {
                         singlePeriod: {
                             periodEndingDate: {
-                                month: detail?.timeframe?.singlePeriod?.periodEndingDate?.month,
-                                year: detail?.timeframe?.singlePeriod?.periodEndingDate?.year,
+                                month: detail?.timeframe?.singlePeriod?.periodEndingDate?.month || 'Unknown',
+                                year: detail?.timeframe?.singlePeriod?.periodEndingDate?.year || 'Unknown',
+          
                             }
                         }
                     },
@@ -74,11 +79,17 @@ async function fetchReportDetail(reportId: string, userId: string): Promise<Repo
                     templateName: detail.templateName,
                     properties: Array.isArray(detail.properties.id) ? detail.properties.id : [detail.properties.id],
                     reportGenerationStatus: detail.reportGenerationStatus,
+                    downloadUrl: downloadUrl,
+
+
                 };
+                console.log("hi",reportDetail.downloadUrl);
+
                 resolve(reportDetail);
             }
         });
     });
+    
 }
 
 
@@ -88,9 +99,7 @@ export async function fetchAllReports(): Promise<ReportDetail[]> {
     await initializePool();
     const reports = await fetchReport(userId || "");
     
-    //return await Promise.all(report);
     const reportDetailsPromises = reports.map(report => fetchReportDetail(report.id, userId || ""));
-    //const reportDetails = await Promise.all(reportDetailsPromises);
 
     return await Promise.all(reportDetailsPromises);
 }
