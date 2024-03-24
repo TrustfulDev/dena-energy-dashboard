@@ -83,8 +83,6 @@ async function fetchReportDetail(reportId: string, userId: string): Promise<Repo
 
 
                 };
-                console.log("hi",reportDetail.downloadUrl);
-
                 resolve(reportDetail);
             }
         });

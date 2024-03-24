@@ -50,9 +50,6 @@ export async function GET(req: NextRequest) {
       throw new Error(`HTTP error! status: ${apiRes.status}`);
     }
 
-    //const data = await apiRes.text();
-    //return new Response (data);
-
     //this is better, base on research
     const blob = await apiRes.blob();
     const headers = new Headers({
