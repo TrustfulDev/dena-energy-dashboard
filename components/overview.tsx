@@ -47,7 +47,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 // colors for pie chart with padding angle 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#CECE00', '#00C49F', '#FFBB28', '#FF8042'];
 
 // carbon footprint pie chart 
 const carbon_data = [
@@ -293,7 +293,7 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
     { month: 'Recent', name: 'Electricity', value: recentTotalEnergyUsage, type: 'Electricity', fill: '#8884d8' },
     { month: 'Recent', name: 'Water', value: recentTotalWaterUsage, type: 'Water', fill: '#82ca9d' },
     { month: 'Recent', name: 'Waste', value: recentTotalWasteUsage, type: 'Waste', fill: '#FF8042' },
-    { month: 'Recent', name: 'Gas', value: recentTotalGasUsage, type :'Natrual Gas', fill: '#1F4E7D' },
+    { month: 'Recent', name: 'Gas', value: recentTotalGasUsage, type :'Natrual Gas', fill: '#CECE00' },
   ];
 
   // Populate recent cost data
@@ -371,8 +371,8 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                       }}
                     >
                       <CartesianGrid opacity={0.15} />
-                      <XAxis dataKey="month" />
-                      <YAxis />
+                      <XAxis dataKey="month" stroke="#FFF" />
+                      <YAxis stroke="#FFF" />
                       <Tooltip contentStyle={{ backgroundColor: "#000"}} />
                       <Legend />
                         {legendItems.map((propertyName, index) => (
@@ -411,7 +411,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                         dataKey="value"
                         label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
                       >
-                      <Label value={`Total: ${cost_data_added}`} position="center" />
+                      <Label value={`Total: ${cost_data_added}`} position="center"  />
                         {recentCost_data.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
@@ -440,8 +440,8 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                       }}
                     >
                       <CartesianGrid opacity={0.15} />
-                      <XAxis dataKey="name" />
-                      <YAxis />
+                      <XAxis dataKey="name" stroke="#FFF" />
+                      <YAxis stroke="#FFF" />
                       <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                       <Legend />
                       <Bar dataKey="value" name="Past Cost" fill="#82ca9d" />
@@ -486,7 +486,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                       }}
                     >
                       <CartesianGrid opacity={0.15} />
-                      <XAxis dataKey="name"  tick={{ fontSize: 13 }}/>
+                      <XAxis dataKey="name" stroke="#FFF" tick={{ fontSize: 13 }}/>
                       {/* <YAxis /> */}
                       <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
                       <Legend />
