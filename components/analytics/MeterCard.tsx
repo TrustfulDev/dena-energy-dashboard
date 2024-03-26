@@ -22,33 +22,69 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { CheckSquare, ChevronsUpDown } from "lucide-react";
+import { PropertyDetails } from "@/lib/propertiesApi";
 
-const dummyData = [
-    {
-        test: "hello",
-        test2: "world"
-    },
-    {
-        test: "goodbye",
-        test2: "to you"
-    },
-    {
-        test: "lorem",
-        test2: "ipsum"
-    },
-]
+interface MeterCardProps {
+    properties: PropertyDetails[];
+    meter: any;
+}
+interface Meter {
+    meterId: string;
+    energyConsumption?: EnergyConsumption;
+    details?: MeterDetails;
+}
 
-export const MeterCard = () => {
+interface MeterDetails {
+    type: string;
+    name: string;
+    unitOfMeasure: string;
+}
+interface EnergyConsumption {
+    id: string;
+    usage: string;
+    startDate: string;
+    endDate: string;
+    cost: string;
+}
+  
+
+
+export const MeterCard = ({ properties, meter}: MeterCardProps) => {
     // Used for Pop-Over components (dropdown selection)
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");   // Stores name
+    
+    let totalUsage = 0;
+    let totalCost = 0;
+    let monthlyMeterUsage = 0;
+    let monthlyMeterCost = 0;
+  
+    for(let i = 0; i < meter?.energyConsumption.length; i++){
+        let totalU = parseFloat(meter?.energyConsumption[i].usage);
+        totalUsage += isNaN(totalU) ? 0 : totalU;
+        let totalC = parseFloat(meter?.energyConsumption[i].cost);
+        totalCost += isNaN(totalC) ? 0 : totalC;
+    }
+    if(value){
+        for(let i = 0; i < meter?.energyConsumption.length; i++){
+            const selectedDate = meter?.energyConsumption[i].startDate + " - " + meter?.energyConsumption[i].endDate;
+            if(selectedDate === value){
+                let usage = parseFloat(meter?.energyConsumption[i].usage);
+                monthlyMeterUsage = isNaN(usage) ? 0 : usage;
+                let cost = parseFloat(meter?.energyConsumption[i].cost);
+                monthlyMeterCost = isNaN(cost) ? 0 : cost;    
+            }
+        }
 
+    }
+       
     return (
+      
         <Card className="col-span-2">
             <CardHeader className="flex flex-row justify-between">
                 <div>
-                    <h1 className="text-3xl">Meter Name</h1>
-                    <p className="flex items-center gap-1 text-sm">Meter ID</p>
+                    <h1 className="text-3xl">{meter?.details.name}</h1>
+                    <p className="flex items-center gap-1 text-sm">{meter?.meterId}</p>
                 </div>
                 <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild>
@@ -68,20 +104,20 @@ export const MeterCard = () => {
                                 <CommandEmpty>No properties found.</CommandEmpty>
 
                                 <CommandGroup>
-                                    {dummyData?.map((entry) => (
+                                    {meter?.energyConsumption.map((entry:any) => (
                                     <CommandItem
-                                        key={entry.test2}
-                                        value={entry.test2}
+                                        key={entry.meterId}
+                                        value={entry.startDate + " - " + entry.endDate}
                                         onSelect={(currentValue) => {
                                             setValue(currentValue)
                                             setOpen(false)
                                         }}
                                     >
-                                        {entry.test2}
+                                        {entry.startDate + " - " + entry.endDate}
                                         <CheckSquare
                                             className={cn(
                                                 "ml-auto h-4 w-4",
-                                                value === entry.test2 ? "opacity-100" : "opacity-0"
+                                                value === entry.startDate + " - " + entry.endDate ? "opacity-100" : "opacity-0"
                                             )}
                                         />
                                     </CommandItem>
@@ -93,9 +129,17 @@ export const MeterCard = () => {
             </CardHeader>
 
             <CardContent>
-                <p>Just print out all the data first</p>
-                <p>energyConsumption: usage, cost</p>
-                <p>details: type, name, unitOfMeasure</p>
+                <p>Meter overall Information</p>
+                <p>Usage:{totalUsage} </p>
+                <p>Cost:{totalCost}  </p>
+                <p>type:{meter?.details.type}  </p>
+                <p>name:{meter?.details.name} </p>
+                <p> unitOfMeasure:{meter?.details.unitOfMeasure} </p>
+
+                <p>Bill selected Information: {value}</p>
+                <p>Monthly Usage: {monthlyMeterUsage}</p>
+                <p>Monthly Cost: {monthlyMeterCost}</p>
+                
             </CardContent>
         </Card>
     )

@@ -20,11 +20,29 @@ import { Gauge } from 'lucide-react';
   
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
-import { useState } from "react";
+import { PropertyDetails } from '@/lib/propertiesApi';
 
-export const MultiSelect = () => {
-    const [checked, setChecked] = useState<string[]>([]);
 
+interface MultiSelectProps {
+    properties: PropertyDetails[];
+    checked: string[];
+    setChecked: React.Dispatch<React.SetStateAction<string[]>>;
+  }
+
+export const MultiSelect = ({ properties, checked, setChecked }: MultiSelectProps) => {
+    //console.log("p",properties);
+    const handleCheckboxChange = (meterId: string) => {
+        setChecked((prev) => {
+          const index = prev.indexOf(meterId);
+          if (index !== -1) {
+            return prev.filter((item) => item !== meterId);
+          } else {
+            return [...prev, meterId];
+          }
+        });
+      };
+
+    
     return (
         <Sheet modal={false}>
             <SheetTrigger asChild>
@@ -38,136 +56,37 @@ export const MultiSelect = () => {
                     <SheetDescription>You can choose which meters from which buildings to view on the dashboard.</SheetDescription>
                 </SheetHeader>
                 <Command>
-                    <CommandInput placeholder="Type a command or search..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup heading="EPA Sample Office">
-                            <CommandItem>
+                <CommandInput placeholder="Type a command or search..." />
+                <CommandList>
+                    {properties.map((property) => (
+                    <CommandGroup key={property.name} heading={property.name}>
+                        {Object.entries(property.meterAssociations).map(([meterType, meters]) => {
+                        if (meterType === 'energyMeters') {
+                            return null;
+                        }
+                        return (
+                            <div key={meterType}>
+                            <p className="font-bold">{meterType}</p>
+                            {meters.map((meter: any) => (
+                                <CommandItem key={meter.meterId}>
                                 <div className="flex items-center space-x-2">
-                                    <Checkbox id="terms1" 
-                                        checked={checked.includes("terms1")}
-                                        onCheckedChange={() => { 
-                                            setChecked(prev => {
-                                                const index = prev.indexOf("terms1");
-                                                if (index !== -1) {
-                                                    return prev.filter(item => item !== "terms1");
-                                                } else {
-                                                    return [...prev, "terms1"]
-                                                }
-                                            })
-                                        }}
+                                    <Checkbox
+                                    id={meter.meterId}
+                                    checked={checked.includes(meter.meterId)}
+                                    onCheckedChange={() => handleCheckboxChange(meter.meterId)}
                                     />
-
-                                    <label
-                                        htmlFor="terms1"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Meter 1
+                                    <label htmlFor={meter.meterId} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                    {meter.details.name}
                                     </label>
                                 </div>
-
-                                {/* Pass in the property name here so that the search bar can also search for properties */}
-                                <p className="sr-only" aria-hidden>EPA Sample Office</p>
-                            </CommandItem>
-                            <CommandItem>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox id="terms2" 
-                                        checked={checked.includes("terms2")}
-                                        onCheckedChange={() => { 
-                                            setChecked(prev => {
-                                                const index = prev.indexOf("terms2");
-                                                if (index !== -1) {
-                                                    return prev.filter(item => item !== "terms2");
-                                                } else {
-                                                    return [...prev, "terms2"]
-                                                }
-                                            })
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="terms2"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Meter 21
-                                    </label>
-                                </div>
-                            </CommandItem>
-                        </CommandGroup>
-
-                        <CommandSeparator />
-
-                        <CommandGroup heading="EPA Sample Laboratory">
-                            <CommandItem>
-                            <   div className="flex items-center space-x-2">
-                                    <Checkbox id="terms3" 
-                                        checked={checked.includes("terms3")}
-                                        onCheckedChange={() => { 
-                                            setChecked(prev => {
-                                                const index = prev.indexOf("terms3");
-                                                if (index !== -1) {
-                                                    return prev.filter(item => item !== "terms3");
-                                                } else {
-                                                    return [...prev, "terms3"]
-                                                }
-                                            })
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="terms3"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Meter 31
-                                    </label>
-                                </div>
-                            </CommandItem>
-                            <CommandItem>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox id="terms4" 
-                                        checked={checked.includes("terms4")}
-                                        onCheckedChange={() => { 
-                                            setChecked(prev => {
-                                                const index = prev.indexOf("terms4");
-                                                if (index !== -1) {
-                                                    return prev.filter(item => item !== "terms4");
-                                                } else {
-                                                    return [...prev, "terms4"]
-                                                }
-                                            })
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="terms4"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Meter 22
-                                    </label>
-                                </div>
-                            </CommandItem>
-                            <CommandItem>
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox id="terms5" 
-                                        checked={checked.includes("terms5")}
-                                        onCheckedChange={() => { 
-                                            setChecked(prev => {
-                                                const index = prev.indexOf("terms5");
-                                                if (index !== -1) {
-                                                    return prev.filter(item => item !== "terms5");
-                                                } else {
-                                                    return [...prev, "terms5"]
-                                                }
-                                            })
-                                        }}
-                                    />
-                                    <label
-                                        htmlFor="terms5"
-                                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Meter 34
-                                    </label>
-                                </div>
-                            </CommandItem>
-                        </CommandGroup>
-                    </CommandList>
+                                </CommandItem>
+                            ))}
+                            </div>
+                        );
+                        })}
+                    </CommandGroup>
+                    ))}
+                </CommandList>
                 </Command>
             </SheetContent>
         </Sheet>
