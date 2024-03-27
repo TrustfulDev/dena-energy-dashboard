@@ -60,7 +60,7 @@ export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
                 </div>
             </header>
 
-            <div className="flex-grow grid grid-cols-4">
+            <div className="flex-grow grid grid-cols-4 xl:gap-6 gap-2">
                 {checkedMetersInfo.map((info, index) => (
                     <MeterCard key={index} properties={properties} meter={info}/>
                 ))}

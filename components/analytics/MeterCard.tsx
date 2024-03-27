@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Card,
     CardContent,
@@ -15,12 +15,12 @@ import {
     CommandGroup,
     CommandInput,
     CommandItem,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { CheckSquare, ChevronsUpDown } from "lucide-react";
 import { PropertyDetails } from "@/lib/propertiesApi";
 
@@ -53,29 +53,47 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
     // Used for Pop-Over components (dropdown selection)
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");   // Stores name
+    const [totalUsage, setTotalUsage] = useState(0);
+    const [totalCost, setTotalCost] = useState(0);
+    const [monthlyMeterUsage, setMonthlyMeterUsage] = useState(0);
+    const [monthlyMeterCost, setMonthlyMeterCost] = useState(0);
     
-    let totalUsage = 0;
-    let totalCost = 0;
-    let monthlyMeterUsage = 0;
-    let monthlyMeterCost = 0;
-  
-    for(let i = 0; i < meter?.energyConsumption.length; i++){
-        let totalU = parseFloat(meter?.energyConsumption[i].usage);
-        totalUsage += isNaN(totalU) ? 0 : totalU;
-        let totalC = parseFloat(meter?.energyConsumption[i].cost);
-        totalCost += isNaN(totalC) ? 0 : totalC;
-    }
-    if(value){
+    useEffect(() => {
         for(let i = 0; i < meter?.energyConsumption.length; i++){
-            const selectedDate = meter?.energyConsumption[i].startDate + " - " + meter?.energyConsumption[i].endDate;
-            if(selectedDate === value){
-                let usage = parseFloat(meter?.energyConsumption[i].usage);
-                monthlyMeterUsage = isNaN(usage) ? 0 : usage;
-                let cost = parseFloat(meter?.energyConsumption[i].cost);
-                monthlyMeterCost = isNaN(cost) ? 0 : cost;    
-            }
+            let totalU = parseFloat(meter?.energyConsumption[i].usage);
+            setTotalUsage(isNaN(totalU) ? totalUsage + 0 : totalUsage + totalU);
+            let totalC = parseFloat(meter?.energyConsumption[i].cost);
+            setTotalCost(isNaN(totalC) ? totalCost + 0 : totalCost + totalC);
         }
+    }, []);
 
+    useEffect(() => {
+        if(value){
+            for(let i = 0; i < meter?.energyConsumption.length; i++){
+                const selectedDate = meter?.energyConsumption[i].startDate + " - " + meter?.energyConsumption[i].endDate;
+                if(selectedDate === value){
+                    let usage = parseFloat(meter?.energyConsumption[i].usage);
+                    setMonthlyMeterUsage(isNaN(usage) ? 0 : usage);
+                    let cost = parseFloat(meter?.energyConsumption[i].cost);
+                    setMonthlyMeterCost(isNaN(cost) ? 0 : cost);    
+                }
+            }
+        }   
+    },[value])
+
+    function formatDate(inputDate: string): string {
+        // Split the input date string into year, month, and day parts
+        const [year, month, day] = inputDate.split('-').map(Number);
+        const date = new Date(year, month - 1, day); // month is zero-based in JavaScript Date
+    
+        // Create a formatter with the desired format
+        const formatter = new Intl.DateTimeFormat('en-US', {
+            month: 'short', // Short month name
+            day: '2-digit', // Two-digit day
+            year: 'numeric' // Full year
+        });
+    
+        return formatter.format(date);
     }
        
     return (
@@ -99,11 +117,11 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-[280px] p-0">
-                            <Command>
+                            <Command className="max-h-[300px]">
                                 <CommandInput placeholder="Search bills..." className="h-9" />
                                 <CommandEmpty>No properties found.</CommandEmpty>
 
-                                <CommandGroup>
+                                <CommandGroup className="overflow-y-auto">
                                     {meter?.energyConsumption.map((entry:any) => (
                                     <CommandItem
                                         key={entry.meterId}
@@ -128,18 +146,34 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
                     </Popover>
             </CardHeader>
 
-            <CardContent>
-                <p>Meter overall Information</p>
-                <p>Usage:{totalUsage} </p>
-                <p>Cost:{totalCost}  </p>
-                <p>type:{meter?.details.type}  </p>
-                <p>name:{meter?.details.name} </p>
-                <p> unitOfMeasure:{meter?.details.unitOfMeasure} </p>
+            <CardContent className="mb-4">
+                <div className="flex gap-4 w-full">
+                    <Card className="w-full">
+                        <CardContent className="flex flex-col justify-center items-center px-6 py-4">
+                            <p className="text-xl font-bold">ALL-TIME COST</p>
+                            <p>${(Math.round(totalCost * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}  </p>
+                        </CardContent>
+                    </Card>
 
-                <p>Bill selected Information: {value}</p>
-                <p>Monthly Usage: {monthlyMeterUsage}</p>
-                <p>Monthly Cost: {monthlyMeterCost}</p>
-                
+                    <Card className="w-full">
+                        <CardContent className="flex flex-col justify-center items-center px-6 py-4">
+                            <p className="text-xl font-bold">ALL-TIME USAGE</p>
+                            <p>${(Math.round(totalUsage * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}  </p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <Card className="w-full mt-4">
+                    <CardHeader>
+                        <p className="text-xl font-bold">BILL INFORMATION: <span className="text-lg font-normal">{value}</span></p>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Usage: {monthlyMeterUsage} {meter?.details.unitOfMeasure}</p>
+                        <p>Cost: ${monthlyMeterCost}</p>
+                    </CardContent>
+                </Card>
+
+                <p className="text-sm text-accent-faded w-full text-center mt-2">{meter?.details.type}  </p>
             </CardContent>
         </Card>
     )
