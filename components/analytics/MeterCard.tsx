@@ -59,29 +59,44 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
     const [monthlyMeterCost, setMonthlyMeterCost] = useState(0);
     
     useEffect(() => {
-        for(let i = 0; i < meter?.energyConsumption.length; i++){
-            let totalU = parseFloat(meter?.energyConsumption[i].usage);
-            setTotalUsage(isNaN(totalU) ? totalUsage + 0 : totalUsage + totalU);
-            let totalC = parseFloat(meter?.energyConsumption[i].cost);
-            setTotalCost(isNaN(totalC) ? totalCost + 0 : totalCost + totalC);
+        let tempTotalUsage = 0;
+        let tempTotalCost = 0;
+        for (let i = 0; i < meter?.energyConsumption.length; i++) {
+            let quantityOrUsage = meter?.details.unitOfMeasure === "pounds" 
+                                  ? parseFloat(meter?.energyConsumption[i].quantity)
+                                  : parseFloat(meter?.energyConsumption[i].usage);                   
+            let cost = parseFloat(meter?.energyConsumption[i].cost);
+            if (!isNaN(quantityOrUsage)) {
+                tempTotalUsage += quantityOrUsage;
+            }
+            if (!isNaN(cost)) {
+                tempTotalCost += cost;
+            }
         }
-    }, []);
-
+        setTotalUsage(tempTotalUsage);
+        setTotalCost(tempTotalCost);
+    }, [meter]); 
+    
+    
     useEffect(() => {
         if(value){
             for(let i = 0; i < meter?.energyConsumption.length; i++){
                 const selectedDate = meter?.energyConsumption[i].startDate + " - " + meter?.energyConsumption[i].endDate;
                 if(selectedDate === value){
-                    let usage = parseFloat(meter?.energyConsumption[i].usage);
-                    setMonthlyMeterUsage(isNaN(usage) ? 0 : usage);
+                    let quantityOrUsage = meter?.details.unitOfMeasure === "pounds" 
+                                  ? parseFloat(meter?.energyConsumption[i].quantity)
+                                  : parseFloat(meter?.energyConsumption[i].usage);
+                    setMonthlyMeterUsage(isNaN( quantityOrUsage) ? 0 :  quantityOrUsage);
                     let cost = parseFloat(meter?.energyConsumption[i].cost);
-                    setMonthlyMeterCost(isNaN(cost) ? 0 : cost);    
+                    setMonthlyMeterCost(isNaN(cost) ? 0 : cost);  
+                    break;  
                 }
             }
         }   
     },[value])
 
     function formatDate(inputDate: string): string {
+        
         // Split the input date string into year, month, and day parts
         const [year, month, day] = inputDate.split('-').map(Number);
         const date = new Date(year, month - 1, day); // month is zero-based in JavaScript Date
@@ -95,7 +110,43 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
     
         return formatter.format(date);
     }
-       
+    function formatDateString(dateRange:string) {
+        if (!dateRange) { return " "; }
+
+        // Split the range into start and end dates
+        const [startDate, endDate] = dateRange.split(' - ');
+
+        function createDate(dateStr:string) {
+        const [year, month, day] = dateStr.split('-').map(num => parseInt(num, 10));
+            return new Date(year, month - 1, day);
+        }
+
+        const start = createDate(startDate);
+        const end = createDate(endDate);
+        const options = { year: 'numeric', month: 'short', day: '2-digit' };
+
+        // Format the dates
+        const formattedStart = start.toLocaleDateString('en-US', options as any);
+        const formattedEnd = end.toLocaleDateString('en-US', options as any);
+
+        // Combine the formatted dates
+        return `${formattedStart} - ${formattedEnd}`;
+      }
+   
+    function findProperty(meterid : string){
+        let propertyName = "";
+        properties.forEach(property => {
+            Object.values(property.meterAssociations).forEach(category => {
+                category.forEach((meter: any) => {
+                    if (meter.meterId === meterid) {
+                        propertyName = property.name;    
+                    }
+                });
+            });
+        });
+        return propertyName;
+    }
+      
     return (
       
         <Card className="col-span-2">
@@ -103,6 +154,7 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
                 <div>
                     <h1 className="text-3xl">{meter?.details.name}</h1>
                     <p className="flex items-center gap-1 text-sm">{meter?.meterId}</p>
+                    <p className="flex items-center gap-1 text-sm">{findProperty(meter?.meterId)}</p>
                 </div>
                 <Popover open={open} onOpenChange={setOpen}>
                         <PopoverTrigger asChild>
@@ -131,11 +183,11 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
                                             setOpen(false)
                                         }}
                                     >
-                                        {entry.startDate + " - " + entry.endDate}
+                                        {formatDate(entry.startDate) + " - " + formatDate(entry.endDate)}
                                         <CheckSquare
                                             className={cn(
                                                 "ml-auto h-4 w-4",
-                                                value === entry.startDate + " - " + entry.endDate ? "opacity-100" : "opacity-0"
+                                                value === entry.startDate + " - " + entry.endDate  ? "opacity-100" : "opacity-0"
                                             )}
                                         />
                                     </CommandItem>
@@ -158,14 +210,14 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
                     <Card className="w-full">
                         <CardContent className="flex flex-col justify-center items-center px-6 py-4">
                             <p className="text-xl font-bold">ALL-TIME USAGE</p>
-                            <p>${(Math.round(totalUsage * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}  </p>
+                            <p>{(Math.round(totalUsage * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}  </p>
                         </CardContent>
                     </Card>
                 </div>
 
                 <Card className="w-full mt-4">
                     <CardHeader>
-                        <p className="text-xl font-bold">BILL INFORMATION: <span className="text-lg font-normal">{value}</span></p>
+                        <p className="text-xl font-bold">BILL INFORMATION: <span className="text-lg font-normal">{formatDateString(value)}</span></p>
                     </CardHeader>
                     <CardContent>
                         <p>Usage: {monthlyMeterUsage} {meter?.details.unitOfMeasure}</p>

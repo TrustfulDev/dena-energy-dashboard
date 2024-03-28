@@ -36,7 +36,7 @@ function processMeterCard(properties: PropertyDetails[],checked: string[]): Mete
             });
         });
     });
-
+ 
   return checkedMetersInfo;
 }
 export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
