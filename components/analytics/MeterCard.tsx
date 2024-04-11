@@ -210,7 +210,7 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
                     <Card className="w-full">
                         <CardContent className="flex flex-col justify-center items-center px-6 py-4">
                             <p className="text-xl font-bold">ALL-TIME USAGE</p>
-                            <p>{(Math.round(totalUsage * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}  </p>
+                            <p>{(Math.round(totalUsage * 100) / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} {meter?.details.unitOfMeasure} </p>
                         </CardContent>
                     </Card>
                 </div>
@@ -220,8 +220,8 @@ export const MeterCard = ({ properties, meter}: MeterCardProps) => {
                         <p className="text-xl font-bold">BILL INFORMATION: <span className="text-lg font-normal">{formatDateString(value)}</span></p>
                     </CardHeader>
                     <CardContent>
-                        <p>Usage: {monthlyMeterUsage} {meter?.details.unitOfMeasure}</p>
-                        <p>Cost: ${monthlyMeterCost}</p>
+                        <p>Usage: {monthlyMeterUsage.toLocaleString()} {meter?.details.unitOfMeasure}</p>
+                        <p>Cost: ${monthlyMeterCost.toLocaleString()}</p>
                     </CardContent>
                 </Card>
 

@@ -34,6 +34,7 @@ async function fetchReport(id: string): Promise<Report[]> {
     const xml = await response.text();
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
+
     return new Promise((resolve, reject) => {
         parser.parseString(xml, (err: any, result: any) => {
             if (err) {

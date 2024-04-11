@@ -1,5 +1,5 @@
 "use client";
-import {  Cell, PieChart, Label, Pie, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {  Cell, PieChart, Label, LabelList,Pie, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 import {
   Card,
@@ -12,6 +12,7 @@ import {
 
 import { Landmark, Gauge, Thermometer } from 'lucide-react';
 import { PropertyDetails } from '@/lib/propertiesApi';
+
 // interface
 interface ConsumptionData {
   month: string;
@@ -32,42 +33,70 @@ interface ChartDataEntry {
   month: string;
   [key: string]: string | number;
 }
+interface CarbonData{
+  propertyId: string;
+  name: string;
+  value: number;
+  type: string;
+}
 // data units
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const { name, value, type } = payload[0].payload;
-    const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Natrual Gas' ? 'therm' : type === 'Cost' ? ' $' : '';
-    return (
-      <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
-        <p className="drop-shadow text-lg">{`${name}: ${value} ${unit}`}</p>
-      </div>
-    );
+    const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Natrual Gas' ? 'therm' : type === 'Cost' ? ' $' : 'Metric Tons CO2e';
+    if(unit !== ' $'){
+      return (
+          <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
+            <p className="drop-shadow text-lg">{`${name}: ${value.toLocaleString()} ${unit}`}</p>
+          </div>
+      );
+    }
+    else{
+      return (
+          <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
+            <p className="drop-shadow text-lg">{`${name}: ${unit} ${value.toLocaleString()} `}</p>
+          </div>
+      );
+    }
   }
   return null;
 };
 
 // colors for pie chart with padding angle 
-const COLORS = ['#CECE00', '#00C49F', '#FFBB28', '#FF8042'];
-
-// carbon footprint pie chart 
-const carbon_data = [
-  { name: 'Electricity', value: 400, fill: '#8884d8' },
-  { name: 'Water', value: 300, fill: '#82ca9d' },
-  { name: 'Waste', value: 300, fill: '#FF8042' },
-];
+const COLORS = ['#CECE00', '#00C49F', '#FFBB28', '#FF8042','#FF8082'];
 
 const renderCustomizedLabel = ({
-  cx, cy, midAngle, innerRadius, outerRadius, percent,
+  cx, cy, midAngle, innerRadius, outerRadius, percent,value
 }: any) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
   const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
   return (
     <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-      {`${(percent * 100).toFixed(0)} CO₂e`}
+      {`${value.toLocaleString()} `}
     </text>
   );
 };
+function CarbonFootprint(properties: PropertyDetails[]): CarbonData[] {
+  let carbon_data: CarbonData[] = [];
+  const emission = "totalLocationBasedGHGEmissions";
+  properties.forEach(property => {
+    const foundScores = property.metricScores.filter(score => score.name === emission);
+    if (foundScores.length > 0) {
+      carbon_data.push({
+        propertyId: property.id,
+        name: property.name,
+        value: Number(foundScores[0].value),
+        type: "carbon"
+      });
+    }
+  });
+  carbon_data.sort((a, b) => b.value - a.value);
+  if(carbon_data.length > 5){
+    carbon_data.slice(0, 5);
+  }
+  return carbon_data;
+}
 
 function OverallElectricityUsage(properties: PropertyDetails[]): ChartDataEntry[] {
   let overview_data: DataEntry[] = [];
@@ -323,6 +352,7 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
 }
 
 export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
+
   let totalNumberOfMeters = 0;
   let cost_data_added = 0;
   let numberOfProperties = 0;
@@ -330,6 +360,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
   let recentCost_data: ConsumptionData[] = [];
   let recentHighestConsumer_data: ConsumptionData[] = [];
   let changeinCost_data: ConsumptionData[] = [];
+  let carbon_data: CarbonData[] = [];
 
   if (properties && properties.length > 0) {
     // Process data for all properties focusing on the most recent data
@@ -342,6 +373,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
     cost_data_added = recentCost_data[0].value + recentCost_data[1].value + recentCost_data[2].value + recentCost_data[3].value + recentCost_data[4].value;
     totalNumberOfMeters = processedData.totalNumberOfMeters;
     numberOfProperties = properties.length;
+    carbon_data = CarbonFootprint(properties)
   }
   const Data = OverallElectricityUsage(properties);
   const chartData = Data.reverse();
@@ -380,7 +412,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                             key={propertyName}
                             type="monotone"
                             dataKey={propertyName}
-                            stroke={`#${Math.floor(Math.random()*16777215).toString(16)}`} // Random color for each line
+                            stroke={COLORS[index % COLORS.length]} 
                             activeDot={{ r: 8 }}
                           />
                         ))}
@@ -411,7 +443,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                         dataKey="value"
                         label={({ percent }) => `${(percent * 100).toFixed(2)}%`}
                       >
-                      <Label value={`Total: ${cost_data_added}`} position="center"  />
+                      <Label value={`Total: ${cost_data_added.toLocaleString()}`} position="center"  />
                         {recentCost_data.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
@@ -443,9 +475,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                       <XAxis dataKey="name" stroke="#FFF" />
                       <YAxis stroke="#FFF" />
                       <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                      <Legend />
-                      <Bar dataKey="value" name="Past Cost" fill="#82ca9d" />
-                      <Bar dataKey="0" name="Current Cost" fill="#8884d8" />  
+                      <Bar dataKey="value"  /> 
                     </BarChart>   
                   </ResponsiveContainer>
                 </CardContent>
@@ -486,11 +516,12 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                       }}
                     >
                       <CartesianGrid opacity={0.15} />
-                      <XAxis dataKey="name" stroke="#FFF" tick={{ fontSize: 13 }}/>
+                      <XAxis dataKey="name" stroke="#FFF" />
                       {/* <YAxis /> */}
-                      <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                      <Legend />
-                      <Bar dataKey="value" name="Utility Consumption"/>
+                      <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />                     
+                      <Bar dataKey="value" name="Utility Consumption">
+                          <LabelList dataKey="value" position="top" formatter={(value : any) => value.toLocaleString()}/> 
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -499,7 +530,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
             <Card className='flex flex-col 2xl:col-span-2 col-span-6 2xl:aspect-square xl:aspect-video aspect-square h-full w-full'>
                 <CardHeader>
                   <CardTitle>Carbon Footprint</CardTitle>
-                  <CardDescription>Monthly Total CO2 Emission</CardDescription>
+                  <CardDescription>Top Five CO2-producing Propeties</CardDescription>
                 </CardHeader>
 
                 <CardContent className='flex-grow'>
@@ -523,7 +554,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
                         labelLine={false}
                       >
                         {carbon_data.map((entry, index) => (
-                        <Cell key={'cell-${index}'} fill={entry.fill} />
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
                       <Tooltip content={<CustomTooltip />}/>

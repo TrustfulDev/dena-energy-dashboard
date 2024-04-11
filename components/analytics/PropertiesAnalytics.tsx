@@ -35,7 +35,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {  Cell, PieChart, LabelList, Pie, Sector, LineChart, Line, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LabelList, BarChart, Bar,XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
  
 
@@ -44,16 +44,27 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       const { name, value, type } = payload[0].payload;
       const unit = type === 'Electricity' ? ' kWh' : type === 'Waste' ? ' pounds' : type === 'Water' ? ' gallons' : type === 'Natrual Gas' ? 'therm' : type === 'Cost' ? ' $' : '';
-      return (
-        <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
-          <p className="drop-shadow text-lg">{`${name}: ${value} ${unit}`}</p>
-        </div>
-      );
+      if(unit !== ' $'){
+        return (
+            <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
+              <p className="drop-shadow text-lg">{`${name}: ${value.toLocaleString()} ${unit}`}</p>
+            </div>
+        );
+      }
+      else{
+        return (
+            <div className="custom-tooltip backdrop-blur-md text-neutral-200 p-4 font-bold rounded-sm">
+              <p className="drop-shadow text-lg">{`${name}: ${unit} ${value.toLocaleString()} `}</p>
+            </div>
+        );
+      }
+      
     }
     return null;
 };
 
 import { PropertyDetails } from "@/lib/propertiesApi";
+
 // Interfaces
 interface ConsumptionData {
     month: string;
@@ -62,6 +73,16 @@ interface ConsumptionData {
     type: string;
     fill: string;
 }
+function CarbonFootprint(selected: PropertyDetails) {
+    let carbon_data = 0;
+    const emission = "totalLocationBasedGHGEmissions";
+    const foundScores = selected.metricScores.filter(score => score.name === emission);
+    if (foundScores.length > 0) {  
+        carbon_data = Number(foundScores[0].value);
+    }
+    return carbon_data;
+  }
+  
 // selected property recent data process
 function processSelectedProperty(selected: PropertyDetails): { consumption_data: ConsumptionData[],cost_data: ConsumptionData[],highestConsumer_data: ConsumptionData[]} {
     let consumption_data: ConsumptionData[] = [];
@@ -210,6 +231,8 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
     let consumption_data: ConsumptionData[] = [];
     let cost_data: ConsumptionData[] = [];
     let highestConsumer_data: ConsumptionData[] = [];
+    let carbon = 0;
+    
 
     // default property 
     if(!selected && properties){setSelected(properties[0])}
@@ -219,6 +242,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
         consumption_data = processedData.consumption_data;
         cost_data = processedData.cost_data;
         highestConsumer_data = processedData.highestConsumer_data;
+        carbon = CarbonFootprint(selected);
     }
     // Used for Pop-Over components (dropdown selection)
     const [open, setOpen] = useState(false);
@@ -322,7 +346,9 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 <XAxis dataKey="name" stroke="#FFF"/>
                                 <YAxis stroke="#FFF"/>
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#fff"}} cursor={{fill: '#000', opacity: '20%'}} />
-                                <Bar dataKey="value" name="Recent Month Consumption"/>
+                                <Bar dataKey="value" >
+                                    <LabelList dataKey="value" position="top" formatter={(value : any) => value.toLocaleString()} /> 
+                                </Bar>
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
@@ -379,7 +405,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                         </CardHeader>
                         <CardContent className='flex gap-4 justify-center items-center h-full py-4 px-4 2xl:!px-12 z-[1]'>
                             <Footprints className="w-12 h-auto" /> 
-                            <p className="text-xl">40,000 CO<span className="text-xs">2</span></p>
+                            <p className="text-xl">{carbon} Metric Tons CO2e<span className="text-xs">2</span></p>
                         </CardContent>
                     </Card>
                 </div>
@@ -389,7 +415,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                         <CardTitle className="">
                             Highest Consumers
                         </CardTitle>
-                        <CardDescription>Find Which Meter Is Consuming The Highest</CardDescription>
+                        <CardDescription>Find Which Meter Is Costing The Most</CardDescription>
                     </CardHeader>
                     <CardContent className='flex-grow'>
                         <ResponsiveContainer width="100%" height="100%">
@@ -407,9 +433,8 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 <XAxis type="number" opacity={0.75} stroke="#FFF" /> 
                                 <YAxis dataKey="name" type="category" width={80} stroke="#FFF" /> 
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                                <Legend />
                                 <Bar dataKey="value" name="Recent Month Highest Cost Meter">
-                                    <LabelList dataKey="value" position="right"  /> 
+                                    <LabelList dataKey="value" position="right" formatter={(value : any) => value.toLocaleString()} /> 
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
@@ -435,12 +460,11 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 }}
                             >
                                 <CartesianGrid opacity={0.15} />
-                                <XAxis dataKey="name"  tick={{ fontSize: 10 }} angle={-25} textAnchor="end" interval={0} stroke="#FFF"/>
+                                <XAxis dataKey="name" opacity={0.75} stroke="#FFF"/>
                                 <YAxis hide />
                                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}} />
-                                <Legend /> 
                                 <Bar dataKey="value" name="Recent Month Cost">
-                                    <LabelList dataKey="value" position="top" /> 
+                                    <LabelList dataKey="value" position="top" formatter={(value : any) => value.toLocaleString()}/> 
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>
