@@ -37,27 +37,23 @@ interface EnergyConsumption {
     endDate: string;
     cost: string;
 }
-
-/*
-interface Metric {
-    name: string;
-    dataType: string;
-    value: string;
-    uom?: string;    
-}
-
-interface MetricScore {
-    propertyId: string;
-    month: string;
-    year: string;
-    measurementSystem: string;
-    metrics: Metric[];
-}
-*/
-
 //testing for socres
 interface Test {
 
+}
+
+interface Metric {
+    name: string;
+    dataType: string;
+    value: any; 
+    uom?: string;
+}
+
+interface MetricScore {
+    name: string;
+    dataType: string;
+    value: string | number | null;
+    uom?: string | null;
 }
 
 export interface PropertyDetails {
@@ -86,6 +82,7 @@ export interface PropertyDetails {
     energyConsumption: EnergyConsumption[];
 
     //metricScores: MetricScore[];
+    metricScores: MetricScore[];
 
 
 }
@@ -136,14 +133,44 @@ async function fetchScores(propertyId: string, id: string): Promise<Test[]> {
     const xml = await response.text();
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
+    /*
     return new Promise((resolve, reject) => {
         parser.parseString(xml, (err: any, result: any) => {
             if (err) {
                 console.error("fetchProperties FAILED... No account?");
                 reject(err);
             } else {
-                const test: Test[] = result;
+                const test: Test[] = result.propertyMetrics.metric;
+
+                console.log("gerereer", test);
+
                 resolve(test);
+            }
+        });
+    });
+    */
+    return new Promise((resolve, reject) => {
+        parser.parseString(xml, (err, result) => {
+            if (err) {
+                console.error("Failed to fetch scores for property ID:", propertyId, err);
+                reject(err);
+            } else {
+                const metrics = result.propertyMetrics.metric.map((metric: Metric) => {
+                    //handle value considering 'xsi:nil'
+                    let metricValue = metric.value;
+                    if (typeof metricValue === 'object' && metricValue['xsi:nil'] === 'true') {
+                        metricValue = null;
+                    }
+
+                    return {
+                        name: metric.name,
+                        dataType: metric.dataType,
+                        value: metricValue,
+                        uom: metric.uom || null //dollar checking
+                    };
+                });
+
+                resolve(metrics);
             }
         });
     });
@@ -157,6 +184,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
     //const scorePromise = await fetch(`${baseUrl}/api/energystar/meters/scores?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
 
     const [metersXml, detailsXml, associationsXml] = await Promise.all([metersPromise, detailsPromise, associationPromise]);
+    const metricScores = await fetchScores(propertyId, id);
 
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
@@ -340,13 +368,15 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
                     linkMeters: linkMeters,
                     meterAssociations: meterAssociations,
                     //test: test,
+                    metricScores: metricScores,
+
                     
                 });
             }
         });
     });
 
-    //console.log(propertyDetails.meterAssociations.electricMeters);
+    //console.log(propertyDetails);
     return propertyDetails;
 
 
@@ -359,7 +389,7 @@ export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
     await initializePool();
     
     const energystaraccount = await fetchEnergyStarAccount(userId || "");
-    const scoresData = await fetchScores("1234", userId || "");
+    //const scoresData = await fetchScores("31452836", userId || "");
     //console.log("what",scoresData);
 
     const properties = await fetchProperties(energystaraccount.id, userId || "");

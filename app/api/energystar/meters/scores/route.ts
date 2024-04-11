@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
   }
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
-  const url = `https://portfoliomanager.energystar.gov/ws/property/31452836`;
+  const url = `https://portfoliomanager.energystar.gov/ws/property/${propertyId}/design/metrics?measurementSystem=METRIC`;
 
   try {
     const apiRes = await fetch(url, {
