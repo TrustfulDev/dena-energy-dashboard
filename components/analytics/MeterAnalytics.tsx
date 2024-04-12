@@ -1,108 +1,70 @@
-"use client"
-
-// React & Packages
-import { useState, useEffect } from "react"
-import { format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react"
-
-// Components
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-  
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+"use client";
+import { PropertyDetails } from "@/lib/propertiesApi";
 import { MultiSelect } from "./multiSelect";
+import { MeterCard } from "./MeterCard";
+import { useState } from "react";
 
-export const MeterAnalytics = ({}) => {
-    // Used for Pop-Over components (dropdown selection)
-    const [date, setDate] = useState<Date>();                           // Stores date
+interface MeterAnalyticsProps {
+    properties: PropertyDetails[],  
+}
+interface Meter {
+    meterId: string;
+    energyConsumption?: EnergyConsumption;
+    details?: MeterDetails;
+}
 
-    // GET a list of all properties & Initialize Date
-    useEffect(() => {
-        setDate(new Date()); // Set current date as initial value
-    }, []);
-
-    // Used to fetch consumption Data for a meter
-    // useEffect(() => {
-    //     async function fetchMeters() {
-    //         // Check to make sure there are details
-    //         if (!propertyDetail) {
-    //             return;
-    //         }
-
-    //         try {
-    //             const response = fetch(`/api/energystar/meters/consumption?id=${propertyDetail?.linkMeters[1].id}`).then(res => res.text());
-    //             const xml = await response;
-    //             console.log(xml);
-    //             const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
-                
-    //             parser.parseString(xml, (err: any, result: any) => {
-    //                 if (err) {
-    //                     console.error('Could not parse XML', err);
-    //                 } else {
-    //                     console.log(result);
-    //                 }
-    //             })
-
-    //         } catch (error) {
-    //             console.error('An error occurred while fetching data:', error);
-    //         }
-    //     }
-
-    //     fetchMeters();
-    // }, [propertyDetail])
+interface MeterDetails {
+    type: string;
+    name: string;
+    unitOfMeasure: string;
+}
+interface EnergyConsumption {
+    id: string;
+    usage: string;
+    startDate: string;
+    endDate: string;
+    cost: string;
+}
+function processMeterCard(properties: PropertyDetails[],checked: string[]): Meter[]{
+    const checkedMetersInfo: Meter[] = [];
+    properties.forEach(property => {
+        Object.values(property.meterAssociations).forEach(category => {
+            category.forEach((meter: any) => {
+                if (checked.includes(meter.meterId)&& !checkedMetersInfo.some(m => m.meterId === meter.meterId)) {
+                    checkedMetersInfo.push(meter);
+                }
+            });
+        });
+    });
+ 
+  return checkedMetersInfo;
+}
+export const MeterAnalytics: React.FC<MeterAnalyticsProps> = ({
+    properties
+}) => {
+    const [checked, setChecked] = useState<string[]>([]);
+    const checkedMetersInfo: Meter[] =  processMeterCard(properties,checked);
+    
 
     return (
         <>
-            <header className="flex gap-2 justify-between mb-1">
-                {/* Name & Address */}
+            <header className="flex gap-2 justify-between mb-2">
                 <div>
                     <h1 className="text-3xl min-[1930px]:text-4xl capitalize">Select Meters To View</h1>
                     <p className="flex items-center gap-1 text-sm">
-                        Meters Selected: 0
+                        Meters Selected: {checked.length}
                     </p>
                 </div>
-
-                {/* Command + Date */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-                    <MultiSelect />
-
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                    "w-[280px] justify-start text-left font-normal",
-                                    !date && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {date ? format(date, "PPP") : <span>Pick a date</span>}
-                            </Button>
-                        </PopoverTrigger>
-
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={date}
-                                onSelect={setDate}
-                                disabled={(date) =>
-                                    date > new Date() || date < new Date("1900-01-01")
-                                }
-                                initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
+                    <MultiSelect properties={properties} checked={checked} setChecked={setChecked}/>
                 </div>
             </header>
 
-            <div className="flex-grow">
-                Test
-            </div>
+            <div className="flex-grow grid grid-cols-4 xl:gap-6 gap-2">
+                {checkedMetersInfo.map((info, index) => (
+                    <MeterCard key={index} properties={properties} meter={info}/>
+                ))}
+            </div>    
         </>
     )
 }

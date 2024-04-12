@@ -1,6 +1,10 @@
-import { rejects } from 'assert';
+import { initializePool } from '@/utils/database';
+import { auth } from '@clerk/nextjs/server';
 import xml2js from 'xml2js';
 
+interface EnergyStarAccount {
+    id: string;
+}
 interface Property {
     id: string;
     hint: string;
@@ -22,6 +26,8 @@ interface MeterAssociation {
     energyMeters: Meter[];
     waterMeters: Meter[];
     wasteMeters: Meter[];
+    electricMeters: Meter[];
+    naturalGasMeters: Meter[];
 }
 
 interface EnergyConsumption {
@@ -30,6 +36,24 @@ interface EnergyConsumption {
     startDate: string;
     endDate: string;
     cost: string;
+}
+//testing for socres
+interface Test {
+
+}
+
+interface Metric {
+    name: string;
+    dataType: string;
+    value: any; 
+    uom?: string;
+}
+
+interface MetricScore {
+    name: string;
+    dataType: string;
+    value: string | number | null;
+    uom?: string | null;
 }
 
 export interface PropertyDetails {
@@ -53,21 +77,46 @@ export interface PropertyDetails {
 
     linkMeters: Property[]; // Changed linkMeters to use Property interface directly
 
-    meterAssociations: MeterAssociation[];
+    meterAssociations: MeterAssociation;
 
     energyConsumption: EnergyConsumption[];
 
+    //metricScores: MetricScore[];
+    metricScores: MetricScore[];
+
+
 }
 
-async function fetchProperties(): Promise<Property[]> {
-    const response = await fetch('/api/energystar/properties');
+async function fetchEnergyStarAccount(id: string): Promise<EnergyStarAccount> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/energystar/account?id=${id}`);
     const xml = await response.text();
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
     return new Promise((resolve, reject) => {
         parser.parseString(xml, (err: any, result: any) => {
             if (err) {
-                console.error('Could not parse XML', err);
+                console.error("fetchProperties FAILED... No account?");
+                reject(err);
+            } else {
+                const energystaraccount: EnergyStarAccount = result.account;
+                resolve(energystaraccount);
+            }
+        });
+    });
+
+}
+
+async function fetchProperties(account: string, id: string): Promise<Property[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/energystar/properties?id=${id}&account=${account}`, { next: { tags: ['energystar_properties'] } });
+    const xml = await response.text();
+    const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+
+    return new Promise((resolve, reject) => {
+        parser.parseString(xml, (err: any, result: any) => {
+            if (err) {
+                console.error("fetchProperties FAILED... No account?");
                 reject(err);
             } else {
                 const properties: Property[] = result.response.links.link;
@@ -77,19 +126,72 @@ async function fetchProperties(): Promise<Property[]> {
     });
 }
 
-async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails> {
-    const metersPromise = fetch(`/api/energystar/meters?id=${propertyId}`).then(res => res.text());
-    const detailsPromise = fetch(`/api/energystar/properties_detail?id=${propertyId}`).then(res => res.text());
-    const associationPromise = fetch(`/api/energystar/meters/property_meters_ids?id=${propertyId}`).then(res => res.text());
+//testing
+async function fetchScores(propertyId: string, id: string): Promise<Test[]> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const response = await fetch(`${baseUrl}/api/energystar/meters/scores?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
+    const xml = await response.text();
+    const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+
+    /*
+    return new Promise((resolve, reject) => {
+        parser.parseString(xml, (err: any, result: any) => {
+            if (err) {
+                console.error("fetchProperties FAILED... No account?");
+                reject(err);
+            } else {
+                const test: Test[] = result.propertyMetrics.metric;
+
+                console.log("gerereer", test);
+
+                resolve(test);
+            }
+        });
+    });
+    */
+    return new Promise((resolve, reject) => {
+        parser.parseString(xml, (err, result) => {
+            if (err) {
+                console.error("Failed to fetch scores for property ID:", propertyId, err);
+                reject(err);
+            } else {
+                const metrics = result.propertyMetrics.metric.map((metric: Metric) => {
+                    //handle value considering 'xsi:nil'
+                    let metricValue = metric.value;
+                    if (typeof metricValue === 'object' && metricValue['xsi:nil'] === 'true') {
+                        metricValue = null;
+                    }
+
+                    return {
+                        name: metric.name,
+                        dataType: metric.dataType,
+                        value: metricValue,
+                        uom: metric.uom || null //dollar checking
+                    };
+                });
+
+                resolve(metrics);
+            }
+        });
+    });
+}
+
+async function fetchPropertyDetails(propertyId: string, id: string): Promise<PropertyDetails> {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const metersPromise = await fetch(`${baseUrl}/api/energystar/meters?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    const detailsPromise = await fetch(`${baseUrl}/api/energystar/properties_detail?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    const associationPromise = await fetch(`${baseUrl}/api/energystar/meters/property_meters_ids?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
+    //const scorePromise = await fetch(`${baseUrl}/api/energystar/meters/scores?id=${propertyId}&userId=${id}`, { next: { tags: ['energystar_properties'] } }).then(res => res.text());
 
     const [metersXml, detailsXml, associationsXml] = await Promise.all([metersPromise, detailsPromise, associationPromise]);
+    const metricScores = await fetchScores(propertyId, id);
 
     const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
 
     const linkMeters: Property[] = await new Promise((resolve, reject) => {
         parser.parseString(metersXml, (err: any, result: any) => {
             if (err) {
-                console.error('Failed to parse meters XML', err);
+                console.error('fetchPropertyDetails FAILED...', err);
                 reject(err);
             } else {
                 resolve(result.response.links.link);
@@ -101,13 +203,15 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
     const meterAssociations: MeterAssociation = await new Promise((resolve, reject) => {
         parser.parseString(associationsXml, (err: any, result: any) => {
             if (err) {
-                console.error('Failed to parse associations XML', err);
+                console.error('fetchPropertyDetails: Failed to parse meterAssociations XML', err);
                 reject(err);
             } else {
                 const associations: MeterAssociation = {
                     energyMeters: [],
                     waterMeters: [],
-                    wasteMeters: []
+                    wasteMeters: [],
+                    electricMeters: [],
+                    naturalGasMeters: [],
                 };
 
                 if (result.meterPropertyAssociationList.energyMeterAssociation?.meters?.meterId) {
@@ -130,18 +234,41 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
         });
     });
 
+        //split the gas and electric
+        await Promise.all(meterAssociations.energyMeters.map(async (meter) => {
+            const meterDetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
+            const meterDetailXml = await meterDetailResponse.text();
+        
+            return new Promise<void>((resolve, reject) => {
+                parser.parseString(meterDetailXml, (err: any, result: any) => {
+                    if (err) {
+                        console.error(`fetchPropertyDetails: Failed to parse meter detail XML for meter ${meter.meterId}`, err);
+                        reject(err);
+                    } else {
+                        const meterType = result.meter.type;
+                        if (meterType === 'Electric') {
+                            meterAssociations.electricMeters.push(meter);
+                        } else if (meterType === 'Natural Gas') {
+                            meterAssociations.naturalGasMeters.push(meter);
+                        }
+                        resolve();
+                    }
+                });
+            });
+        }));
+
     //fetch EnergyConsumption data for each energy meter
     for (let meter of meterAssociations.energyMeters) {
-        const consumptionResponse = await fetch(`/api/energystar/meters/consumption?id=${meter.meterId}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`/api/energystar/meters/meter?id=${meter.meterId}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {
             parser.parseString(consumptionXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.energyConsumption = result.meterData.meterConsumption;
@@ -153,7 +280,7 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
         await new Promise<void>((resolve, reject) => {
             parser.parseString(meterdetailXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.details = result.meter;
@@ -165,16 +292,16 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
 
     //fetch EnergyConsumption data for each water meter
     for (let meter of meterAssociations.waterMeters) {
-        const consumptionResponse = await fetch(`/api/energystar/meters/consumption?id=${meter.meterId}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`/api/energystar/meters/meter?id=${meter.meterId}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {
             parser.parseString(consumptionXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.energyConsumption = result.meterData.meterConsumption;
@@ -186,7 +313,7 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
         await new Promise<void>((resolve, reject) => {
             parser.parseString(meterdetailXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.details = result.meter;
@@ -198,16 +325,16 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
 
     //fetch EnergyConsumption data for each waste meter
     for (let meter of meterAssociations.wasteMeters) {
-        const consumptionResponse = await fetch(`/api/energystar/meters/consumption/waste?id=${meter.meterId}`);
+        const consumptionResponse = await fetch(`${baseUrl}/api/energystar/meters/consumption/waste?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const consumptionXml = await consumptionResponse.text();
 
-        const meterdetailResponse = await fetch(`/api/energystar/meters/meter?id=${meter.meterId}`);
+        const meterdetailResponse = await fetch(`${baseUrl}/api/energystar/meters/meter?id=${meter.meterId}&userId=${id}`, { next: { tags: ['energystar_properties'] } });
         const meterdetailXml = await meterdetailResponse.text();
 
         await new Promise<void>((resolve, reject) => {
             parser.parseString(consumptionXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.energyConsumption = result.wasteDataList.wasteData;
@@ -219,7 +346,7 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
         await new Promise<void>((resolve, reject) => {
             parser.parseString(meterdetailXml, (err: any, result: any) => {
                 if (err) {
-                    console.error(`Failed to parse consumption XML for meter ${meter.meterId}`, err);
+                    console.error(`fetchPropertyDetails: Failed to parse consumption XML for meter ${meter.meterId}`, err);
                     reject(err);
                 } else {
                     meter.details = result.wasteMeter;
@@ -232,7 +359,7 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
     const propertyDetails: PropertyDetails = await new Promise((resolve, reject) => {
         parser.parseString(detailsXml, (err: any, result: any) => {
             if (err) {
-                console.error('Failed to parse property details XML', err);
+                console.error('fetchPropertyDetails: Failed to parse property details XML', err);
                 reject(err);
             } else {
                 resolve({
@@ -240,18 +367,33 @@ async function fetchPropertyDetails(propertyId: string): Promise<PropertyDetails
                     id: propertyId,
                     linkMeters: linkMeters,
                     meterAssociations: meterAssociations,
+                    //test: test,
+                    metricScores: metricScores,
+
                     
                 });
             }
         });
     });
 
+    //console.log(propertyDetails);
     return propertyDetails;
+
+
 }
 
 
 export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
-    const properties = await fetchProperties();
-    const propertyDetailsPromises = properties.map(property => fetchPropertyDetails(property.id));
+    const { userId } = auth();
+
+    await initializePool();
+    
+    const energystaraccount = await fetchEnergyStarAccount(userId || "");
+    //const scoresData = await fetchScores("31452836", userId || "");
+    //console.log("what",scoresData);
+
+    const properties = await fetchProperties(energystaraccount.id, userId || "");
+
+    const propertyDetailsPromises = properties.map(property => fetchPropertyDetails(property.id, userId || ""));
     return await Promise.all(propertyDetailsPromises);
 }

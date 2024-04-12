@@ -4,13 +4,18 @@ import { Button } from "@/components/ui/button";
 interface ReportStatementsProps {
   reportName: string;
   date: string;
+  downloadUrl: string;
+
 }
 
 const ReportStatements: React.FC<ReportStatementsProps> = ({ 
   reportName, 
-  date 
+  date,
+  downloadUrl,
+
 }) => {
-  // Implement downloads here
+
+  //console.log('ppppppppp', downloadUrl);
 
   return (
     <>
@@ -19,8 +24,9 @@ const ReportStatements: React.FC<ReportStatementsProps> = ({
           <h1 className="text-primary-text">{reportName}</h1>
           <p className="text-primary-text text-opacity-75 text-sm pb-4">{date}</p>
         </div>
-
-        <Button size="icon" variant="ghost"><Download /></Button>
+        
+        <Button asChild size="icon" variant="ghost"><a href={downloadUrl} download><Download /></a></Button> 
+        
       </div>
       <hr className="bg-white border-none h-[1px] mb-4"/>
     </>

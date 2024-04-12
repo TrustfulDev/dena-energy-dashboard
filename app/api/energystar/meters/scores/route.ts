@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(req: NextRequest) {
 
   const {searchParams} = new URL(req.url||"");
-  const meterId = searchParams.get("id");
+  const propertyId = searchParams.get("id");
   const userId = searchParams.get("userId");
   const connection = await getPool();
 
@@ -19,18 +19,19 @@ export async function GET(req: NextRequest) {
     FROM ENERGYSTAR
     WHERE ClerkUID = ?
   `
-  try {
-
+  
+  try{
     const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
     if ( rows.length > 0 ){
       username = rows[0].Username;
       password = rows[0].Password; 
-
+      
     }else {
       return new NextResponse("Can't find aaccount", { status: 400 }) 
     }
-  }catch (error: any){
+
+  }catch (error: any) {
 
     console.error('Database query error:', error);
     return new NextResponse("Internal Server Error", { status: 500 });
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
   }
 
   const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
-  const url = `https://portfoliomanager.energystar.gov/ws/meter/${meterId}/wasteData`;
+  const url = `https://portfoliomanager.energystar.gov/ws/property/${propertyId}/design/metrics?measurementSystem=METRIC`;
 
   try {
     const apiRes = await fetch(url, {
@@ -59,4 +60,5 @@ export async function GET(req: NextRequest) {
   } catch (error : any) {
     return new Response (error.message);
   }
+  
 }
