@@ -9,7 +9,7 @@ export default function SignupPage() {
         appearance={{
           elements: {
             rootBox: "w-full",
-            card: "bg-transparent b-none shadow-none p-0 m-0 max-w-none w-full",
+            card: "bg-transparent b-none shadow-none p-0 pl-4 m-0 max-w-none w-full",
             headerTitle: "hidden",
             headerSubtitle: "hidden",
             socialButtonsBlockButton: "bg-foreground text-background hover:bg-indigo-300",
