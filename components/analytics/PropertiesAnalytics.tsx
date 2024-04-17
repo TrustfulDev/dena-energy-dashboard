@@ -284,6 +284,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                                 role="combobox"
                                 aria-expanded={open}
                                 className="w-[280px] justify-between"
+                                aria-label='select property'
                             >
                                 {/* THE INTIAL/DEFAULT VALUE set here, we should change it to use the first possible property */}
                                 {value
