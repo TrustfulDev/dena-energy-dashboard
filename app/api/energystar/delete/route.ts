@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getPool } from "@/utils/database";
 import { auth } from "@clerk/nextjs";
-import { revalidateTag } from 'next/cache';
+import action from '@/lib/revalidateUtil';
 
 export async function POST() {
-    const { userId } = auth();
+    const { userId } = await auth();
     const connection = await getPool();
 
     try {
@@ -15,7 +15,7 @@ export async function POST() {
         const deleteQuery = 'DELETE FROM ENERGYSTAR WHERE ClerkUID = ?';
         await connection.execute(deleteQuery, [userId]);
         
-        revalidateTag('energystar_properties');
+        action();
         return new NextResponse("Row successfully deleted", {status: 200});
     } catch (error) {
         console.error('Error deleting row:', error);

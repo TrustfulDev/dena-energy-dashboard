@@ -384,7 +384,7 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
 
 export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
-    const { userId } = auth();
+    const { userId } = await auth();
 
     await initializePool();
     

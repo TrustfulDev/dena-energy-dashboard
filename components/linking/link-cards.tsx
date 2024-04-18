@@ -30,6 +30,8 @@ const LinkCards: React.FC<LinkCardsProps> = ({
 
   useEffect(() => {
     const getData = async () => {
+      if (disabled) return;
+
       const linked = await fetch(`/api/${api}/linking/`, {
         method: 'GET',
       });
@@ -38,7 +40,7 @@ const LinkCards: React.FC<LinkCardsProps> = ({
         const data = await linked.json();
         setUsername(data.username);
       } else {
-        console.error("Failed to fetch:", linked.statusText);
+        console.error("LINK-CARDS - Failed to fetch:", linked.statusText);
       }
     }
 

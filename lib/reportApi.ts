@@ -93,7 +93,7 @@ async function fetchReportDetail(reportId: string, userId: string): Promise<Repo
 
 
 export async function fetchAllReports(): Promise<ReportDetail[]> {
-    const { userId } = auth();
+    const { userId } = await auth();
     //console.log("what about here, ", userId);
     await initializePool();
     const reports = await fetchReport(userId || "");

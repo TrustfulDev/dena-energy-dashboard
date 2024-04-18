@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs";
 import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
-import { revalidateTag } from "next/cache";
+import action from "@/lib/revalidateUtil";
 
 export async function POST(
     req: Request,
@@ -10,15 +10,14 @@ export async function POST(
     const connection = await getPool();
 
     try {
-        const { userId } = auth();
+        const { userId } = await auth();
         const currUser = await currentUser();
-
-        const { username, password } = await req.json();
-
         const firstname = currUser?.firstName;
         const lastname = currUser?.lastName;
+        
+        const { username, password } = await req.json();
 
-        if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
+        if (!userId) return new NextResponse("ENERGY STAR LINKING - Unauthorized Access [UserId]", { status: 401 });
 
         //--------------
         //fetch check account valid in energystar environment first
@@ -33,11 +32,11 @@ export async function POST(
         });
 
         if (!energyStarResponse.ok) {
-            console.log("EnergyStar Linking route.ts: account NOTTTT found!!!!!!")
+            console.log("ENERGY STAR LINKING - Account not found!")
 
-            return new NextResponse("EnergyStar account validation failed", { status: 401 });
+            return new NextResponse("ENERGY STAR LINKING - Account validation failed!", { status: 401 });
         }else {
-            console.log("EnergyStar Linking route.ts: account found!!!!!!")
+            console.log("ENERGY STAR LINKING - Account verified!")
         }
         //----------------------
 
@@ -58,20 +57,20 @@ export async function POST(
         `;
         await connection.execute(energyStarInsertQuery, [username, password, userId]);
         
-        revalidateTag('energystar_properties');
-        return new NextResponse("Account linked successfully", { status: 200 });
+        action();
+        return new NextResponse("ENERGY STAR LINKING - Account linked successfully!", { status: 200 });
     } catch(err: any) {
         if (err.errno === 1062) {
-            return new NextResponse("Account already linked", { status: 409 });
+            return new NextResponse("ENERGY STAR LINKING - Account already linked!", { status: 409 });
         }
-        return new NextResponse("Internal Error", { status: 500 });
+        return new NextResponse("ENERGY STAR LINKING - Internal Error!", { status: 500 });
     }
 }
 
 export async function GET() {
 
-    const { userId } = auth();
-    if (!userId) return new NextResponse("Unauthorized Access", { status: 401 });
+    const { userId } = await auth();
+    if (!userId) return new NextResponse("ENERGY STAR LINKING - Unauthorized Access", { status: 401 });
     const connection = await getPool();
 
     //return NextResponse.json({ username: null }, { status: 200 })
@@ -91,10 +90,10 @@ export async function GET() {
             return NextResponse.json({ username: Username }, { status: 200 })
 
         } else {
-            return NextResponse.json({ username: null }, { status: 400 })
+            return NextResponse.json({ username: null }, { status: 200 })
         }
     }catch (error: any){
-        console.error('Database query error:', error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        console.error('ENERGY STAR LINKING - Database query error: ', error);
+        return new NextResponse("ENERGY STAR LINKING - Internal Server Error", { status: 500 });
     }
 }
