@@ -19,7 +19,7 @@ export default function SignInPage() {
             formFieldLabel: "text-foreground text-base",
             formButtonPrimary: "bg-primary text-foreground text-base hover:bg-indigo-500",
             footerActionText: "text-foreground text-base",
-            footerActionLink: "text-indigo-500 hover:text-indigo-400 text-base"
+            footerActionLink: "text-indigo-500 hover:text-indigo-400 text-base",
           }
         }}
       />

@@ -8,7 +8,7 @@ export default async function Reports() {
     //console.log("adasdas", data);
 
     return (
-        <div className="mx-4 md:m-0 overflow-y-auto">
+        <div className="flex flex-grow flex-col gap-4 mx-4 md:m-0 overflow-y-auto pr-4">
            {data && data.length > 0 ? (
                 data.map((report, index) => (
                     <ReportStatements 

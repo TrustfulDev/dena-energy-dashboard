@@ -96,7 +96,7 @@ async function fetchEnergyStarAccount(id: string): Promise<EnergyStarAccount> {
     return new Promise((resolve, reject) => {
         parser.parseString(xml, (err: any, result: any) => {
             if (err) {
-                console.error("fetchProperties FAILED... No account?");
+                console.error("propertiesApi.ts ERROR: fetchEnergyStarAccount");
                 reject(err);
             } else {
                 const energystaraccount: EnergyStarAccount = result.account;
@@ -116,7 +116,7 @@ async function fetchProperties(account: string, id: string): Promise<Property[]>
     return new Promise((resolve, reject) => {
         parser.parseString(xml, (err: any, result: any) => {
             if (err) {
-                console.error("fetchProperties FAILED... No account?");
+                console.error("propertiesApi.ts ERROR: fetchProperties");
                 reject(err);
             } else {
                 const properties: Property[] = result.response.links.link;

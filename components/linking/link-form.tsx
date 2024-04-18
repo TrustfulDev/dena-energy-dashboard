@@ -25,12 +25,14 @@ const formSchema = z.object({
 
 interface LinkFormProps {
     api: string,
-    callback: Function
+    callback: Function,
+    disable?: boolean,
 }
 
 export const LinkForm: React.FC<LinkFormProps> = ({
     api,
-    callback
+    callback,
+    disable
 }) => {
     const [loading, setLoading] = useState(false);
 
@@ -80,7 +82,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
                             <FormLabel className="font-bold ml-3 absolute -top-[7px] bg-background px-2">USERNAME</FormLabel>
 
                             <FormControl>
-                                <Input disabled={loading} placeholder="Enter Username" {...field} className="!mt-1 !py-6" />
+                                <Input disabled={loading || disable} placeholder="Enter Username" {...field} className="!mt-1 !py-6" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -93,14 +95,14 @@ export const LinkForm: React.FC<LinkFormProps> = ({
                         <FormItem className="relative">
                             <FormLabel className="font-bold ml-3 absolute -top-[7px] bg-background px-2">PASSWORD</FormLabel>
                             <FormControl>
-                                <Input disabled={loading} placeholder="Enter Password" type="password" {...field} className="!mt-1 !py-6" />
+                                <Input disabled={loading || disable} placeholder="Enter Password" type="password" {...field} className="!mt-1 !py-6" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 
-                <Button disabled={loading} variant="outline" type="submit" className="border-2 border-primary">Link Account</Button>
+                <Button disabled={loading || disable} variant="outline" type="submit" className="border-2 border-primary">Link Account</Button>
             </form>
         </Form>
     )

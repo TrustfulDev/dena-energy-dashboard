@@ -19,16 +19,17 @@ const ReportStatements: React.FC<ReportStatementsProps> = ({
 
   return (
     <>
-      <div className="flex justify-between">
-        <div className="justify-start">
-          <h1 className="text-primary-text">{reportName}</h1>
-          <p className="text-primary-text text-opacity-75 text-sm pb-4">{date}</p>
+      <div>
+        <div className="flex justify-between">
+          <div className="justify-start">
+            <h1 className="text-primary-text">{reportName}</h1>
+            <p className="text-primary-text text-opacity-75 text-sm pb-4">{date}</p>
+          </div>
+          
+          <Button asChild size="icon" variant="ghost"><a href={downloadUrl} download><Download /></a></Button> 
         </div>
-        
-        <Button asChild size="icon" variant="ghost"><a href={downloadUrl} download><Download /></a></Button> 
-        
+        <hr className="bg-white border-none w-full h-[1px] mx-auto"/>
       </div>
-      <hr className="bg-white border-none h-[1px] mb-4"/>
     </>
   );
 };

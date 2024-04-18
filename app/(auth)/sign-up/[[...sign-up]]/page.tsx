@@ -19,7 +19,12 @@ export default function SignupPage() {
             formFieldLabel: "text-foreground",
             formButtonPrimary: "bg-primary text-foreground text-base hover:bg-indigo-500mt-6",
             footerActionText: "text-foreground text-base",
-            footerActionLink: "text-indigo-500 hover:text-indigo-400 text-base"
+            footerActionLink: "text-indigo-500 hover:text-indigo-400 text-base",
+            identityPreview: "bg-white",
+            formHeaderTitle: "text-foreground",
+            formHeaderSubtitle: "text-foreground",
+            otpCodeFieldInput: "border-white text-foreground outline-none",
+            formResendCodeLink: "text-indigo-500 hover:text-indigo-400"
           }
         }}
       />

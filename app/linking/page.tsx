@@ -11,19 +11,22 @@ const companies = [
         img: energystar,
         api: "energystar",
         name: "Energy Star Portfolio Manager",
-        description: "Energy Star is a program run by the U.S. Environmental Protection Agency and U.S. Department of Energy that promotes energy efficiency."
+        description: "Energy Star is a program run by the U.S. Environmental Protection Agency and U.S. Department of Energy that promotes energy efficiency.",
+        disabled: false
     },
     {
         img: pge,
         api: "",
         name: "Pacific Gas and Electric Company",
-        description: "Pacific Gas and Electric Company (PG&E) is one of the largest combined natural gas and electric companies in the United States."
+        description: "Pacific Gas and Electric Company (PG&E) is one of the largest combined natural gas and electric companies in the United States.",
+        disabled: true
     },
     {
         img: ae,
         api: "",
         name: "AccuEnergy",
-        description: "Accuenergy manufactures and designs industrial power and energy meter solutions. Perfect for sub-meters."
+        description: "Accuenergy manufactures and designs industrial power and energy meter solutions. Perfect for sub-meters.",
+        disabled: true
     },
 ]
 
@@ -37,6 +40,7 @@ export default function Linking() {
                     api={company.api}
                     companyName={company.name}
                     description={company.description}
+                    disabled={company.disabled}
                 />
             ))}
         </div> 

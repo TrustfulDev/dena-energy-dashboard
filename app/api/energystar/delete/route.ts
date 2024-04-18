@@ -17,7 +17,6 @@ export async function POST() {
         
         revalidateTag('energystar_properties');
         return new NextResponse("Row successfully deleted", {status: 200});
-
     } catch (error) {
         console.error('Error deleting row:', error);
         return new NextResponse("Internal Server Error", {status: 500});

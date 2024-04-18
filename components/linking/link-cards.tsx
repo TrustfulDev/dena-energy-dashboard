@@ -15,6 +15,7 @@ interface LinkCardsProps {
   api: string,
   companyName: string,
   description: string, 
+  disabled: boolean
 }
 
 
@@ -23,12 +24,13 @@ const LinkCards: React.FC<LinkCardsProps> = ({
   api,
   companyName, 
   description, 
+  disabled
 }) => {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
-      const linked = await fetch(`http://localhost:3000/api/${api}/linking/`, {
+      const linked = await fetch(`/api/${api}/linking/`, {
         method: 'GET',
       });
     
@@ -88,7 +90,7 @@ const LinkCards: React.FC<LinkCardsProps> = ({
             <Button variant="destructive" type="button" onClick={onDelete}>Unlink Account</Button>
           </div>
           :
-          <LinkForm api={api} callback={setUsername} />
+          <LinkForm api={api} callback={setUsername} disable={disabled} />
         }
         
       </CardContent>

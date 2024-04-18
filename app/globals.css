@@ -34,36 +34,36 @@
     --ring: 228, 6%, 15%;
  
     --radius: 0.5rem;
-}
+  }
  
-.dark {
-  --background: 224, 71%, 4%; /* #030712 - Gray 950 */
-  /* --foreground: 210, 20%, 98%; */
+  .dark {
+    --background: 224, 71%, 4%; /* #030712 - Gray 950 */
+    /* --foreground: 210, 20%, 98%; */
 
-  --popover: 224, 71%, 4%; /* #030712 - Gray 950 */
-  --popover-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
+    --popover: 224, 71%, 4%; /* #030712 - Gray 950 */
+    --popover-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
 
-  --primary: 242, 47%, 34%; /* #312e81 - Indigo 900 */
-  --primary-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
+    --primary: 242, 47%, 34%; /* #312e81 - Indigo 900 */
+    --primary-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
 
-  --secondary: 240, 7%, 23%;
-  --secondary-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
+    --secondary: 240, 7%, 23%;
+    --secondary-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
 
-  --muted: 240, 7%, 23%;
-  --muted-foreground: rgba(236, 243, 246, 0.75); /* Gray 50 - 75% opacity */
+    --muted: 240, 7%, 23%;
+    --muted-foreground: rgba(236, 243, 246, 0.75); /* Gray 50 - 75% opacity */
 
-  /* Used for hover effects on buttons, dropdown items, etc... */
-  --accent: rgba(30, 27, 75, 0.5); /* #312e81 - Indigo 900 */
-  --accent-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
-  --accent-faded: rgba(236, 243, 246, 0.75); /* Gray 50 - 75% opacity */
+    /* Used for hover effects on buttons, dropdown items, etc... */
+    --accent: rgba(30, 27, 75, 0.5); /* #312e81 - Indigo 900 */
+    --accent-foreground: 210, 20%, 98%; /* #f9fafb - Gray 50 */
+    --accent-faded: rgba(236, 243, 246, 0.75); /* Gray 50 - 75% opacity */
 
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 240, 33%, 99%; /* #FDFDFE - Text */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 240, 33%, 99%; /* #FDFDFE - Text */
 
-  --border: 242, 47%, 34%; /* #312e81 - Indigo 900 */
-  --input: 217, 19%, 27%; /* #374151 - Gray 700 */
-  /* --ring: ; */
-}
+    --border: 242, 47%, 34%; /* #312e81 - Indigo 900 */
+    --input: 217, 19%, 27%; /* #374151 - Gray 700 */
+    /* --ring: ; */
+  }
 }
  
 @layer base {
