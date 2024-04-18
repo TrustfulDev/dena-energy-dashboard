@@ -1,4 +1,5 @@
 import { initializePool } from '@/utils/database';
+import { currentUser } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { rejects } from 'assert';
 import { resolve } from 'path';
@@ -93,8 +94,8 @@ async function fetchReportDetail(reportId: string, userId: string): Promise<Repo
 
 
 export async function fetchAllReports(): Promise<ReportDetail[]> {
-    const { userId } = await auth();
-    //console.log("what about here, ", userId);
+    const currUser = await currentUser();
+    const userId = currUser?.id;
     await initializePool();
     const reports = await fetchReport(userId || "");
     

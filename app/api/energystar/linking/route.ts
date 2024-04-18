@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { auth, currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
-import action from "@/lib/revalidateUtil";
+import { revalidateTag } from "next/cache";
 
 export async function POST(
     req: Request,
@@ -10,8 +10,8 @@ export async function POST(
     const connection = await getPool();
 
     try {
-        const { userId } = await auth();
         const currUser = await currentUser();
+        const userId = currUser?.id;
         const firstname = currUser?.firstName;
         const lastname = currUser?.lastName;
         
@@ -38,8 +38,6 @@ export async function POST(
         }else {
             console.log("ENERGY STAR LINKING - Account verified!")
         }
-        //----------------------
-
 
         //need to put this code somewhere so it could auto check exist account or add account
         //only check and add clerk user into USER table database
@@ -57,7 +55,7 @@ export async function POST(
         `;
         await connection.execute(energyStarInsertQuery, [username, password, userId]);
         
-        action();
+        revalidateTag('energystar_properties');
         return new NextResponse("ENERGY STAR LINKING - Account linked successfully!", { status: 200 });
     } catch(err: any) {
         if (err.errno === 1062) {
@@ -68,12 +66,11 @@ export async function POST(
 }
 
 export async function GET() {
-
-    const { userId } = await auth();
+    const currUser = await currentUser();
+    const userId = currUser?.id;
     if (!userId) return new NextResponse("ENERGY STAR LINKING - Unauthorized Access", { status: 401 });
     const connection = await getPool();
 
-    //return NextResponse.json({ username: null }, { status: 200 })
     const query = `
         SELECT Username
         FROM ENERGYSTAR

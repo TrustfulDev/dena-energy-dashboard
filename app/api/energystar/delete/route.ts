@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getPool } from "@/utils/database";
-import { auth } from "@clerk/nextjs";
-import action from '@/lib/revalidateUtil';
+import { currentUser } from "@clerk/nextjs";
+import { revalidateTag } from 'next/cache';
 
 export async function POST() {
-    const { userId } = await auth();
+    const currUser = await currentUser();
+    const userId = currUser?.id;
     const connection = await getPool();
 
     try {
@@ -15,12 +16,10 @@ export async function POST() {
         const deleteQuery = 'DELETE FROM ENERGYSTAR WHERE ClerkUID = ?';
         await connection.execute(deleteQuery, [userId]);
         
-        action();
+        revalidateTag('energystar_properties');
         return new NextResponse("Row successfully deleted", {status: 200});
     } catch (error) {
         console.error('Error deleting row:', error);
         return new NextResponse("Internal Server Error", {status: 500});
-
     }
-
 }

@@ -1,5 +1,5 @@
 import { initializePool } from '@/utils/database';
-import { auth } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs';
 import xml2js from 'xml2js';
 
 interface EnergyStarAccount {
@@ -382,9 +382,9 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
 }
 
-
 export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
-    const { userId } = await auth();
+    const currUser = await currentUser();
+    const userId = currUser?.id;
 
     await initializePool();
     

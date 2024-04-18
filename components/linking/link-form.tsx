@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     username: z.string().min(1, "Username is required"),
@@ -35,6 +36,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
     disable
 }) => {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -54,6 +56,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
                 toast.success("Account Linked!", {
                     description: `Your account [${values.username}] is now linked with us.`
                 })
+                router.refresh();
             } else if (res.status === 409) {
                 toast.error("Account Already Linked!", {
                     description: "You already have an account linked with us."

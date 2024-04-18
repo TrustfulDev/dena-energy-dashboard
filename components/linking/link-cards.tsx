@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface LinkCardsProps {
   src: string,
@@ -27,6 +28,7 @@ const LinkCards: React.FC<LinkCardsProps> = ({
   disabled
 }) => {
   const [username, setUsername] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     const getData = async () => {
@@ -59,6 +61,7 @@ const LinkCards: React.FC<LinkCardsProps> = ({
         });
 
         setUsername(null);
+        router.refresh();
     } else {
         toast.error("Failed to unlink account!", {
             description: "Please contact us directly if the problem persists."
