@@ -382,18 +382,19 @@ async function fetchPropertyDetails(propertyId: string, id: string): Promise<Pro
 
 }
 
-export async function fetchAllPropertyDetails(): Promise<PropertyDetails[]> {
-    const currUser = await currentUser();
-    const userId = currUser?.id;
-
+export async function fetchAllPropertyDetails({
+    id
+} : {
+    id: string | undefined
+}): Promise<PropertyDetails[]> {
     await initializePool();
     
-    const energystaraccount = await fetchEnergyStarAccount(userId || "");
+    const energystaraccount = await fetchEnergyStarAccount(id || "");
     //const scoresData = await fetchScores("31452836", userId || "");
     //console.log("what",scoresData);
 
-    const properties = await fetchProperties(energystaraccount.id, userId || "");
+    const properties = await fetchProperties(energystaraccount.id, id || "");
 
-    const propertyDetailsPromises = properties.map(property => fetchPropertyDetails(property.id, userId || ""));
+    const propertyDetailsPromises = properties.map(property => fetchPropertyDetails(property.id, id || ""));
     return await Promise.all(propertyDetailsPromises);
 }

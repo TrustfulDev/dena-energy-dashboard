@@ -3,10 +3,9 @@ import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-
-    const {searchParams} = new URL(req.url||"");
-    const userId = searchParams.get("id");
-    const connection = await getPool();
+  const {searchParams} = new URL(req.url||"");
+  const userId = searchParams.get("id");
+  const connection = await getPool();
 
   //console.log("checkingggg," , userId);
   let username = '';

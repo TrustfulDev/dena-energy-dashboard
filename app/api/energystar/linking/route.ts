@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs";
+import { NextRequest, NextResponse } from "next/server";
 import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
 import { revalidateTag } from "next/cache";
@@ -10,12 +9,7 @@ export async function POST(
     const connection = await getPool();
 
     try {
-        const currUser = await currentUser();
-        const userId = currUser?.id;
-        const firstname = currUser?.firstName;
-        const lastname = currUser?.lastName;
-        
-        const { username, password } = await req.json();
+        const { username, password, firstname, lastname, userId } = await req.json();
 
         if (!userId) return new NextResponse("ENERGY STAR LINKING - Unauthorized Access [UserId]", { status: 401 });
 
@@ -65,9 +59,10 @@ export async function POST(
     }
 }
 
-export async function GET() {
-    const currUser = await currentUser();
-    const userId = currUser?.id;
+export async function GET(req: NextRequest) {
+    const {searchParams} = new URL(req.url || "");
+    const userId = searchParams.get("id");
+
     if (!userId) return new NextResponse("ENERGY STAR LINKING - Unauthorized Access", { status: 401 });
     const connection = await getPool();
 

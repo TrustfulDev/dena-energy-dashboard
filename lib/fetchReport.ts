@@ -1,16 +1,16 @@
 import { ReportDetail, fetchAllReports } from "./reportApi";
 
-export async function fetchData() {
+export async function fetchData({
+    id
+}: {
+    id: string | undefined
+}) {
     let data: ReportDetail[] | null;
 
     try {
-        data = await fetchAllReports();
-        //console.log('ssssss', data);
-
+        data = await fetchAllReports({ id });
     } catch(err) {
         data = null;
-        //console.log('ssssss', data);
-
     }
     
     return data;

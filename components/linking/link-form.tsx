@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button"
 import {
@@ -37,6 +38,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
 }) => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const { user } = useUser();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -47,8 +49,13 @@ export const LinkForm: React.FC<LinkFormProps> = ({
             setLoading(true);
             const res = await fetch(`/api/${api}/linking/`, {
                 method: 'POST',
-                body: JSON.stringify({ username: values.username, password: values.password }), 
-
+                body: JSON.stringify({ 
+                    username: values.username, 
+                    password: values.password,
+                    firstname: user?.firstName,
+                    lastname: user?.lastName,
+                    userId: user?.id
+                }), 
             });
 
             if (res.ok) {

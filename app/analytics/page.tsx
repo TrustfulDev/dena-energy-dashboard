@@ -1,13 +1,14 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MeterAnalytics } from "@/components/analytics/MeterAnalytics";
-import { CarbonFootprint } from "@/components/analytics/CarbonFootprint";
 import { PropertiesAnalytics } from "@/components/analytics/PropertiesAnalytics";
 
 import { fetchData } from "@/lib/fetchAccounts";
 import NoAccount from "@/components/noAccount";
+import { currentUser } from "@clerk/nextjs";
 
 export default async function Analytics() {
-    const data = await fetchData();
+    const currUser = await currentUser();
+    const data = await fetchData({ id: currUser?.id });
 
     return (
         <div className="flex flex-grow h-full mb-6 md:overflow-y-auto">

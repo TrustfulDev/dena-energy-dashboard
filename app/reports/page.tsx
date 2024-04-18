@@ -1,9 +1,11 @@
 import ReportStatements from '@/components/report-statements'
 import { fetchData } from "@/lib/fetchReport";
 import NoAccount from '@/components/noAccount';
+import { currentUser } from '@clerk/nextjs';
 
 export default async function Reports() {
-    const data = await fetchData();
+    const currUser = await currentUser();
+    const data = await fetchData({ id: currUser?.id });
 
     //console.log("adasdas", data);
 

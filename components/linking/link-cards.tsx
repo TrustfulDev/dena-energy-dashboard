@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { useUser } from "@clerk/nextjs";
 import Image from 'next/image'
+
 import { LinkForm } from './link-form';
 
 import {
@@ -29,12 +31,13 @@ const LinkCards: React.FC<LinkCardsProps> = ({
 }) => {
   const [username, setUsername] = useState(null);
   const router = useRouter();
+  const { user } = useUser();
 
   useEffect(() => {
     const getData = async () => {
       if (disabled) return;
 
-      const linked = await fetch(`/api/${api}/linking/`, {
+      const linked = await fetch(`/api/${api}/linking/?id=${user?.id}`, {
         method: 'GET',
       });
     
@@ -53,6 +56,7 @@ const LinkCards: React.FC<LinkCardsProps> = ({
   const onDelete = async () => {
     const response = await fetch(`/api/${api}/delete/`, {
         method: 'POST',
+        body: JSON.stringify(user),
     });
 
     if (response.ok) {

@@ -93,13 +93,15 @@ async function fetchReportDetail(reportId: string, userId: string): Promise<Repo
 }
 
 
-export async function fetchAllReports(): Promise<ReportDetail[]> {
-    const currUser = await currentUser();
-    const userId = currUser?.id;
+export async function fetchAllReports({
+    id
+}: {
+    id: string | undefined
+}): Promise<ReportDetail[]> {
     await initializePool();
-    const reports = await fetchReport(userId || "");
+    const reports = await fetchReport(id || "");
     
-    const reportDetailsPromises = reports.map(report => fetchReportDetail(report.id, userId || ""));
+    const reportDetailsPromises = reports.map(report => fetchReportDetail(report.id, id || ""));
 
     return await Promise.all(reportDetailsPromises);
 }
