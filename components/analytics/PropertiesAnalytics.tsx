@@ -306,7 +306,7 @@ export const PropertiesAnalytics: React.FC<PropertiesAnalyticsProps> = ({
                         <CardTitle className="">
                             Monthly Usage
                         </CardTitle>
-                        <CardDescription>Electricity, Natrual Gas, Water, and Waste</CardDescription>
+                        <CardDescription>Electricity, Natural Gas, Water, and Waste</CardDescription>
                     </CardHeader>
                     <CardContent className='flex-grow'>
                         <ResponsiveContainer width="100%" height="100%">

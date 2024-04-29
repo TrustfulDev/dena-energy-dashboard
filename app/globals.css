@@ -76,3 +76,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.apexcharts-tooltip {
+  background: #808080;
+  color: black;
+}
