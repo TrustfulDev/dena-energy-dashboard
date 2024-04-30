@@ -34,20 +34,20 @@ export default async function Privacy() {
                         <h2 className="text-lg font-bold mb-2">Table Of Contents</h2>
                         
                         <ul className="list pl-6 mb-4">
-                            <li><strong>1. WHAT INFORMATION DO WE COLLECT?</strong> </li>
-                            <li><strong>2. HOW DO WE PROCESS YOUR INFORMATION?</strong> </li>
-                            <li><strong>3. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</strong></li>
-                            <li><strong>4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</strong> </li>
-                            <li><strong>5. HOW DO WE HANDLE YOUR SOCIAL LOGINS?</strong> </li>
-                            <li><strong>6. HOW LONG DO WE KEEP YOUR INFORMATION?</strong> </li>
-                            <li><strong>7. HOW DO WE KEEP YOUR INFORMATION SAFE?</strong> </li>
-                            <li><strong>8. DO WE COLLECT INFORMATION FROM MINORS?</strong> </li>
-                            <li><strong>9. WHAT ARE YOUR PRIVACY RIGHTS?</strong> </li>
-                            <li><strong>10. CONTROLS FOR DO-NOT-TRACK FEATURES</strong> </li>
-                            <li><strong>11. DO UNITED STATES RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</strong> </li>
-                            <li><strong>12. DO WE MAKE UPDATES TO THIS NOTICE?</strong> </li>
-                            <li><strong>13. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</strong> </li>
-                            <li><strong>14. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</strong> </li>
+                            <li><a href="#personal-information" className="toc-link hover:text-blue-500"><strong>1. WHAT INFORMATION DO WE COLLECT?</strong></a></li>
+                            <li><a href="#2" className="toc-link hover:text-blue-500"><strong>2. HOW DO WE PROCESS YOUR INFORMATION?</strong></a> </li>
+                            <li><a href="#3" className="toc-link hover:text-blue-500"><strong>3. WHEN AND WITH WHOM DO WE SHARE YOUR PERSONAL INFORMATION?</strong></a></li>
+                            <li><a href="#4" className="toc-link hover:text-blue-500"><strong>4. DO WE USE COOKIES AND OTHER TRACKING TECHNOLOGIES?</strong></a> </li>
+                            <li><a href="#5" className="toc-link hover:text-blue-500"><strong>5. HOW DO WE HANDLE YOUR SOCIAL LOGINS?</strong></a></li>
+                            <li><a href="#6" className="toc-link hover:text-blue-500"><strong>6. HOW LONG DO WE KEEP YOUR INFORMATION?</strong></a> </li>
+                            <li><a href="#7" className="toc-link hover:text-blue-500"><strong>7. HOW DO WE KEEP YOUR INFORMATION SAFE?</strong></a> </li>
+                            <li><a href="#8" className="toc-link hover:text-blue-500"><strong>8. DO WE COLLECT INFORMATION FROM MINORS?</strong></a> </li>
+                            <li><a href="#9" className="toc-link hover:text-blue-500"><strong>9. WHAT ARE YOUR PRIVACY RIGHTS?</strong></a> </li>
+                            <li><a href="#10" className="toc-link hover:text-blue-500"><strong>10. CONTROLS FOR DO-NOT-TRACK FEATURES</strong></a> </li>
+                            <li><a href="#11" className="toc-link hover:text-blue-500"><strong>11. DO UNITED STATES RESIDENTS HAVE SPECIFIC PRIVACY RIGHTS?</strong></a> </li>
+                            <li><a href="#12" className="toc-link hover:text-blue-500"><strong>12. DO WE MAKE UPDATES TO THIS NOTICE?</strong></a> </li>
+                            <li><a href="#13" className="toc-link hover:text-blue-500"><strong>13. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</strong></a> </li>
+                            <li><a href="#14" className="toc-link hover:text-blue-500"><strong>14. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</strong></a> </li>
                         </ul>
                     </div>
         
@@ -72,7 +72,7 @@ export default async function Privacy() {
                         </ul>
                     </div>
                 {/* How Do We Process Your Information? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="2">
                         <h2 className="text-lg font-bold mb-2">2. How Do We Process Your Information?</h2>
                         <p><strong>In Short:</strong> We process your information to provide, improve, and administer our Services, communicate with you, for security and fraud prevention, and to comply with law. We may also process your information for other purposes with your consent.</p>
                         <p>We process your personal information for a variety of reasons, depending on how you interact with our Services, including:</p>
@@ -89,7 +89,7 @@ export default async function Privacy() {
                 </div>
 
                 {/* When and With Whom Do We Share Your Personal Information? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="3">
                         <h2 className="text-lg font-bold mb-2">3. When and With Whom Do We Share Your Personal Information?</h2>
                         <p><strong>In Short:</strong> We may share information in specific situations described in this section and/or with the following third parties.</p>
                         <p>We may need to share your personal information in the following situations:</p>
@@ -100,14 +100,14 @@ export default async function Privacy() {
                 </div>
 
                 {/* Do We Use Cookies and Other Tracking Technologies? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="4">
                         <h2 className="text-lg font-bold mb-2">4. Do We Use Cookies and Other Tracking Technologies?</h2>
                         <p><strong>In Short:</strong> We may use cookies and other tracking technologies to collect and store your information.</p>
                         <p>We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Notice.</p>
                 </div>
 
                 {/* How Do We Handle Your Social Logins? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="5">
                         <h2 className="text-lg font-bold mb-2">5. How Do We Handle Your Social Logins?</h2>
                         <p><strong>In Short:</strong> If you choose to register or log in to our Services using a social media account, we may have access to certain information about you.</p>
                         <p>Our Services offer you the ability to register and log in using your third-party social media account details (like your Facebook or Twitter logins). Where you choose to do this, we will receive certain profile information about you from your social media provider. The profile information we receive may vary depending on the social media provider concerned, but will often include your name, email address, friends list, and profile picture, as well as other information you choose to make public on such a social media platform.</p>
@@ -115,7 +115,7 @@ export default async function Privacy() {
                 </div>
 
                 {/* How Long Do We Keep Your Information? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="6">
                         <h2 className="text-lg font-bold mb-2">6. How Long Do We Keep Your Information?</h2>
                         <p><strong>In Short:</strong> We keep your information for as long as necessary to fulfill the purposes outlined in this privacy notice unless otherwise required by law.</p>
                         <p>We will only keep your personal information for as long as it is necessary for the purposes set out in this privacy notice, unless a longer retention period is required or permitted by law (such as tax, accounting, or other legal requirements). No purpose in this notice will require us keeping your personal information for longer than ÿ the period of time in which users have an account with us.</p>
@@ -123,21 +123,21 @@ export default async function Privacy() {
                 </div>
 
                 {/* How Do We Keep Your Information Safe? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="7">
                         <h2 className="text-lg font-bold mb-2">7. How Do We Keep Your Information Safe?</h2>
                         <p><strong>In Short:</strong> We aim to protect your personal information through a system of organizational and technical security measures.</p>
                         <p>We have implemented appropriate and reasonable technical and organizational security measures designed to protect the security of any personal information we process. However, despite our safeguards and efforts to secure your information, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security and improperly collect, access, steal, or modify your information. Although we will do our best to protect your personal information, transmission of personal information to and from our Services is at your own risk. You should only access the Services within a secure environment.</p>
                 </div>
 
                 {/* Do We Collect Information From Minors? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="8">
                         <h2 className="text-lg font-bold mb-2">8. Do We Collect Information From Minors?</h2>
                         <p><strong>In Short:</strong> We do not knowingly collect data from or market to children under 18 years of age.</p>
                         <p>We do not knowingly solicit data from or market to children under 18 years of age. By using the Services, you represent that you are at least 18 or that you are the parent or guardian of such a minor and consent to such minor dependent use of the Services. If we learn that personal information from users less than 18 years of age has been collected, we will deactivate the account and take reasonable measures to promptly delete such data from our records. If you become aware of any data we may have collected from children under age 18, please contact us at <a href="mailto:privacy@dena.energy.com" className="text-blue-500">privacy@dena.energy.com</a>.</p>
                 </div>
 
                 {/* What Are Your Privacy Rights? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="9">
                         <h2 className="text-lg font-bold mb-2">9. What Are Your Privacy Rights?</h2>
                         <p><strong>In Short:</strong> You may review, change, or terminate your account at any time.</p>
                         <p><strong>Withdrawing your consent:</strong> If we are relying on your consent to process your personal information, which may be express and/or implied consent depending on the applicable law, you have the right to withdraw your consent at any time. You can withdraw your consent at any time by contacting us by using the contact details provided in the section "HOW CAN YOU CONTACT US ABOUT THIS NOTICE?" below.</p>
@@ -153,13 +153,13 @@ export default async function Privacy() {
                 </div>
 
                 {/* Controls for Do-Not-Track Features */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="10">
                         <h2 className="text-lg font-bold mb-2">10. Controls for Do-Not-Track Features</h2>
                         <p>Most web browsers and some mobile operating systems and mobile applications include a Do-Not-Track ("DNT") feature or setting you can activate to signal your privacy preference not to have data about your online browsing activities monitored and collected. At this stage, no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals or any other mechanism that automatically communicates your choice not to be tracked online. If a standard for online tracking is adopted that we must follow in the future, we will inform you about that practice in a revised version of this privacy notice.</p>
                 </div>
 
                 {/* Do United States Residents Have Specific Privacy Rights? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="11">
                         <h2 className="text-lg font-bold mb-2">11. Do United States Residents Have Specific Privacy Rights?</h2>
                         <p><strong>In Short:</strong> If you are a resident of California, Colorado, Connecticut, Utah, or Virginia, you are granted specific rights regarding access to your personal information.</p>
                         <p><strong>What categories of personal information do we collect?</strong></p>
@@ -345,13 +345,13 @@ export default async function Privacy() {
                   </div>
                 
                  {/* DO WE MAKE UPDATES TO THIS NOTICE? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="12">
                         <h2 className="text-lg font-bold mb-2">12. DO WE MAKE UPDATES TO THIS NOTICE?</h2>
                         <p className="mb-2">In Short: Yes, we will update this notice as necessary to stay compliant with relevant laws.</p>
                         <p>We may update this privacy notice from time to time. The updated version will be indicated by an updated "Revised" date and the updated version will be effective as soon as it is accessible. If we make material changes to this privacy notice, we may notify you either by prominently posting a notice of such changes or by directly sending you a notification. We encourage you to review this privacy notice frequently to be informed of how we are protecting your information.</p>
                   </div>
                 {/* HOW CAN YOU CONTACT US ABOUT THIS NOTICE? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="13">
                         <h2 className="text-lg font-bold mb-2">13. HOW CAN YOU CONTACT US ABOUT THIS NOTICE?</h2>
                         <p>If you have questions or comments about this notice, you may contact us by post at:</p>
                         <address>
@@ -363,7 +363,7 @@ export default async function Privacy() {
                    </div>
                 
                  {/* HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU? */}
-                <div className="border-t-2 border-gray-300 pt-4 mt-4">
+                <div className="border-t-2 border-gray-300 pt-4 mt-4" id="14">
                         <h2 className="text-lg font-bold mb-2">14. HOW CAN YOU REVIEW, UPDATE, OR DELETE THE DATA WE COLLECT FROM YOU?</h2>
                         <p>Based on the applicable laws of your country, you may have the right to request access to the personal information we collect from you, change that information, or delete it. To request to review, update, or delete your personal information, please fill out and submit a data subject access request.</p>
                    </div>
