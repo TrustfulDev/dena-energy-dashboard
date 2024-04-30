@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 export default function AuthLayout({
     children,
 }: {
@@ -11,7 +13,10 @@ export default function AuthLayout({
 
                 <p className="text-foreground text-xl mt-auto">Secured with Clerk Authentication</p>
             </div>
-            <div className="flex-1 p-6 xl:p-16">{children}</div>
+            <div className="relative flex-1 p-6 xl:p-16">
+                {children}
+                <Link href="/privacy" className="absolute bottom-6 xl:bottom-16 left-1/2 -translate-x-1/2">Privacy Policy</Link>
+            </div>
         </div>
     )
 }
