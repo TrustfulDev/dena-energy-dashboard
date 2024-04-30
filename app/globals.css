@@ -71,6 +71,7 @@
     @apply border-border;
     scrollbar-width: thin;
     scrollbar-color: #FF9E73 #37373fa4;
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;
