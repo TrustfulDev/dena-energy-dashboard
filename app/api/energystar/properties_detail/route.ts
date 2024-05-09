@@ -3,31 +3,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { RowDataPacket } from 'mysql2';
 
 export async function GET(req: NextRequest) {
-
   const {searchParams} = new URL(req.url||"");
   const propertyId = searchParams.get("id");
   const userId = searchParams.get("userId");
-  const connection = await getPool();
-
-  //const username = process.env.ENERGY_STAR_USERNAME;
-  //const password = process.env.ENERGY_STAR_PASSWORD;
-  let username = '';
-  let password = '';
+  const connection = getPool();
 
   const query = `
-    SELECT Username, Password
+    SELECT AccountID
     FROM ENERGYSTAR
     WHERE ClerkUID = ?
   `
   try{
     const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
-    if ( rows.length > 0 ){
-      username = rows[0].Username;
-      password = rows[0].Password; 
-
-    }else {
-      return new NextResponse("Can't find aaccount", { status: 400 }) 
+    if ( !(rows.length > 0) ){
+      return new NextResponse("Can't find account", { status: 400 }) 
     }
   } catch (error){
     console.error('Database query error:', error);
@@ -35,9 +25,7 @@ export async function GET(req: NextRequest) {
 
   }
 
-  //console.log("Checking id passing pro : ", propertyId);
-
-  const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+  const basicAuth = 'Basic ' + Buffer.from(`${process.env.ENERGY_STAR_USERNAME}:${process.env.ENERGY_STAR_PASSWORD}`).toString('base64');
   const url = `https://portfoliomanager.energystar.gov/ws/property/${propertyId}`;
 
   try {
@@ -45,7 +33,6 @@ export async function GET(req: NextRequest) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/xml',
-        //'PM-Metrics': 'score, sourceIntensity, waterIntensityTotal, totalWasteDisposedandDivertedIntensity',
         'Authorization': basicAuth,
       },
     });

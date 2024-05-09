@@ -329,13 +329,23 @@ function processAllPropertyRecent(properties: PropertyDetails[]): {
   recentTotalEnergyCost = Math.round((recentTotalEnergyCost + Number.EPSILON) * 100) / 100;
   recentTotalWaterCost = Math.round((recentTotalWaterCost + Number.EPSILON) * 100) / 100;
   recentTotalWasteCost = Math.round((recentTotalWasteCost + Number.EPSILON) * 100) / 100;
-  recentCost_data = [
-    { month: 'Recent', name: properties[0].name, value: individualPropertiesRecentCost[0], type: 'Cost', fill: '#8884d8' },
-    { month: 'Recent', name: properties[1].name, value: individualPropertiesRecentCost[1], type: 'Cost', fill: '#82ca9d' },
-    { month: 'Recent', name: properties[2].name, value: individualPropertiesRecentCost[2], type: 'Cost', fill: '#82ca9d' },
-    { month: 'Recent', name: properties[3].name, value: individualPropertiesRecentCost[3], type: 'Cost', fill: '#82ca9d' },
-    { month: 'Recent', name: properties[4].name, value: individualPropertiesRecentCost[4], type: 'Cost', fill: '#FF8042' }
-  ];
+  // recentCost_data = [
+  //   { month: 'Recent', name: properties[0].name, value: individualPropertiesRecentCost[0], type: 'Cost', fill: '#8884d8' },
+  //   { month: 'Recent', name: properties[1].name, value: individualPropertiesRecentCost[1], type: 'Cost', fill: '#82ca9d' },
+  //   { month: 'Recent', name: properties[2].name, value: individualPropertiesRecentCost[2], type: 'Cost', fill: '#82ca9d' },
+  //   { month: 'Recent', name: properties[3].name, value: individualPropertiesRecentCost[3], type: 'Cost', fill: '#82ca9d' },
+  //   { month: 'Recent', name: properties[4].name, value: individualPropertiesRecentCost[4], type: 'Cost', fill: '#FF8042' }
+  // ];
+  recentCost_data = properties.map((property, index) => {
+    const fillColors = ['#8884d8', '#82ca9d', '#82ca9d', '#82ca9d', '#FF8042']; // Define your color palette
+    return {
+        month: 'Recent',
+        name: property.name,
+        value: individualPropertiesRecentCost[index],
+        type: 'Cost',
+        fill: fillColors[index % fillColors.length] // Use modulo to cycle through colors if there are more properties than colors
+    };
+  });
 
   changeinCost_data = [
     { month: 'Recent', name: 'Past Cost', value: pastMonthCost, type : 'Cost',fill: '#82ca9d' },
@@ -370,7 +380,8 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
     recentHighestConsumer_data = processedData.recentHighestConsumer_data;
     changeinCost_data = processedData.changeinCost_data;
     // adding the cost data from all properties for the pie chart text area 
-    cost_data_added = recentCost_data[0].value + recentCost_data[1].value + recentCost_data[2].value + recentCost_data[3].value + recentCost_data[4].value;
+    //cost_data_added = recentCost_data[0].value + recentCost_data[1].value + recentCost_data[2].value + recentCost_data[3].value + recentCost_data[4].value;
+    cost_data_added = recentCost_data.reduce((total, current) => total + current.value, 0)
     totalNumberOfMeters = processedData.totalNumberOfMeters;
     numberOfProperties = properties.length;
     carbon_data = CarbonFootprint(properties)
@@ -384,7 +395,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
             <Card className='w-full flex flex-col col-span-6 min-h-[500px]'>
                 <CardHeader>
                   <CardTitle className="flex justify-between items-center">
-                      Top 5 Electricity Consumers
+                      Top Electricity Consumers
                   </CardTitle>
                   <CardDescription>The top monthly electric consumers (kWh)</CardDescription>
                 </CardHeader>

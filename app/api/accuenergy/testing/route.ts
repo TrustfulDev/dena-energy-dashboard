@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             
             revalidateTag("accuenergy");
             revalidatePath("/test");
-            console.log(data);
+            //console.log(data);
             return new Response("Success!", { status: 200 });
         } catch (error) {
             console.error('Error processing request:', error);

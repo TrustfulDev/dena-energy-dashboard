@@ -20,9 +20,9 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-    username: z.string().min(1, "Username is required"),
-    password: z.string().min(1, "Password is required"),
-
+    accountID: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
+        message: "Expected number, received a string"
+    })
 });
 
 interface LinkFormProps {
@@ -50,8 +50,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
             const res = await fetch(`/api/${api}/linking/`, {
                 method: 'POST',
                 body: JSON.stringify({ 
-                    username: values.username, 
-                    password: values.password,
+                    accountID: values.accountID, 
                     firstname: user?.firstName,
                     lastname: user?.lastName,
                     userId: user?.id
@@ -59,9 +58,9 @@ export const LinkForm: React.FC<LinkFormProps> = ({
             });
 
             if (res.ok) {
-                callback(values.username);
+                callback(values.accountID);
                 toast.success("Account Linked!", {
-                    description: `Your account [${values.username}] is now linked with us.`
+                    description: `Your account [${values.accountID}] is now linked with us.`
                 })
                 router.refresh();
             } else if (res.status === 409) {
@@ -71,7 +70,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
             } else {
                 console.log(res.status);
                 toast.error("Account Authentication Failed!", {
-                    description: `Your account [${values.username}] does not exist.`,
+                    description: `Your account [${values.accountID}] does not exist.`,
                 })
             }
         } catch(err) {
@@ -86,26 +85,13 @@ export const LinkForm: React.FC<LinkFormProps> = ({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
                     control={form.control}
-                    name="username"
+                    name="accountID"
                     render={({ field }) => (
                         <FormItem className="relative">
-                            <FormLabel className="font-bold ml-3 absolute -top-[7px] bg-background px-2">USERNAME</FormLabel>
+                            <FormLabel className="font-bold ml-3 absolute -top-[7px] bg-background px-2">ACCOUNT ID</FormLabel>
 
                             <FormControl>
-                                <Input disabled={loading || disable} placeholder="Enter Username" {...field} className="!mt-1 !py-6" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="password" 
-                    render={({ field }) => (
-                        <FormItem className="relative">
-                            <FormLabel className="font-bold ml-3 absolute -top-[7px] bg-background px-2">PASSWORD</FormLabel>
-                            <FormControl>
-                                <Input disabled={loading || disable} placeholder="Enter Password" type="password" {...field} className="!mt-1 !py-6" />
+                                <Input disabled={loading || disable} placeholder="Enter Account ID" {...field} className="!mt-1 !py-6" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

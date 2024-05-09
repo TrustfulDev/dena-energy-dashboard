@@ -2,21 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
 import { revalidateTag } from "next/cache";
+import xml2js from 'xml2js';
 
 export async function POST(
     req: Request,
 ) {
-    const connection = await getPool();
+    const connection = getPool();
 
     try {
-        const { username, password, firstname, lastname, userId } = await req.json();
+        const { accountID, firstname, lastname, userId } = await req.json();
 
         if (!userId) return new NextResponse("ENERGY STAR LINKING - Unauthorized Access [UserId]", { status: 401 });
 
         //--------------
         //fetch check account valid in energystar environment first
-        const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
-        const url = `https://portfoliomanager.energystar.gov/ws/account`;
+        const basicAuth = 'Basic ' + Buffer.from(`${process.env.ENERGY_STAR_USERNAME}:${process.env.ENERGY_STAR_PASSWORD}`).toString('base64');
+        const url = `https://portfoliomanager.energystar.gov/ws/account/${accountID}/property/list`;
 
         const energyStarResponse = await fetch(url, {
             method: 'GET',
@@ -29,7 +30,19 @@ export async function POST(
             console.log("ENERGY STAR LINKING - Account not found!")
 
             return new NextResponse("ENERGY STAR LINKING - Account validation failed!", { status: 401 });
-        }else {
+        } else {
+            const xml = await energyStarResponse.text();
+            const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+
+            parser.parseString(xml, (err: any, result: any) => {
+                if (err) {
+                    console.error("propertiesApi.ts ERROR: fetchProperties");
+                } else {
+                    const properties = result.response.links.link;
+                    if (properties.length < 1) return new NextResponse("ENERGY STAR LINKING - Account validation failed!", { status: 401 });
+                }
+            });
+
             console.log("ENERGY STAR LINKING - Account verified!")
         }
 
@@ -44,10 +57,10 @@ export async function POST(
         
         //check account already exist in energystar
         const energyStarInsertQuery = `
-            INSERT INTO ENERGYSTAR (Username, Password, ClerkUID)
-            VALUES (?, ?, ?);
+            INSERT INTO ENERGYSTAR (AccountID, ClerkUID)
+            VALUES (?, ?);
         `;
-        await connection.execute(energyStarInsertQuery, [username, password, userId]);
+        await connection.execute(energyStarInsertQuery, [accountID, userId]);
         
         revalidateTag('energystar_properties');
         return new NextResponse("ENERGY STAR LINKING - Account linked successfully!", { status: 200 });
@@ -64,10 +77,10 @@ export async function GET(req: NextRequest) {
     const userId = searchParams.get("id");
 
     if (!userId) return new NextResponse("ENERGY STAR LINKING - Unauthorized Access", { status: 401 });
-    const connection = await getPool();
+    const connection = getPool();
 
     const query = `
-        SELECT Username
+        SELECT AccountID
         FROM ENERGYSTAR
         WHERE ClerkUID = ?
     `;
@@ -76,10 +89,9 @@ export async function GET(req: NextRequest) {
         const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
         if (rows.length > 0) {
-            const { Username } = rows[0];
-            
-            //return new NextResponse("Account already linked", { status: 200 });
-            return NextResponse.json({ username: Username }, { status: 200 })
+            const { AccountID } = rows[0];
+
+            return NextResponse.json({ username: AccountID }, { status: 200 })
 
         } else {
             return NextResponse.json({ username: null }, { status: 200 })

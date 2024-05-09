@@ -1,18 +1,17 @@
 import { getPool } from "@/utils/database";
 import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
+import xml2js from 'xml2js';
 
 export async function GET(req: NextRequest) {
   const {searchParams} = new URL(req.url||"");
   const userId = searchParams.get("id");
   const connection = await getPool();
 
-  //console.log("checkingggg," , userId);
-  let username = '';
-  let password = '';
+  let AccountID = '';
 
   const query = `
-    SELECT Username, Password
+    SELECT AccountID
     FROM ENERGYSTAR
     WHERE ClerkUID = ?
   `
@@ -20,8 +19,7 @@ export async function GET(req: NextRequest) {
     const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
     if ( rows.length > 0 ){
-      username = rows[0].Username;
-      password = rows[0].Password; 
+      AccountID = rows[0].AccountID;
 
     }else {
       return new NextResponse("Can't find aaccount", { status: 400 }) 
@@ -33,15 +31,14 @@ export async function GET(req: NextRequest) {
 
   }
 
-  const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
-  const url = `https://portfoliomanager.energystar.gov/ws/account`;
+  const basicAuth = 'Basic ' + Buffer.from(`${process.env.ENERGY_STAR_USERNAME}:${process.env.ENERGY_STAR_PASSWORD}`).toString('base64');
+  const url = `https://portfoliomanager.energystar.gov/ws/account/${AccountID}/property/list`;
 
   try {
     const apiRes = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/xml',
-        //'PM-Metrics': 'score, sourceIntensity, waterIntensityTotal, totalWasteDisposedandDivertedIntensity',
         'Authorization': basicAuth,
       },
     });
@@ -51,9 +48,19 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await apiRes.text();
-    return new Response (data);
+    const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+
+    parser.parseString(data, (err: any, result: any) => {
+        if (err) {
+            console.error("propertiesApi.ts ERROR: fetchProperties");
+        } else {
+            const properties = result.response.links.link;
+            if (properties.length < 1) return new NextResponse("ENERGY STAR ACCOUNT - Account validation failed!", { status: 401 });
+        }
+    });
+
+    return NextResponse.json({ username: AccountID }, { status: 200 })
   } catch (error : any) {
     return new Response (error.message);
   }
-  
 }

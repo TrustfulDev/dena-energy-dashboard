@@ -3,37 +3,27 @@ import { RowDataPacket } from 'mysql2';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-
   const {searchParams} = new URL(req.url||"");
   const userId = searchParams.get("id");
-  const connection = await getPool();
-
-  let username = '';
-  let password = '';
+  const connection = getPool();
 
   const query = `
-    SELECT Username, Password
+    SELECT AccountID
     FROM ENERGYSTAR
     WHERE ClerkUID = ?
   `
   try {
     const [rows] = await connection.execute<RowDataPacket[]>(query, [userId]);
 
-    if ( rows.length > 0 ){
-      username = rows[0].Username;
-      password = rows[0].Password; 
-
-    }else {
+    if ( !(rows.length > 0) ){
       return new NextResponse("Can't find aaccount", { status: 400 }) 
     }
   } catch (error){
-
     console.error('Database query error:', error);
     return new NextResponse("Internal Server Error", { status: 500 });
-
   }
 
-  const basicAuth = 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64');
+  const basicAuth = 'Basic ' + Buffer.from(`${process.env.ENERGY_STAR_USERNAME}:${process.env.ENERGY_STAR_PASSWORD}`).toString('base64');
   const url = 'https://portfoliomanager.energystar.gov/ws/reports?type=ENERGY_STAR';
 
   try {
@@ -41,7 +31,6 @@ export async function GET(req: NextRequest) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/xml',
-        //'PM-Metrics': 'score, sourceIntensity, waterIntensityTotal, totalWasteDisposedandDivertedIntensity',
         'Authorization': basicAuth,
       },
     });
@@ -55,5 +44,4 @@ export async function GET(req: NextRequest) {
   } catch (error : any) {
     return new Response (error.message);
   }
-  
 }
