@@ -4,7 +4,7 @@ import { revalidateTag } from 'next/cache';
 
 export async function POST(req: NextRequest) {
     const { id } = await req.json();
-    const connection = await getPool();
+    const connection = getPool();
 
     try {
         if (!id) {

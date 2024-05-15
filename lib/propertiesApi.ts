@@ -1,5 +1,4 @@
 import { initializePool } from '@/utils/database';
-import { currentUser } from '@clerk/nextjs';
 import xml2js from 'xml2js';
 
 interface EnergyStarAccount {
@@ -90,21 +89,18 @@ export interface PropertyDetails {
 async function fetchEnergyStarAccount(id: string): Promise<EnergyStarAccount> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const response = await fetch(`${baseUrl}/api/energystar/account?id=${id}`);
-    const xml = await response.text();
-    const parser = new xml2js.Parser({ explicitArray: false, mergeAttrs: true });
+    const data = await response.json();
 
     return new Promise((resolve, reject) => {
-        parser.parseString(xml, (err: any, result: any) => {
-            if (err) {
-                console.error("propertiesApi.ts ERROR: fetchEnergyStarAccount");
-                reject(err);
-            } else {
-                const energystaraccount: EnergyStarAccount = result.account;
-                resolve(energystaraccount);
-            }
-        });
+        if (!response) {
+            console.error("propertiesApi.ts ERROR: fetchEnergyStarAccount");
+            reject("Failed to fetch account");
+        } else {
+            console.log("ENERGY STAR ACCOUNT: " + response);
+            const res: EnergyStarAccount = {id: data.username};
+            resolve(res);
+        }
     });
-
 }
 
 async function fetchProperties(account: string, id: string): Promise<Property[]> {
