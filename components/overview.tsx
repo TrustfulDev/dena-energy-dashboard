@@ -384,7 +384,7 @@ export const Overview = ({ properties} : { properties: PropertyDetails[] }) => {
             <Card className='w-full flex flex-col col-span-6 min-h-[500px]'>
                 <CardHeader>
                   <CardTitle className="flex justify-between items-center">
-                      Top 5 Electricity Consumers
+                      Top 3 Electricity Consumers
                   </CardTitle>
                   <CardDescription>The top monthly electric consumers (kWh)</CardDescription>
                 </CardHeader>
