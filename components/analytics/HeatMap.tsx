@@ -17,9 +17,7 @@ interface Reading {
 }
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: 'short',
-    day: 'numeric',
+  return new Date(date).toLocaleTimeString("en-US", {
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit'
@@ -61,7 +59,13 @@ export const AreaCharts: React.FC<{ importActiveEnergy: Reading[] }> = ({ import
                       <ResponsiveContainer width="100%" height={400}>
                         <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="timestamp" tickFormatter={formatDate} hide={true} />
+                          <XAxis dataKey="timestamp" 
+                            tickFormatter={formatDate} 
+                            angle={-90} 
+                            textAnchor="end" 
+                            height={70}
+                            tick={{ fontSize: '10px' }}  
+                            />
                           <YAxis label={{ value: 'kWh', angle: -90, position: 'insideLeft' }} />
                           <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: "#000"}} cursor={{fill: '#000', opacity: '20%'}}/>
                           <Area type="monotone" dataKey="value" stroke="#8884d8" fill="#8884d8" />
